@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>15. Power Platform von innen: Bausteine und Umgebungen</title>
+<style>
+:root { --bg:#fafaf7; --text:#1f2230; --muted:#5b6072; --accent:#2f5d8a;
+  --accent-soft:#d9e4ef; --leader:#b8472a; --node-fill:#ffffff;
+  --node-stroke:#2f5d8a; --rule:#c8ccd6; --code-bg:#eef1f5; }
+html,body { background:var(--bg); color:var(--text);
+  font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+  line-height:1.65; font-size:18px; }
+body { max-width:760px; margin:3rem auto 6rem; padding:0 1.5rem; }
+h1 { font-size:2rem; line-height:1.2; margin:0 0 2rem;
+  border-bottom:1px solid var(--rule); padding-bottom:0.6rem; }
+h2 { font-size:1.35rem; margin-top:2.4rem; margin-bottom:0.8rem;
+  color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif;
+  font-weight:600; letter-spacing:0.01em; }
+p { margin:0 0 1.1rem; }
+figure { margin:2rem auto; text-align:center; }
+figure svg { max-width:100%; height:auto; display:block; margin:0 auto; }
+figcaption { font-family:"Helvetica Neue",Arial,sans-serif; font-size:0.85rem;
+  color:var(--muted); margin-top:0.6rem; text-align:center; }
+svg text { font-family:"Helvetica Neue",Arial,sans-serif; fill:var(--text); }
+.legend-text { font-size:11px; fill:var(--muted); }
+pre { background:var(--code-bg); padding:0.9rem 1.1rem; overflow-x:auto;
+  border-radius:6px; font-size:0.82em; }
+code { background:var(--code-bg); font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:0.85em; padding:0.1em 0.3em; border-radius:3px; }
+pre code { background:none; padding:0; }
+.table-wrap { overflow-x:auto; margin:1.5rem 0; }
+table { border-collapse:collapse; width:100%; font-size:0.85em; line-height:1.45; }
+th { text-align:left; color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif;
+  font-weight:600; border-bottom:2px solid var(--accent); padding:0.45rem 0.6rem;
+  vertical-align:bottom; }
+td { border-bottom:1px solid var(--rule); padding:0.45rem 0.6rem; vertical-align:top; }
+tr { break-inside:avoid; }
+</style>
+</head>
+<body>
+<h1>15. Power Platform von innen: Bausteine und Umgebungen</h1>
+
+<p>Die Power Platform wirkt von außen wie eine Sammlung von Werkzeugen für Leute, die nicht programmieren. Von innen ist sie eine Plattform mit klarer Struktur: Bausteine, die in Umgebungen leben, eine Datenbank pro Umgebung und mehrere Rechtesysteme übereinander. Wer diese Struktur kennt, versteht schnell, warum eine App „nicht startet“, ein Flow „verschwunden“ ist oder ein Admin „keine Daten sieht“. Die Rechte- und Abrechnungsseite der Umgebungen ist bereits beschrieben (siehe <a href="12-plattformen-verwaltung.html">Kapitel 12, Plattformen und Verwaltungsorte</a>). Hier geht es darum, was man in der Power Platform baut und wo es liegt.</p>
+
+<h2>Die Bausteine</h2>
+
+<p>Die Power Platform besteht aus wenigen Bausteinen. Jeder hat einen eigenen Ausgangspunkt.</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Baustein</th><th>Was er ist</th><th>Ausgangspunkt</th><th>Braucht Dataverse?</th></tr></thead>
+<tbody>
+<tr><td><strong>Canvas App</strong></td><td>App, deren Oberfläche frei auf einer Leinwand gestaltet wird</td><td>die Oberfläche</td><td>nein, Daten kommen über Connectors</td></tr>
+<tr><td><strong>Model-driven App</strong></td><td>App, deren Oberfläche aus dem Datenmodell erzeugt wird</td><td>das Datenmodell</td><td>ja</td></tr>
+<tr><td><strong>Cloud Flow</strong></td><td>automatisierter Ablauf in Microsofts Cloud</td><td>ein Auslöser</td><td>nein</td></tr>
+<tr><td><strong>Desktop Flow</strong></td><td>Automatisierung von Bedienschritten auf einem Windows-Rechner</td><td>ein Bildschirm, eine Anwendung</td><td>nein, aber meist aus einem Cloud Flow gestartet</td></tr>
+<tr><td><strong>Agent</strong> in Copilot Studio</td><td>Chat- oder Hintergrundagent mit Wissen und Tools</td><td>eine Aufgabe</td><td>ja, er liegt in Dataverse</td></tr>
+<tr><td><strong>Power Pages</strong></td><td>Website für externe Besucher</td><td>die Website</td><td>ja</td></tr>
+<tr><td><strong>Dataverse</strong></td><td>Datenbank der Umgebung mit eigenem Rechtemodell</td><td>Tabellen</td><td>ist selbst die Datenbank</td></tr>
+</tbody>
+</table></div>
+
+<p>Zwei Merksätze ordnen die Apps. Eine <strong>Canvas App</strong> heißt „Oberfläche zuerst, Daten irgendwo“: Sie kann SharePoint, Excel, SQL oder Dataverse lesen, je nach Connector. Eine <strong>Model-driven App</strong> heißt „Daten zuerst, Oberfläche folgt“: Formulare und Ansichten entstehen aus Tabellen in Dataverse, und die Rechte kommen aus dessen Sicherheitsrollen. Die Logik in Canvas Apps schreibt man in Power Fx, einer Formelsprache ähnlich wie in Excel.</p>
+
+<p>Bei den Flows trennt sich die Welt nach dem Ort der Ausführung. Ein <strong>Cloud Flow</strong> läuft in Microsofts Rechenzentrum und spricht Dienste über Connectors an. Ein <strong>Desktop Flow</strong> ist RPA (Robotic Process Automation): Er klickt und tippt auf einem Windows-Rechner in Anwendungen, die keine API haben. Das geht beaufsichtigt (attended), mit angemeldeter Person am Rechner, oder unbeaufsichtigt (unattended), auf einer Maschine ohne Person. Für Altsysteme ohne Schnittstelle ist das oft der einzige Weg, aber auch der zerbrechlichste.</p>
+
+<p><strong>Power Pages</strong> fällt aus dem Rahmen. Besucher einer solchen Website sind keine Konten im Tenant, sondern Kontakte in Dataverse. Sie melden sich über einen eigenen Identitätsanbieter an, und ihre Rechte regeln Web-Rollen und Tabellenberechtigungen, ein weiteres eigenes Rechtesystem.</p>
+
+<h2>Die Umgebung als Grenze</h2>
+
+<p>Alle Bausteine leben in einer <strong>Umgebung</strong> (siehe <a href="12-plattformen-verwaltung.html">Kapitel 12, Plattformen und Verwaltungsorte</a>). Drei Eigenschaften machen sie zur wichtigsten Grenze der Plattform:</p>
+
+<ul>
+<li><strong>Höchstens eine Datenbank.</strong> Eine Umgebung hat keine oder genau eine Dataverse-Datenbank.</li>
+<li><strong>Nur eigene Quellen.</strong> Eine App oder ein Flow kann nur Verbindungen, Gateways und Dataverse derselben Umgebung nutzen. Was in eine andere Umgebung soll, wandert als Solution (siehe <a href="18-solutions-alm.html">Kapitel 18, Solutions und ALM</a>).</li>
+<li><strong>Eine Region.</strong> Alles, was in der Umgebung entsteht, liegt in ihrer Region.</li>
+</ul>
+
+<figure id="kap15-umgebungen">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 360" role="img" aria-labelledby="d15-um-title d15-um-desc"><title id="d15-um-title">Umgebungen im Tenant</title><desc id="d15-um-desc">Ein Tenant mit vier Umgebungen: Default, Developer, Test und Produktion. Jede hat eigene Apps, Flows, Agenten und Verbindungen und höchstens eine Dataverse-Datenbank. Eine Solution wandert von Developer über Test nach Produktion.</desc><defs><marker id="d15-um-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="d15-um-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker><marker id="d15-um-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker></defs><rect x="10" y="10" width="660" height="340" rx="6" fill="none" stroke="#c8ccd6" stroke-width="1.5"/><text x="24" y="34" font-size="14" text-anchor="start" font-weight="600" style="fill:#2f5d8a">Tenant (Entra ID)</text><rect x="22" y="50" width="150" height="232" rx="6" fill="none" stroke="#2f5d8a" stroke-width="1.5"/><text x="97" y="72" font-size="13" text-anchor="middle" font-weight="600" style="fill:#2f5d8a">Default</text><text x="97" y="88" font-size="11" text-anchor="middle" style="fill:#5b6072">alle sind Maker</text><rect x="32" y="100" width="130" height="30" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="97.0" y="120" font-size="12.5" text-anchor="middle" font-weight="600">Apps, Flows</text><rect x="32" y="138" width="130" height="30" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="97.0" y="158" font-size="12.5" text-anchor="middle" font-weight="600">Agenten</text><rect x="32" y="176" width="130" height="30" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="97.0" y="196" font-size="12.5" text-anchor="middle" font-weight="600">Verbindungen</text><rect x="32" y="222" width="130" height="46" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5" stroke-dasharray="5 4"/><text x="97.0" y="242" font-size="12.5" text-anchor="middle" font-weight="600">Dataverse</text><text x="97.0" y="258" font-size="11" text-anchor="middle" style="fill:#5b6072">optional</text><rect x="185" y="50" width="150" height="232" rx="6" fill="none" stroke="#2f5d8a" stroke-width="1.5"/><text x="260" y="72" font-size="13" text-anchor="middle" font-weight="600" style="fill:#2f5d8a">Developer</text><text x="260" y="88" font-size="11" text-anchor="middle" style="fill:#5b6072">eine Person</text><rect x="195" y="100" width="130" height="30" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="260.0" y="120" font-size="12.5" text-anchor="middle" font-weight="600">Apps, Flows</text><rect x="195" y="138" width="130" height="30" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="260.0" y="158" font-size="12.5" text-anchor="middle" font-weight="600">Agenten</text><rect x="195" y="176" width="130" height="30" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="260.0" y="196" font-size="12.5" text-anchor="middle" font-weight="600">Verbindungen</text><rect x="195" y="222" width="130" height="46" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="260.0" y="242" font-size="12.5" text-anchor="middle" font-weight="600">Dataverse</text><text x="260.0" y="258" font-size="11" text-anchor="middle" style="fill:#5b6072">höchstens eine</text><rect x="348" y="50" width="150" height="232" rx="6" fill="none" stroke="#2f5d8a" stroke-width="1.5"/><text x="423" y="72" font-size="13" text-anchor="middle" font-weight="600" style="fill:#2f5d8a">Test</text><text x="423" y="88" font-size="11" text-anchor="middle" style="fill:#5b6072">Sandbox, Team</text><rect x="358" y="100" width="130" height="30" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="423.0" y="120" font-size="12.5" text-anchor="middle" font-weight="600">Apps, Flows</text><rect x="358" y="138" width="130" height="30" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="423.0" y="158" font-size="12.5" text-anchor="middle" font-weight="600">Agenten</text><rect x="358" y="176" width="130" height="30" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="423.0" y="196" font-size="12.5" text-anchor="middle" font-weight="600">Verbindungen</text><rect x="358" y="222" width="130" height="46" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="423.0" y="242" font-size="12.5" text-anchor="middle" font-weight="600">Dataverse</text><text x="423.0" y="258" font-size="11" text-anchor="middle" style="fill:#5b6072">höchstens eine</text><rect x="511" y="50" width="150" height="232" rx="6" fill="none" stroke="#2f5d8a" stroke-width="1.5"/><text x="586" y="72" font-size="13" text-anchor="middle" font-weight="600" style="fill:#2f5d8a">Produktion</text><text x="586" y="88" font-size="11" text-anchor="middle" style="fill:#5b6072">mit Sicherheitsgruppe</text><rect x="521" y="100" width="130" height="30" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="586.0" y="120" font-size="12.5" text-anchor="middle" font-weight="600">Apps, Flows</text><rect x="521" y="138" width="130" height="30" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="586.0" y="158" font-size="12.5" text-anchor="middle" font-weight="600">Agenten</text><rect x="521" y="176" width="130" height="30" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="586.0" y="196" font-size="12.5" text-anchor="middle" font-weight="600">Verbindungen</text><rect x="521" y="222" width="130" height="46" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="586.0" y="242" font-size="12.5" text-anchor="middle" font-weight="600">Dataverse</text><text x="586.0" y="258" font-size="11" text-anchor="middle" style="fill:#5b6072">höchstens eine</text><path d="M260 302 L421 302" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d15-um-a)"/><path d="M423 302 L584 302" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d15-um-a)"/><text x="341" y="296" font-size="11" text-anchor="middle" font-weight="600" style="fill:#2f5d8a">Solution</text><text x="504" y="296" font-size="11" text-anchor="middle" font-weight="600" style="fill:#2f5d8a">Solution</text><text x="340" y="335" font-size="12" text-anchor="middle" font-weight="600" style="fill:#b8472a">Jede Umgebung hat eine Region und höchstens eine Datenbank.</text></svg>
+<figcaption>Die Umgebung ist die Grenze für Daten, Verbindungen und Rechte. Zwischen Umgebungen wandert nur, was als Solution exportiert und importiert wird.</figcaption>
+</figure>
+
+<h3>Umgebungstypen und wofür sie da sind</h3>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Typ</th><th>Zweck</th><th>Wichtige Eigenschaft</th></tr></thead>
+<tbody>
+<tr><td><strong>Default</strong></td><td>persönliche Produktivität, kleine Experimente</td><td>gibt es genau einmal, nicht löschbar; jeder lizenzierte Nutzer ist dort Maker</td></tr>
+<tr><td><strong>Developer</strong></td><td>eigene Entwicklungsumgebung einer Person</td><td>nur der Besitzer hat Zugang</td></tr>
+<tr><td><strong>Sandbox</strong></td><td>Entwicklung und Test im Team</td><td>lässt sich kopieren und zurücksetzen</td></tr>
+<tr><td><strong>Production</strong></td><td>Betrieb</td><td>volle Kontrolle, dauerhaft</td></tr>
+<tr><td><strong>Trial</strong></td><td>kurzer Versuch</td><td>läuft nach einer festen Frist ab</td></tr>
+</tbody>
+</table></div>
+
+<p>Die Default-Umgebung ist das typische Problem in Firmen. Weil jeder dort bauen darf, sammeln sich über Jahre Apps und Flows, die mit persönlichen Verbindungen an Firmendaten hängen. Microsoft empfiehlt, sie als Ort für persönliche Produktivität zu behandeln, mit einer strengen DLP-Richtlinie abzusichern und alles Ernsthafte in eigene Umgebungen zu verlegen.</p>
+
+<p>Die Developer-Umgebung verändert sich gerade. Microsoft führt sie künftig nur noch als Managed Environment, eine pro Person. Wer im Test-Tenant mit einer älteren Developer-Umgebung arbeitet, sollte die eigenen Solutions exportieren und die angekündigten Fristen im Admin Center im Blick behalten. Am Modell ändert das nichts: Entwickeln findet getrennt von Test und Betrieb statt.</p>
+
+<h3>Eine sinnvolle Aufteilung für eine kleine Firma</h3>
+
+<p>Für eine kleine Firma reicht meist ein einfaches Muster:</p>
+
+<ol>
+<li><strong>Default</strong> für persönliche Kleinigkeiten, mit strenger DLP-Richtlinie und umbenannt, damit niemand sie für den Ort des Betriebs hält.</li>
+<li><strong>Entwicklung</strong> als Sandbox oder Developer-Umgebung für die Person, die baut.</li>
+<li><strong>Test</strong> als Sandbox, wenn mehrere Leute prüfen sollen; bei sehr kleinen Vorhaben kann sie entfallen.</li>
+<li><strong>Produktion</strong> für alles, worauf sich der Betrieb verlässt, mit Sicherheitsgruppe und eigener DLP-Richtlinie.</li>
+</ol>
+
+<p>Mit einem IT-Dienstleister ist genau das der Teil des Rahmens, den er einmal einrichtet (siehe <a href="14-it-dienstleister.html">Kapitel 14, Mit externem IT-Dienstleister</a>).</p>
+
+<h2>Managed Environments: ein Schalter, kein Typ</h2>
+
+<p><strong>Managed Environments</strong> sind kein weiterer Umgebungstyp, sondern ein Bündel von Verwaltungsfunktionen, das man auf einer bestehenden Umgebung einschaltet. Die Funktionsliste wächst ständig. Didaktisch lässt sie sich in drei Gruppen ordnen:</p>
+
+<ul>
+<li><strong>Sichtbarkeit:</strong> Berichte darüber, welche Apps, Flows und Agenten wie oft genutzt werden.</li>
+<li><strong>Begrenzung:</strong> Freigabe von Apps und Agenten nur an begrenzte Personenkreise, Durchsetzen von Prüfungen vor dem Import, Pipelines für den Transport, Zulassung einzelner Apps.</li>
+<li><strong>Härtung:</strong> Zugriffsregeln nach IP-Adresse, eigene Schlüssel, Netzwerkanbindung, erweiterte Sicherung.</li>
+</ul>
+
+<p>Der Preis ist eine Lizenzfolge. In einer Managed Environment braucht jede aktive Nutzung eine eigenständige Lizenz wie Power Apps Premium oder einen Pay-as-you-go-Zähler; die in Microsoft 365 enthaltenen Rechte reichen dort nicht. Microsoft setzt das zunehmend technisch durch. Wer also für eine Abteilung eine Umgebung „managed“ macht, entscheidet zugleich über Lizenzkosten für alle, die darin Apps öffnen.</p>
+
+<h2>Wer baut, wer verwaltet</h2>
+
+<p>In der Power Platform sind Bauen und Verwalten getrennt, und beide sind getrennt vom Zugriff auf Daten.</p>
+
+<figure id="kap15-rollenebenen">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 350" role="img" aria-labelledby="d15-re-title d15-re-desc"><title id="d15-re-title">Vier Ebenen von Rollen</title><desc id="d15-re-desc">Vier Ebenen übereinander: Entra-Rollen im Tenant verwalten Umgebungen, Umgebungsrollen gelten ohne Dataverse, Sicherheitsrollen in Dataverse geben Datenzugriff, darüber Rollen einzelner Apps. Ein gestrichelter Pfeil von der Tenant-Ebene zu Dataverse steht für das protokollierte Selbst-Hochstufen.</desc><defs><marker id="d15-re-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="d15-re-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker><marker id="d15-re-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker></defs><rect x="130" y="20" width="500" height="60" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="380.0" y="40" font-size="12.5" text-anchor="middle" font-weight="600">Tenant: Entra-Rollen</text><text x="380.0" y="56" font-size="11" text-anchor="middle" style="fill:#5b6072">Power Platform Administrator, Global Administrator</text><text x="380.0" y="70" font-size="11" text-anchor="middle" style="fill:#5b6072">verwalten Umgebungen</text><text x="20" y="54" font-size="11" text-anchor="start" font-weight="600" style="fill:#5b6072">Ebene 1</text><rect x="130" y="96" width="500" height="60" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="380.0" y="124" font-size="12.5" text-anchor="middle" font-weight="600">Umgebung ohne Dataverse</text><text x="380.0" y="138" font-size="11" text-anchor="middle" style="fill:#5b6072">Environment Admin, Environment Maker</text><text x="20" y="130" font-size="11" text-anchor="start" font-weight="600" style="fill:#5b6072">Ebene 2</text><rect x="130" y="172" width="500" height="60" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="380.0" y="200" font-size="12.5" text-anchor="middle" font-weight="600">Dataverse: Sicherheitsrollen</text><text x="380.0" y="214" font-size="11" text-anchor="middle" style="fill:#5b6072">System Administrator, System Customizer, Basic User, eigene Rollen</text><text x="20" y="206" font-size="11" text-anchor="start" font-weight="600" style="fill:#5b6072">Ebene 3</text><rect x="130" y="248" width="500" height="60" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="380.0" y="276" font-size="12.5" text-anchor="middle" font-weight="600">App</text><text x="380.0" y="290" font-size="11" text-anchor="middle" style="fill:#5b6072">Rollen einer Dynamics-365-App, Web-Rollen in Power Pages</text><text x="20" y="282" font-size="11" text-anchor="start" font-weight="600" style="fill:#5b6072">Ebene 4</text><rect x="126" y="168" width="508" height="140" rx="6" fill="none" stroke="#2f5d8a" stroke-width="2.5"/><text x="20" y="230" font-size="11" text-anchor="start" font-weight="600" style="fill:#2f5d8a">Datenzugriff</text><text x="20" y="244" font-size="11" text-anchor="start" font-weight="600" style="fill:#2f5d8a">entsteht hier</text><path d="M630 50 L660 50 L660 196 L636 196" fill="none" stroke="#b8472a" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#d15-re-r)"/><text x="380" y="335" font-size="12" text-anchor="middle" font-weight="600" style="fill:#b8472a">Vom Tenant-Admin zu den Daten nur durch Selbst-Hochstufen, und das wird protokolliert.</text></svg>
+<figcaption>Wer Umgebungen verwaltet, sieht dadurch noch keine Daten. Der Datenzugriff hängt an der Sicherheitsrolle in Dataverse, und ein Tenant-Admin muss sich dafür ausdrücklich selbst hochstufen.</figcaption>
+</figure>
+
+<ul>
+<li>Ein <strong>Maker</strong> baut in einer Umgebung: Apps, Flows, Agenten, Verbindungen. Die Rolle <code>Environment Maker</code> erlaubt genau das, gibt aber keine Rechte auf Daten. Wer Tabellen anlegen will, braucht zusätzlich eine Rolle wie <code>System Customizer</code>.</li>
+<li>Ein <strong>Admin</strong> verwaltet Umgebungen: anlegen, Sicherheitsgruppe zuweisen, DLP-Richtlinien, Kapazität. Auf Tenant-Ebene ist das die Entra-Rolle <code>Power Platform Administrator</code>.</li>
+<li><strong>Datenzugriff</strong> entsteht erst durch eine Sicherheitsrolle in Dataverse (siehe <a href="16-dataverse.html">Kapitel 16, Dataverse</a>).</li>
+</ul>
+
+<p>Eine wichtige Folge: Ein <code>Power Platform Administrator</code> oder Global Administrator ist in einer Umgebung mit Dataverse nicht automatisch <code>System Administrator</code>. Er kann sich selbst hochstufen, und dieser Schritt wird protokolliert. Das ist dasselbe Muster wie „Elevate Access“ in Azure (siehe <a href="04-admin-rollen.html">Kapitel 4, Admin-Rollen</a>): Die Verwaltungsrolle öffnet die Tür, aber das Hineingehen hinterlässt eine Spur.</p>
+
+<h2>Die Werkzeuge</h2>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Werkzeug</th><th>Wofür</th></tr></thead>
+<tbody>
+<tr><td>Maker-Portale <code>make.powerapps.com</code>, <code>make.powerautomate.com</code>, <code>copilotstudio.microsoft.com</code></td><td>Bauen; arbeiten immer in der oben rechts gewählten Umgebung</td></tr>
+<tr><td>Power Platform Admin Center</td><td>Umgebungen, Nutzer und Rollen je Umgebung, Application Users, DLP-Richtlinien, Kapazität</td></tr>
+<tr><td><code>pac</code> CLI</td><td>Anmelden an Umgebungen, Solutions exportieren und importieren, Dataverse, Power Pages</td></tr>
+</tbody>
+</table></div>
+
+<p>Die <code>pac</code> CLI ist für jemanden mit Entwicklerhintergrund der natürliche Einstieg, weil sie den Weg zur Automatisierung öffnet. Sie arbeitet mit Profilen, ähnlich wie <code>az</code>:</p>
+
+<pre><code class="language-bash">pac auth create --environment https://&lt;org&gt;.crm4.dynamics.com
+pac auth list
+pac org who</code></pre>
+
+<p><code>pac org who</code> zeigt, mit welchem Konto und in welcher Umgebung die Sitzung läuft. Das ist dieselbe Frage wie bei jedem Token: Wer bin ich gerade, und wofür gilt das?</p>
+
+<h2>Lizenzen als Modell</h2>
+
+<p>Die Einzelheiten der Lizenzen ändern sich oft (siehe <a href="11-lizenzen-abrechnung.html">Kapitel 11, Lizenzen und Abrechnung</a>). Das Modell bleibt stabil und besteht aus drei Säulen:</p>
+
+<ul>
+<li><strong>In Microsoft 365 enthalten:</strong> Apps und Flows mit Standard-Connectors im Kontext von Microsoft 365, etwa auf SharePoint-Listen.</li>
+<li><strong>Premium pro Person:</strong> Power Apps Premium oder Power Automate Premium für Premium- und Custom Connectors, Dataverse außerhalb des Microsoft-365-Kontexts und Managed Environments.</li>
+<li><strong>Kapazität und Verbrauch:</strong> Speicher in Dataverse, Copilot Credits, unbeaufsichtigte Desktop Flows oder Pay-as-you-go über eine Azure-Subscription.</li>
+</ul>
+
+<p>Eine Lizenz schaltet einen Dienst frei, gibt aber keine Rechte auf Daten. Auch eine Person mit Premium-Lizenz sieht in Dataverse nichts ohne Sicherheitsrolle.</p>
+
+<h2>Typische Missverständnisse</h2>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Annahme</th><th>Was stimmt</th></tr></thead>
+<tbody>
+<tr><td>„Global Administrator sieht alle Daten in der Power Platform.“</td><td>Er verwaltet Umgebungen, muss sich für Daten aber erst selbst zum System Administrator hochstufen.</td></tr>
+<tr><td>„Managed Environment ist ein Umgebungstyp.“</td><td>Es ist ein Schalter auf einer beliebigen Umgebung, mit Lizenzfolgen für alle Nutzer.</td></tr>
+<tr><td>„Environment Maker darf Daten lesen.“</td><td>Nein. Bauen und Datenzugriff sind getrennt.</td></tr>
+<tr><td>„Die Default-Umgebung ist für Produktion gedacht.“</td><td>Sie ist für persönliche Produktivität gedacht und sollte eng abgesichert werden.</td></tr>
+<tr><td>„Mit Microsoft 365 E3 kann ich jede App auf Dataverse bauen.“</td><td>Die enthaltenen Rechte decken nur Standard-Connectors im Microsoft-365-Kontext ab.</td></tr>
+<tr><td>„Ein Flow ist weg.“</td><td>Meist ist im Portal die falsche Umgebung gewählt.</td></tr>
+</tbody>
+</table></div>
+<nav style="display:flex;justify-content:space-between;gap:1rem;margin-top:3rem;border-top:1px solid var(--rule);padding-top:1rem;font-family:'Helvetica Neue',Arial,sans-serif;font-size:.9rem"><span><a href="14-it-dienstleister.html">← Zurück</a></span><a href="index.html">Übersicht</a><span><a href="16-dataverse.html">Weiter →</a></span></nav>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Berechtigungen im Überblick</title><style>
+:root { --bg:#fafaf7; --text:#1f2230; --muted:#5b6072; --accent:#2f5d8a;
+  --accent-soft:#d9e4ef; --leader:#b8472a; --node-fill:#ffffff;
+  --node-stroke:#2f5d8a; --rule:#c8ccd6; --code-bg:#eef1f5; }
+html,body { background:var(--bg); color:var(--text);
+  font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+  line-height:1.65; font-size:18px; }
+body { max-width:760px; margin:3rem auto 6rem; padding:0 1.5rem; }
+h1 { font-size:2rem; line-height:1.2; margin:0 0 2rem;
+  border-bottom:1px solid var(--rule); padding-bottom:0.6rem; }
+h2 { font-size:1.35rem; margin-top:2.4rem; margin-bottom:0.8rem;
+  color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif;
+  font-weight:600; letter-spacing:0.01em; }
+p { margin:0 0 1.1rem; }
+figure { margin:2rem auto; text-align:center; }
+figure svg { max-width:100%; height:auto; display:block; margin:0 auto; }
+figcaption { font-family:"Helvetica Neue",Arial,sans-serif; font-size:0.85rem;
+  color:var(--muted); margin-top:0.6rem; text-align:center; }
+svg text { font-family:"Helvetica Neue",Arial,sans-serif; fill:var(--text); }
+.legend-text { font-size:11px; fill:var(--muted); }
+pre { background:var(--code-bg); padding:0.9rem 1.1rem; overflow-x:auto;
+  border-radius:6px; font-size:0.82em; }
+code { background:var(--code-bg); font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:0.85em; padding:0.1em 0.3em; border-radius:3px; }
+pre code { background:none; padding:0; }
+.table-wrap { overflow-x:auto; margin:1.5rem 0; }
+table { border-collapse:collapse; width:100%; font-size:0.85em; line-height:1.45; }
+th { text-align:left; color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif;
+  font-weight:600; border-bottom:2px solid var(--accent); padding:0.45rem 0.6rem;
+  vertical-align:bottom; }
+td { border-bottom:1px solid var(--rule); padding:0.45rem 0.6rem; vertical-align:top; }
+tr { break-inside:avoid; }
+</style></head><body>
+<h1>Berechtigungen im Überblick</h1>
+<p>Entra ID, Azure, Microsoft 365, GitHub und KI-Agenten: was wo liegt, wer es verwaltet und wer was darf. Stand: 5. November 2026.</p>
+<ol style="list-style:none;padding:0"><li><a href="01-landkarte.html">1. Die Landkarte: Was liegt wo?</a></li>
+<li><a href="02-identitaeten-tokens.html">2. Identitäten und Tokens: Wer ist wer?</a></li>
+<li><a href="03-rechtesysteme.html">3. Die drei Rechtesysteme: Warum „Admin“ nicht gleich „darf alles“ ist</a></li>
+<li><a href="04-admin-rollen.html">4. Admin-Rollen: Wer sieht und darf was wirklich?</a></li>
+<li><a href="05-daten-freigaben.html">5. Daten und Freigaben: Wer kommt an welche Datei?</a></li>
+<li><a href="06-geraete-zugriff.html">6. Geräte und Zugriffsregeln: Welche Rolle spielt der Laptop?</a></li>
+<li><a href="07-server-github.html">7. Server und GitHub: Vom Commit zur laufenden App</a></li>
+<li><a href="08-projekt.html">8. Ein Beispielprojekt eingeordnet: Vom Test-Tenant in eine Firma</a></li>
+<li><a href="09-ki-agenten.html">9. KI-Agenten im Rechtemodell: Claude Code und Codex</a></li>
+<li><a href="10-bauen-ohne-admin-rechte.html">10. Bauen ohne Admin-Rechte: Woran es in einer Firma hapert</a></li>
+<li><a href="11-lizenzen-abrechnung.html">11. Lizenzen und Abrechnung: Wer bezahlt, wer darf kaufen?</a></li>
+<li><a href="12-plattformen-verwaltung.html">12. Plattformen und Verwaltungsorte: Azure, Foundry, Power Platform</a></li>
+<li><a href="13-recht-datenweg.html">13. Rechtliche Einordnung, technisch gedacht: Welche Daten dürfen wohin?</a></li>
+<li><a href="14-it-dienstleister.html">14. Mit externem IT-Dienstleister: Wer hält die Rollen, wer entscheidet, wer zahlt?</a></li>
+<li><a href="15-power-platform-bausteine.html">15. Power Platform von innen: Bausteine und Umgebungen</a></li>
+<li><a href="16-dataverse.html">16. Dataverse: Datenmodell und Sicherheitsmodell</a></li>
+<li><a href="17-apps-flows.html">17. Apps und Flows bauen: Canvas, Model-driven, Cloud Flows</a></li>
+<li><a href="18-solutions-alm.html">18. Solutions und ALM: von Dev nach Prod</a></li>
+<li><a href="19-copilot-studio.html">19. Copilot Studio von innen und Pro-Code-Anbindung</a></li>
+<li><a href="20-sap-grundlagen.html">20. SAP für Microsoft-Leute: Systemlandschaft und Rechtemodell</a></li>
+<li><a href="21-sap-microsoft.html">21. Microsoft und SAP: Identität und Datenzugriff an der Schnittstelle</a></li>
+</ol>
+<p><a href="glossar.html">Glossar</a></p>
+<p style="color:var(--muted)">Die Kapitel 1 bis 8 sind ein Überblick aus Fachwissen und nicht einzeln gegen die Microsoft-Dokumentation geprüft. Kapitel 10 ist keine Rechtsberatung. Kapitel 11 und 12 beruhen auf Beobachtungen im eigenen Test-Tenant und sind ebenfalls nicht gegen die Dokumentation geprüft. Kapitel 15 bis 21 beruhen auf einer Recherche in der Dokumentation von Microsoft und SAP vom November 2026 und beschreiben bewusst das tragfähige Modell statt jeder Einzelfunktion. Kapitel 14 beschreibt typische Konstellationen kleiner Firmen; die Kosten sind Richtwerte nach Anbieterangaben. Kapitel 13 beruht auf einer Recherche in Gesetzestexten und Microsoft-Dokumentation vom 7. November 2026 und ist ebenfalls keine Rechtsberatung.</p>
+</body></html>

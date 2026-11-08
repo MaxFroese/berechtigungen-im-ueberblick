@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>4. Admin-Rollen: Wer sieht und darf was wirklich?</title>
+<style>
+:root { --bg:#fafaf7; --text:#1f2230; --muted:#5b6072; --accent:#2f5d8a;
+  --accent-soft:#d9e4ef; --leader:#b8472a; --node-fill:#ffffff;
+  --node-stroke:#2f5d8a; --rule:#c8ccd6; --code-bg:#eef1f5; }
+html,body { background:var(--bg); color:var(--text);
+  font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+  line-height:1.65; font-size:18px; }
+body { max-width:760px; margin:3rem auto 6rem; padding:0 1.5rem; }
+h1 { font-size:2rem; line-height:1.2; margin:0 0 2rem;
+  border-bottom:1px solid var(--rule); padding-bottom:0.6rem; }
+h2 { font-size:1.35rem; margin-top:2.4rem; margin-bottom:0.8rem;
+  color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif;
+  font-weight:600; letter-spacing:0.01em; }
+p { margin:0 0 1.1rem; }
+figure { margin:2rem auto; text-align:center; }
+figure svg { max-width:100%; height:auto; display:block; margin:0 auto; }
+figcaption { font-family:"Helvetica Neue",Arial,sans-serif; font-size:0.85rem;
+  color:var(--muted); margin-top:0.6rem; text-align:center; }
+svg text { font-family:"Helvetica Neue",Arial,sans-serif; fill:var(--text); }
+.legend-text { font-size:11px; fill:var(--muted); }
+pre { background:var(--code-bg); padding:0.9rem 1.1rem; overflow-x:auto;
+  border-radius:6px; font-size:0.82em; }
+code { background:var(--code-bg); font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:0.85em; padding:0.1em 0.3em; border-radius:3px; }
+pre code { background:none; padding:0; }
+.table-wrap { overflow-x:auto; margin:1.5rem 0; }
+table { border-collapse:collapse; width:100%; min-width:560px;
+  font-family:"Helvetica Neue",Arial,sans-serif; font-size:0.78rem; line-height:1.45; }
+th, td { text-align:left; vertical-align:top; padding:0.5rem 0.6rem;
+  border-bottom:1px solid var(--rule); }
+th { color:var(--accent); background:var(--accent-soft); font-weight:600; }
+@media print { .table-wrap { overflow:visible; } table { min-width:0; } }
+</style>
+</head>
+<body>
+<h1>4. Admin-Rollen: Wer sieht und darf was wirklich?</h1>
+
+<p>Die Bezeichnung „Admin“ sagt wenig darüber aus, was ein Konto tatsächlich kann. Aussagekräftig wird eine Rolle erst durch drei getrennte Fragen:</p>
+
+<ol>
+<li><strong>Was darf sie verwalten?</strong> Das ist der offizielle Zweck der Rolle.</li>
+<li><strong>Sieht sie Inhalte direkt?</strong> Gemeint sind E-Mails, Dateien und Chats, nicht nur Einstellungen.</li>
+<li><strong>Kann sie sich mehr Rechte verschaffen?</strong> Eine Rolle, die sich selbst erweitern kann, ist effektiv mächtiger, als ihre Beschreibung vermuten lässt.</li>
+</ol>
+
+<p>Die dritte Frage ist für die Sicherheit oft die wichtigste. Eine Rolle ohne direkten Inhaltsblick schützt Inhalte nur begrenzt, wenn sie sich diesen Blick mit zwei Klicks selbst einrichten kann. Der Unterschied liegt dann nicht im Können, sondern darin, dass der Umweg Spuren hinterlässt und eine bewusste Handlung erfordert.</p>
+
+<h2>Die wichtigen Rollen im Überblick</h2>
+
+<p>Die meisten Rollen hier sind Entra-Rollen. Azure Owner und Contributor gehören dagegen zu Azure RBAC. Sie stehen hier in derselben Tabelle, weil dieselben drei Fragen auch für sie gelten (siehe Kapitel 3, Die drei Rechtesysteme). Entra-Rollen finden sich im Entra Admin Center unter „Roles &amp; admins“. Die Tabelle beschreibt den Standardfall und vereinfacht bewusst. Die genauen Einzelrechte einer Rolle stehen in Microsofts Rollenreferenz und ändern sich gelegentlich.</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Rolle</th><th>Darf verwalten</th><th>Sieht Inhalte direkt?</th><th>Kann sich mehr Rechte verschaffen?</th></tr></thead>
+<tbody>
+<tr><td><strong>Global Administrator</strong></td><td>Nahezu alle Verwaltungsfunktionen in Entra ID und den Microsoft-365-Diensten</td><td>Nein, nicht automatisch</td><td>Ja, praktisch unbegrenzt, auch auf Azure</td></tr>
+<tr><td><strong>Global Reader</strong></td><td>Nichts; liest Einstellungen und Verwaltungsdaten dienstübergreifend</td><td>Nein</td><td>Nein; sieht aber die Konfiguration des ganzen Tenants</td></tr>
+<tr><td><strong>Application Administrator</strong></td><td>App-Registrierungen und Enterprise Applications, einschließlich ihrer Anmeldedaten</td><td>Nein</td><td>Indirekt ja, über Identitäten von Apps mit hohen Rechten</td></tr>
+<tr><td><strong>Cloud Application Administrator</strong></td><td>Wie Application Administrator, aber ohne Application Proxy, der interne Web-Apps über Entra ID veröffentlicht</td><td>Nein</td><td>Indirekt ja, auf demselben Weg</td></tr>
+<tr><td><strong>User Administrator</strong></td><td>Nutzerkonten und Gruppen, Passwort-Resets für Nutzer und einen Teil der niedrig privilegierten Admins</td><td>Nein</td><td>Indirekt: Übernahme von Konten über Passwort-Resets und Zugang über Gruppen; keine Vergabe von Entra-Rollen</td></tr>
+<tr><td><strong>Groups Administrator</strong></td><td>Gruppen und Gruppeneinstellungen</td><td>Nein</td><td>Indirekt: Eigene Aufnahme in Gruppen, die Rechte oder Datenzugriff vermitteln</td></tr>
+<tr><td><strong>Privileged Role Administrator</strong></td><td>Zuweisung von Entra-Rollen, Einstellungen von PIM</td><td>Nein</td><td>Ja, kann auch Global Administrator vergeben</td></tr>
+<tr><td><strong>SharePoint Administrator</strong></td><td>SharePoint-Einstellungen und Sites im ganzen Tenant</td><td>Nein, nicht automatisch</td><td>Innerhalb von SharePoint ja: kann sich als Administrator einer Site eintragen</td></tr>
+<tr><td><strong>Exchange Administrator</strong></td><td>Exchange Online: Postfächer, Mailflow, Einstellungen</td><td>Nein, nicht automatisch</td><td>Innerhalb von Exchange ja: kann sich Zugriffsrechte auf Postfächer einrichten</td></tr>
+<tr><td><strong>Teams Administrator</strong></td><td>Teams-Dienst, Richtlinien, Team- und Gruppenverwaltung</td><td>Nein</td><td>Innerhalb des Dienstes indirekt: Zugang zu Team-Inhalten über Mitgliedschaften; das öffnet keine privaten Chats</td></tr>
+<tr><td><strong>Security Reader</strong></td><td>Nichts; liest Sicherheitsdaten, Berichte und Protokolle</td><td>Nein; Protokolle können aber Metadaten wie Dateinamen oder Betreffzeilen enthalten</td><td>Nein</td></tr>
+<tr><td><strong>Azure Owner</strong></td><td>Ressourcen im jeweiligen Scope (Azure), einschließlich Rollenzuweisungen</td><td>Nicht automatisch auf der Data Plane</td><td>Ja, im eigenen Scope (Azure), auch für Rollen auf der Data Plane</td></tr>
+<tr><td><strong>Azure Contributor</strong></td><td>Ressourcen im jeweiligen Scope (Azure), aber keine Rollenzuweisungen</td><td>Nicht über Datenrollen, aber oft über abrufbare Schlüssel</td><td>Indirekt: über Schlüssel, Konfigurationen und den Code von Apps mit eigener Identität</td></tr>
+</tbody>
+</table></div>
+
+<p>Aus der Tabelle ergibt sich ein Muster. Fast keine dieser Rollen liest Inhalte direkt, und trotzdem haben viele einen Weg dorthin. „Sieht nicht direkt“ bedeutet deshalb nicht „kommt nicht heran“.</p>
+
+<h2>Global Administrator: kein Inhaltsblick, aber offene Türen</h2>
+
+<p>Ein Global Administrator kann zunächst keine fremden Postfächer öffnen. Der Aufruf einer fremden Datei oder E-Mail scheitert, solange das Konto dort kein Recht besitzt, denn die Rechte auf den Daten führt der jeweilige Dienst selbst. Diese Trennung ist real, und sie ist auch nützlich: Versehentliches Mitlesen passiert so nicht, und jeder Zugriff erfordert einen zusätzlichen Schritt.</p>
+
+<p>Eine verlässliche Grenze gegen einen entschlossenen Global Administrator ist sie allerdings nicht. Die Rolle kann jede andere Entra-Rolle vergeben, also auch sich selbst. Sie kann Passwörter anderer Konten zurücksetzen und Admin Consent erteilen. Daraus ergeben sich mehrere Umwege:</p>
+
+<ul>
+<li><strong>Dienstweg:</strong> In Exchange Online oder SharePoint einen Zugriff auf ein Postfach oder eine Site einrichten.</li>
+<li><strong>Kontoweg:</strong> Das Passwort eines Nutzers zurücksetzen und sich als dieser Nutzer anmelden.</li>
+<li><strong>App-Weg:</strong> Eine App mit Anwendungsberechtigungen anlegen, Admin Consent erteilen und über die Graph API lesen.</li>
+<li><strong>Compliance-Weg:</strong> Sich eine Rolle für rechtliche Datensuchen geben und über dieses Werkzeug suchen.</li>
+</ul>
+
+<p>Keiner dieser Wege ist unsichtbar. Rollenvergaben, Passwort-Resets, Consent-Vorgänge und neue Apps werden im Audit-Log festgehalten, dem Protokoll administrativer Änderungen. Eine spätere Prüfung kann also feststellen, dass etwas Ungewöhnliches passiert ist. Verhindern kann sie es nicht.</p>
+
+<figure id="kap04-global-admin-umwege">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 532" role="img" aria-labelledby="d-umwege-title d-umwege-desc"><title id="d-umwege-title">Umwege des Global Administrators zu den Inhalten</title><desc id="d-umwege-desc">Der Global Administrator hat keine direkte Verbindung zu den Inhalten, erreicht sie aber über mehrere Umwege, die alle Spuren in Protokollen hinterlassen.</desc><defs><marker id="d-umwege-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="d-umwege-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker><marker id="d-umwege-l" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker></defs><path d="M80 153 L80 66 L600 66 L600 134" fill="none" stroke="#5b6072" stroke-width="1.5" stroke-dasharray="6 5" marker-end="url(#d-umwege-m)"/><path d="M332 58 L348 74 M348 58 L332 74" stroke="#b8472a" stroke-width="3" fill="none"/><text x="340" y="48" font-size="12" text-anchor="middle" font-weight="600" style="fill:#b8472a">Direkter Zugriff: scheitert ohne eigenes Recht</text><rect x="410" y="96" width="44" height="314" rx="4" fill="#d9e4ef" stroke="#2f5d8a" stroke-width="1.5"/><text x="432" y="257" font-size="12" text-anchor="middle" font-weight="600" style="fill:#1f2230" transform="rotate(-90 432 253)">Protokolle halten jeden Pfad fest</text><path d="M124 171 L174 122" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d-umwege-a)"/><rect x="176" y="98" width="200" height="44" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="276" y="116" font-size="12.5" text-anchor="middle" font-weight="600">Dienstweg</text><text x="276" y="132" font-size="10.5" text-anchor="middle" style="fill:#5b6072">Zugriff auf Postfach oder Site</text><path d="M376 120 L408 120" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d-umwege-a)"/><path d="M454 120 L540 168" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d-umwege-a)"/><path d="M137 191 L174 176" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d-umwege-a)"/><rect x="176" y="153" width="200" height="44" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="276" y="171" font-size="12.5" text-anchor="middle" font-weight="600">Kontoweg</text><text x="276" y="187" font-size="10.5" text-anchor="middle" style="fill:#5b6072">Passwort zurücksetzen, anmelden</text><path d="M376 175 L408 175" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d-umwege-a)"/><path d="M454 175 L533 190" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d-umwege-a)"/><path d="M141 224 L174 229" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d-umwege-a)"/><rect x="176" y="208" width="200" height="44" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="276" y="226" font-size="12.5" text-anchor="middle" font-weight="600">App-Weg</text><text x="276" y="242" font-size="10.5" text-anchor="middle" style="fill:#5b6072">App, Admin Consent, Graph API</text><path d="M376 230 L408 230" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d-umwege-a)"/><path d="M454 230 L533 215" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d-umwege-a)"/><path d="M130 252 L174 284" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d-umwege-a)"/><rect x="176" y="263" width="200" height="44" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="276" y="281" font-size="12.5" text-anchor="middle" font-weight="600">Compliance-Weg</text><text x="276" y="297" font-size="10.5" text-anchor="middle" style="fill:#5b6072">Rolle für Datensuche, dann suchen</text><path d="M376 285 L408 285" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d-umwege-a)"/><path d="M454 285 L541 236" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d-umwege-a)"/><text x="276" y="354" font-size="11" text-anchor="middle" font-weight="600" style="fill:#5b6072">Separater Pfad nach Azure</text><path d="M110 269 L175 383" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d-umwege-a)"/><rect x="176" y="363" width="200" height="44" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="276" y="381" font-size="12.5" text-anchor="middle" font-weight="600">Elevate Access</text><text x="276" y="397" font-size="10.5" text-anchor="middle" style="fill:#5b6072">User Access Administrator</text><path d="M376 385 L408 385" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d-umwege-a)"/><path d="M454 385 L542 385" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d-umwege-a)"/><circle cx="600" cy="385" r="56" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="600" y="382" font-size="12" text-anchor="middle" font-weight="600">Azure-</text><text x="600" y="397" font-size="12" text-anchor="middle" font-weight="600">Subscriptions</text><circle cx="80" cy="215" r="62" fill="#ffffff" stroke="#b8472a" stroke-width="3"/><text x="80" y="212" font-size="12.5" text-anchor="middle" font-weight="600">Global</text><text x="80" y="228" font-size="12.5" text-anchor="middle" font-weight="600">Administrator</text><circle cx="600" cy="202" r="66" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="600" y="168" font-size="13" text-anchor="middle" font-weight="600">Inhalte</text><rect x="569" y="176" width="62" height="18" rx="2" fill="#ffffff" stroke="#2f5d8a" stroke-width="1"/><text x="600" y="189" font-size="10.5" text-anchor="middle">Postfach</text><rect x="569" y="197" width="62" height="18" rx="2" fill="#ffffff" stroke="#2f5d8a" stroke-width="1"/><text x="600" y="210" font-size="10.5" text-anchor="middle">Site</text><rect x="569" y="218" width="62" height="18" rx="2" fill="#ffffff" stroke="#2f5d8a" stroke-width="1"/><text x="600" y="231" font-size="10.5" text-anchor="middle">Datei</text><rect x="20" y="454" width="640" height="36" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/><text x="340" y="477" font-size="13" text-anchor="middle" font-weight="600" style="fill:#b8472a">Die Grenze: zusätzliche, protokollierte Schritte, keine technische Sperre.</text><line x1="20" y1="514" x2="58" y2="514" stroke="#2f5d8a" stroke-width="1.5"/><text x="66" y="518" class="legend-text">Umweg, möglich</text><line x1="190" y1="514" x2="228" y2="514" stroke="#5b6072" stroke-width="1.5" stroke-dasharray="6 5"/><text x="236" y="518" class="legend-text">Direktverbindung, gibt es nicht</text><rect x="440" y="507" width="22" height="14" rx="2" fill="#d9e4ef" stroke="#2f5d8a" stroke-width="1"/><text x="470" y="518" class="legend-text">Protokollierung</text></svg>
+<figcaption>Kein direkter Inhaltsblick heißt nicht kein Zugang: Die Grenze des Global Administrators ist eine Grenze aus zusätzlichen, protokollierten Schritten und keine technische Sperre.</figcaption>
+</figure>
+
+<h3>„Elevate Access“: der Übergang nach Azure</h3>
+
+<p>Entra-Rollen und Azure RBAC sind getrennt. Ein frisch ernannter Global Administrator sieht deshalb im Azure-Portal möglicherweise keine einzige Subscription. Umgekehrt kann ein Azure Owner keinen Nutzer im Tenant anlegen, nur weil er eine Subscription besitzt.</p>
+
+<p>Für einen Fall gibt es eine bewusste Brücke, und zwar für Situationen, in denen niemand mehr Zugriff auf eine Subscription hat. Ein Global Administrator kann in Entra ID unter „Properties“ die Einstellung „Access management for Azure resources“ einschalten. Dasselbe geht über die API:</p>
+
+<pre><code class="language-bash">az rest --method post \
+  --url "https://management.azure.com/providers/Microsoft.Authorization/elevateAccess?api-version=2016-07-01"</code></pre>
+
+<p>Damit erhält das eigene Konto die Azure-Rolle User Access Administrator am obersten Scope (Azure) <code>/</code>. Diese Rolle darf Rollenzuweisungen verwalten, und zwar für alle Management Groups und Subscriptions des Tenants. Der Global Administrator kann sich also selbst zum Owner jeder Subscription machen. Für die Wirkung ist oft eine neue Anmeldung nötig, weil bestehende Tokens die Änderung nicht sofort abbilden.</p>
+
+<p>Die Erhöhung sollte nur vorübergehend bestehen. Anschließend wird die Einstellung wieder ausgeschaltet.</p>
+
+<p>Für das Modell zählt: Global Administrator umfasst Azure nicht von Haus aus, kann sich den Zugriff aber jederzeit nehmen. Der Schutz einer Subscription endet deshalb faktisch beim Schutz der Global-Administrator-Konten.</p>
+
+<h2>Azure Owner und Contributor: dieselbe Frage auf der Ressourcenebene</h2>
+
+<p>Contributor darf alles an einer Ressource verwalten, nur keine Rechte vergeben. Das klingt nach einer klaren Grenze, doch sie hält auf der Data Plane nur teilweise. Viele Dienste erlauben auf der Control Plane den Abruf von Zugriffsschlüsseln. Wer den Schlüssel eines Dienstes abruft, kommt anschließend an dessen Daten, ohne dass ihm eine Datenrolle zugewiesen wurde (siehe Kapitel 3, Die drei Rechtesysteme).</p>
+
+<p>Zwei weitere Wege sind typisch:</p>
+
+<ul>
+<li>Die Konfiguration einer Web-App kann Werte wie Verbindungszeichenfolgen enthalten, die ein Contributor lesen kann.</li>
+<li>Hat eine App eine Managed Identity, kann ein Contributor neuen Code auf diese App ausrollen. Dieser Code läuft dann mit den Rechten der Identität, auch wenn der Contributor selbst diese Rechte nicht hat.</li>
+</ul>
+
+<p>Owner geht einen Schritt weiter: Da er Rollen zuweisen darf, kann er sich im eigenen Scope (Azure) selbst eine Datenrolle geben. Die Grenzen von Owner und Contributor sind also in beiden Fällen eher Stufen als Mauern. Der wichtigste Hebel ist deshalb ein enger Scope (Azure): Ein Contributor an einer einzelnen Resource Group richtet weit weniger Schaden an als einer an der ganzen Subscription.</p>
+
+<h2>Warum App-Admins und Anwendungsberechtigungen heimlich mächtig sind</h2>
+
+<p>Application Administrator und Cloud Application Administrator klingen nach Verwaltungsarbeit an Portalseiten. Ihre Macht liegt woanders: Sie dürfen Anmeldedaten zu bestehenden Apps hinzufügen. Damit können sie sich anschließend <strong>als diese App</strong> anmelden.</p>
+
+<p>Das wird gefährlich, sobald irgendeine App im Tenant hohe Anwendungsberechtigungen besitzt. Eine Rolle ohne eigenes Recht auf Postfächer übernimmt dann das Recht der App. Der Ablauf ist kurz:</p>
+
+<pre><code class="language-bash"># Fügt der App ein weiteres Client Secret hinzu, ohne die vorhandenen zu ersetzen
+az ad app credential reset --id &lt;client-id&gt; --append</code></pre>
+
+<p>Mit dem neuen Client Secret holt sich die Person über den Client-Credentials-Flow ein Access Token. Das ist ein OAuth-Ablauf, bei dem sich die App selbst anmeldet und kein Nutzer beteiligt ist. Das Token sieht etwa so aus:</p>
+
+<pre><code class="language-json">{
+  "aud": "https://graph.microsoft.com",
+  "tid": "&lt;tenant-id&gt;",
+  "appid": "&lt;client-id&gt;",
+  "roles": ["Mail.Read", "Sites.Read.All"]
+}</code></pre>
+
+<p>Es enthält keine Angabe zu einem Nutzer, und es greift keine Schnittmenge mit dessen Rechten. Das Token gilt tenantweit für alle Postfächer und Sites, die diese Berechtigungen abdecken.</p>
+
+<figure id="kap04-app-admin-pfad">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 444" role="img" aria-labelledby="d-app-title d-app-desc"><title id="d-app-title">Vom App-Admin zum tenantweiten Datenzugriff</title><desc id="d-app-desc">Der Weg von einer App-Admin-Rolle ohne Inhaltsrechte zum tenantweiten Datenzugriff über die Identität einer bestehenden App.</desc><defs><marker id="d-app-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="d-app-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker><marker id="d-app-l" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker></defs><circle cx="80" cy="95" r="60" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="80" y="92" font-size="12" text-anchor="middle" font-weight="600">Application</text><text x="80" y="108" font-size="12" text-anchor="middle" font-weight="600">Administrator</text><text x="80" y="172" font-size="11" text-anchor="middle" style="fill:#5b6072">kein eigenes Recht</text><text x="80" y="186" font-size="11" text-anchor="middle" style="fill:#5b6072">auf Postfächer</text><path d="M140 95 L188 95" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d-app-a)"/><rect x="190" y="65" width="210" height="60" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="295" y="85" font-size="11" text-anchor="middle" font-weight="600" style="fill:#2f5d8a">Schritt 1</text><text x="295" y="101" font-size="12.5" text-anchor="middle" font-weight="600">Neues Client Secret</text><text x="295" y="116" font-size="12.5" text-anchor="middle" font-weight="600">hinzufügen</text><rect x="190" y="133" width="210" height="22" rx="3" fill="#d9e4ef" stroke="#2f5d8a" stroke-width="1"/><text x="295.0" y="148.0" font-size="11" text-anchor="middle">Audit-Log: neue Anmeldedaten</text><path d="M400 95 L506 95" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d-app-a)"/><circle cx="570" cy="95" r="62" fill="#ffffff" stroke="#b8472a" stroke-width="3"/><text x="570" y="82" font-size="12" text-anchor="middle" font-weight="600">Bestehende App</text><rect x="531" y="92" width="78" height="22" rx="3" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/><text x="570" y="107" font-size="11" text-anchor="middle" font-weight="600" style="fill:#b8472a">Mail.Read</text><path d="M570 157 L570 212 L130 212 L130 238" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d-app-a)"/><text x="350" y="204" font-size="11" text-anchor="middle" style="fill:#5b6072">mit den Anmeldedaten der App</text><rect x="30" y="240" width="200" height="80" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="130" y="262" font-size="11" text-anchor="middle" font-weight="600" style="fill:#2f5d8a">Schritt 2</text><text x="130" y="280" font-size="12.5" text-anchor="middle" font-weight="600">Access Token holen</text><text x="130" y="302" font-size="11.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">roles statt scp</text><rect x="30" y="328" width="200" height="22" rx="3" fill="#d9e4ef" stroke="#2f5d8a" stroke-width="1"/><text x="130.0" y="343.0" font-size="11" text-anchor="middle">Sign-in-Log: Anmeldung der App</text><path d="M230 280 L268 280" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d-app-a)"/><rect x="270" y="240" width="170" height="80" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="355" y="270" font-size="11" text-anchor="middle" font-weight="600" style="fill:#2f5d8a">Schritt 3</text><text x="355" y="290" font-size="12.5" text-anchor="middle" font-weight="600">Graph API</text><rect x="270" y="328" width="170" height="22" rx="3" fill="#ffffff" stroke="#5b6072" stroke-width="1.5" stroke-dasharray="3 3"/><text x="355.0" y="343.0" font-size="11" text-anchor="middle" style="fill:#5b6072">kein Eintrag in Entra-Logs</text><path d="M440 280 L506 280" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d-app-a)"/><circle cx="570" cy="280" r="62" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="570" y="276" font-size="12" text-anchor="middle" font-weight="600">Alle Postfächer</text><text x="570" y="293" font-size="11" text-anchor="middle" font-weight="600" style="fill:#b8472a">tenantweit</text><rect x="20" y="368" width="640" height="36" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/><text x="340" y="391" font-size="13" text-anchor="middle" font-weight="600" style="fill:#b8472a">Die Rolle wirkt harmlos. Ihre Reichweite bestimmen die Apps im Tenant.</text><rect x="20" y="419" width="22" height="14" rx="2" fill="#d9e4ef" stroke="#2f5d8a" stroke-width="1"/><text x="50" y="430" class="legend-text">Eintrag im Protokoll</text><circle cx="204" cy="426" r="7" fill="#ffffff" stroke="#b8472a" stroke-width="3"/><text x="218" y="430" class="legend-text">hält die Rechte, um die es geht</text></svg>
+<figcaption>Die Rechte einer App werden zu den Rechten aller, die ihre Anmeldedaten ändern dürfen; die Rolle wirkt harmlos, ihre Reichweite bestimmen die Apps im Tenant.</figcaption>
+</figure>
+
+<p>Eine Einschränkung gilt: Admin Consent für Anwendungsberechtigungen der Graph API können diese beiden Rollen nicht selbst erteilen. Sie können also keine beliebig neue Macht erzeugen, sondern übernehmen die Macht, die bereits vergeben wurde. In einem Tenant mit vielen alten, hoch berechtigten Apps ist das allerdings kein großer Trost.</p>
+
+<p>Der gleiche Hebel steckt in einigen Anwendungsberechtigungen selbst. <code>RoleManagement.ReadWrite.Directory</code> erlaubt die Vergabe von Entra-Rollen. <code>Application.ReadWrite.All</code> erlaubt Änderungen an Apps und damit auch das Hinzufügen von Anmeldedaten. <code>AppRoleAssignment.ReadWrite.All</code> erlaubt die Vergabe von App-Rechten. Eine App mit einem dieser Rechte ist faktisch ein privilegierter Admin, nur taucht sie in keiner Liste von Admin-Konten auf. Hinzu kommt: Auch eingetragene Besitzer einer App-Registrierung können Anmeldedaten hinzufügen, ganz ohne Admin-Rolle.</p>
+
+<p>Daraus folgen konkrete Gegenmaßnahmen:</p>
+
+<ul>
+<li>Apps mit hohen Anwendungsberechtigungen regelmäßig unter „Enterprise applications“ prüfen und nicht mehr benötigte entfernen.</li>
+<li>Breite Rechte vermeiden und engere Varianten wählen, etwa Sites.Selected statt <code>Sites.Read.All</code> (siehe Kapitel 5, Daten und Freigaben).</li>
+<li>Besitzer von hoch berechtigten Apps klein halten und App-Admin-Rollen so behandeln wie die Rechte der mächtigsten App im Tenant.</li>
+<li>Keine dauerhaften Client Secrets verwenden, wo eine Managed Identity oder ein Federated Credential ausreicht.</li>
+<li>Neue Anmeldedaten an Apps im Audit-Log überwachen, denn dieses Ereignis ist ein starkes Warnsignal.</li>
+</ul>
+
+<h2>Hohe Rechte begrenzen</h2>
+
+<h3>Least Privilege in der Praxis</h3>
+
+<p>Least Privilege heißt bei Admin-Rollen zuerst: Global Administrator ist keine Standardrolle für Admin-Arbeit. Microsoft empfiehlt, weniger als fünf solcher Konten zu führen. Für die meisten Aufgaben gibt es eine engere Rolle:</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Aufgabe</th><th>Ausreichende Rolle</th></tr></thead>
+<tbody>
+<tr><td>Konfiguration eines Tenants prüfen</td><td>Global Reader</td></tr>
+<tr><td>Anmeldungen und Sicherheitsberichte ansehen</td><td>Security Reader</td></tr>
+<tr><td>Nutzer anlegen und Passwörter zurücksetzen</td><td>User Administrator</td></tr>
+<tr><td>Apps registrieren und konfigurieren</td><td>Cloud Application Administrator</td></tr>
+<tr><td>Sites und Freigabeeinstellungen verwalten</td><td>SharePoint Administrator</td></tr>
+<tr><td>Einer App Graph-Anwendungsberechtigungen freigeben</td><td>Privileged Role Administrator, nur vorübergehend</td></tr>
+</tbody>
+</table></div>
+
+<h3>Getrennte Admin-Konten</h3>
+
+<p>Ein Admin-Konto sollte nicht das Alltagskonto sein. Wer im selben Konto E-Mails liest, im Web surft und Admin-Rechte hält, setzt diese Rechte jedem Phishing-Link aus. Üblich ist deshalb ein zweites, reines Cloud-Konto, etwa <code>admin-name@contoso.onmicrosoft.com</code>. Es besitzt kein Postfach und keine Produktivlizenzen, und es wird nur für Verwaltungsaufgaben genutzt.</p>
+
+<p>Durch die Trennung lassen sich auch die Zugriffsregeln getrennt verschärfen, zum Beispiel über Conditional Access (siehe Kapitel 6, Geräte und Zugriffsregeln). MFA gehört für Admin-Konten zum Mindeststandard. Sinnvoll sind dabei phishing-resistente Verfahren wie FIDO2-Sicherheitsschlüssel.</p>
+
+<h3>PIM: Rechte nur bei Bedarf</h3>
+
+<p>Dauerhafte Rollen haben einen Nachteil: Ein gestohlenes Konto bringt die Rechte sofort mit. PIM (Privileged Identity Management) kehrt das um, denn Admin-Rechte werden dabei nur bei Bedarf und befristet aktiviert. PIM setzt eine höherwertige Entra-Lizenz voraus.</p>
+
+<p>Das Konto ist statt dauerhaft aktiv nur <em>eligible</em>, also für die Rolle zugelassen. In diesem Zustand hat es die Rechte nicht. Zur Aktivierung ruft die Person die Rolle in PIM auf und durchläuft die eingestellten Bedingungen, typischerweise MFA, eine Begründung und je nach Rolle die Freigabe durch eine zweite Person. Danach ist die Rolle für eine begrenzte Dauer aktiv und fällt automatisch zurück.</p>
+
+<figure id="kap04-pim-zustaende">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 396" role="img" aria-labelledby="d-pim-title d-pim-desc"><title id="d-pim-title">Zustände einer Rolle unter PIM</title><desc id="d-pim-desc">Die Zustände einer Rolle unter PIM, von zugelassen über beantragt zu aktiv und nach Ablauf zurück.</desc><defs><marker id="d-pim-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="d-pim-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker><marker id="d-pim-l" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker></defs><path d="M115 175 L115 65 L263 65" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d-pim-a)"/><text x="185" y="41" font-size="11.5" text-anchor="middle" font-weight="600">Aktivierung</text><text x="185" y="55" font-size="11.5" text-anchor="middle">mit MFA und Begründung</text><path d="M415 65 L565 65 L565 173" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d-pim-a)"/><text x="490" y="41" font-size="11.5" text-anchor="middle">Freigabe durch</text><text x="490" y="55" font-size="11.5" text-anchor="middle">zweite Person</text><path d="M200 195 L478 195" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d-pim-a)"/><text x="340" y="175" font-size="11.5" text-anchor="middle">Aktivierung ohne Freigabepflicht</text><path d="M480 245 L202 245" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d-pim-a)"/><text x="340" y="274" font-size="11.5" text-anchor="middle">Ablauf der Dauer oder manuelle Deaktivierung</text><rect x="73" y="110" width="84" height="22" rx="3" fill="#d9e4ef" stroke="#2f5d8a" stroke-width="1"/><text x="115.0" y="125.0" font-size="11" text-anchor="middle">Audit-Log</text><rect x="523" y="110" width="84" height="22" rx="3" fill="#d9e4ef" stroke="#2f5d8a" stroke-width="1"/><text x="565.0" y="125.0" font-size="11" text-anchor="middle">Audit-Log</text><rect x="298" y="184" width="84" height="22" rx="3" fill="#d9e4ef" stroke="#2f5d8a" stroke-width="1"/><text x="340.0" y="199.0" font-size="11" text-anchor="middle">Audit-Log</text><rect x="298" y="234" width="84" height="22" rx="3" fill="#d9e4ef" stroke="#2f5d8a" stroke-width="1"/><text x="340.0" y="249.0" font-size="11" text-anchor="middle">Audit-Log</text><rect x="265" y="30" width="150" height="70" rx="14" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="340" y="61" font-size="12.5" text-anchor="middle" font-weight="600">wartet auf Freigabe</text><text x="340" y="79" font-size="11" text-anchor="middle" style="fill:#5b6072">optional, je nach Rolle</text><rect x="30" y="175" width="170" height="90" rx="14" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="115" y="215" font-size="14" text-anchor="middle" font-weight="600">eligible</text><text x="115" y="234" font-size="11.5" text-anchor="middle" style="fill:#5b6072">keine Rechte</text><rect x="480" y="175" width="170" height="90" rx="14" fill="#ffffff" stroke="#b8472a" stroke-width="3"/><text x="565" y="207" font-size="14" text-anchor="middle" font-weight="600" style="fill:#b8472a">aktiv</text><text x="565" y="226" font-size="11.5" text-anchor="middle">Rechte wirksam,</text><text x="565" y="241" font-size="11.5" text-anchor="middle">befristet</text><text x="30" y="312" font-size="11.5" text-anchor="start" font-weight="600" style="fill:#5b6072">Rechte im Zeitverlauf</text><path d="M30 335 L650 335" fill="none" stroke="#5b6072" stroke-width="2" marker-end="url(#d-pim-m)"/><line x1="190" y1="335" x2="240" y2="335" stroke="#b8472a" stroke-width="8"/><text x="215.0" y="356" font-size="11" text-anchor="middle" font-weight="600" style="fill:#b8472a">aktiv</text><line x1="430" y1="335" x2="470" y2="335" stroke="#b8472a" stroke-width="8"/><text x="450.0" y="356" font-size="11" text-anchor="middle" font-weight="600" style="fill:#b8472a">aktiv</text><text x="110" y="356" font-size="11" text-anchor="middle" style="fill:#5b6072">keine Rechte</text><text x="335" y="356" font-size="11" text-anchor="middle" style="fill:#5b6072">keine Rechte</text><text x="560" y="356" font-size="11" text-anchor="middle" style="fill:#5b6072">keine Rechte</text><rect x="30" y="372" width="22" height="14" rx="2" fill="#d9e4ef" stroke="#2f5d8a" stroke-width="1"/><text x="60" y="383" class="legend-text">Eintrag im Audit-Log an jedem Übergang</text></svg>
+<figcaption>Unter PIM ist ein gestohlenes Konto im Normalzustand rechtlos: Hohe Rechte existieren nur in kurzen, begründeten und protokollierten Zeitfenstern.</figcaption>
+</figure>
+
+<p>Der Nutzen ist doppelt. Das Zeitfenster für den Missbrauch schrumpft, und jede Aktivierung erzeugt einen nachvollziehbaren Eintrag mit Begründung. PIM lässt sich nicht nur auf Entra-Rollen anwenden, sondern auch auf Azure-Rollen und die Mitgliedschaft in Gruppen. Zu beachten ist: Privileged Role Administrator kann die PIM-Einstellungen selbst ändern und gehört deshalb zu den am strengsten zu behandelnden Rollen.</p>
+
+<h3>Break-Glass-Konto: der Notausgang</h3>
+
+<p>Strenge Regeln können auch aussperren: Eine fehlerhafte Conditional-Access-Regel, ein Ausfall des MFA-Dienstes oder der Weggang der einzigen Admin-Person können dazu führen, dass niemand mehr verwalten kann. Dafür gibt es das Break-Glass-Konto, ein Notfallkonto mit hohen Rechten, das von üblichen Zugriffsregeln gezielt ausgenommen ist.</p>
+
+<p>Bewährt haben sich diese Regeln:</p>
+
+<ul>
+<li>Zwei solche Konten, reine Cloud-Konten auf der <code>onmicrosoft.com</code>-Domain und ohne Bindung an eine einzelne Person.</li>
+<li>Dauerhafte Rolle Global Administrator, weil ein Notfall nicht von einer Aktivierung abhängen darf.</li>
+<li>Starke Anmeldung mit getrennt und sicher verwahrtem Faktor, etwa einem FIDO2-Schlüssel im Tresor. Microsoft erzwingt MFA für Verwaltungsportale zunehmend, daher sollte kein Break-Glass-Konto ohne zweiten Faktor geplant werden.</li>
+<li>Ein Alarm bei jeder Anmeldung, denn im Normalbetrieb wird das Konto nie benutzt und jeder Login ist ein Ereignis.</li>
+<li>Regelmäßige Tests, damit der Notausgang im Ernstfall tatsächlich funktioniert.</li>
+</ul>
+
+<h2>Nachvollziehen: Was Admins nachträglich sehen und was nicht</h2>
+
+<p>Zwei Protokolle in Entra ID bilden die Grundlage. Beide liegen im Entra Admin Center im Bereich „Monitoring &amp; health“.</p>
+
+<ul>
+<li><strong>Audit-Log:</strong> Hält administrative Änderungen fest, etwa neue Rollenzuweisungen, Passwort-Resets, Consent-Vorgänge und neue Anmeldedaten an Apps. Es beantwortet die Frage „Wer hat was geändert?“.</li>
+<li><strong>Sign-in-Log:</strong> Das Protokoll der Anmeldungen. Es zeigt Konto, App, Zieldienst, IP-Adresse, Zeit, Ergebnis und die angewendeten Zugriffsregeln. Anmeldungen von Service Principals und Managed Identities erscheinen in eigenen Ansichten, was bei der Suche nach App-Missbrauch leicht übersehen wird.</li>
+</ul>
+
+<p>Ebenso wichtig sind die Grenzen dieser beiden Protokolle:</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Frage</th><th>Antwort aus den Entra-Protokollen?</th></tr></thead>
+<tbody>
+<tr><td>Wer hat wem eine Rolle gegeben?</td><td>Ja, Audit-Log</td></tr>
+<tr><td>Hat sich dieses Konto oder diese App angemeldet?</td><td>Ja, Sign-in-Log</td></tr>
+<tr><td>Welche E-Mail oder Datei wurde danach geöffnet?</td><td>Nein; das steht, wenn überhaupt, in den Protokollen des jeweiligen Dienstes</td></tr>
+<tr><td>Welche Graph-Aufrufe hat ein Token ausgelöst?</td><td>Nein; dafür braucht es eine eigene, separat einzurichtende Protokollierung</td></tr>
+<tr><td>Was hat ein Azure-Admin an einer Ressource geändert?</td><td>Nein; dafür ist das Activity Log von Azure zuständig</td></tr>
+<tr><td>Was hat jemand auf der Data Plane gelesen?</td><td>Nein; das muss je Ressource über Diagnoseeinstellungen aktiviert werden</td></tr>
+</tbody>
+</table></div>
+
+<p>Die entscheidende Lücke ist die zwischen Anmeldung und Handlung. Das Sign-in-Log zeigt, dass eine App ein Token erhalten hat, aber nicht, welche Postfächer sie anschließend gelesen hat. Zugriffe auf Dateien und Postfächer laufen über das dienstübergreifende Audit in Microsoft Purview, Microsofts Lösung für Compliance und Datenverwaltung. Umfang und Aufbewahrung dieses Audits hängen von der Lizenz ab.</p>
+
+<p>Dazu kommt die Aufbewahrung. Die Entra-Protokolle werden je nach Lizenz nur wenige Wochen vorgehalten, ohne Premium-Lizenz nur etwa eine Woche. Wer längere Spuren braucht, leitet die Protokolle per Diagnoseeinstellung an ein externes Ziel weiter, zum Beispiel an einen Log-Analytics-Workspace, einen Azure-Bereich zum Sammeln und Abfragen von Protokollen. Wer genug Rechte hat, kann diese Weiterleitung aber auch abschalten. Protokolle machen Missbrauch deshalb nur dann verlässlich nachweisbar, wenn sie bei einer zweiten Stelle landen, auf die die betreffende Person keinen Zugriff hat.</p>
+
+<h2>Kleine gegen große Firma: Wer verwaltet was?</h2>
+
+<p>Die Rollen sind überall dieselben, aber ihre Verteilung unterscheidet sich stark.</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Bereich</th><th>Kleine Firma</th><th>Große Firma</th></tr></thead>
+<tbody>
+<tr><td><strong>Tenant und Identitäten</strong></td><td>Eine oder zwei Personen, oft ein externer Dienstleister, mit Global Administrator</td><td>Identity-Team mit User, Groups und Application Administrator; Global Administrator nur per PIM und für wenige Personen</td></tr>
+<tr><td><strong>Rollenvergabe</strong></td><td>Dieselbe Person</td><td>Eigene Stelle mit Privileged Role Administrator, Freigabe durch eine zweite Person</td></tr>
+<tr><td><strong>Microsoft-365-Dienste</strong></td><td>Miterledigt von derselben Person</td><td>Eigene Teams mit SharePoint, Exchange und Teams Administrator</td></tr>
+<tr><td><strong>Azure</strong></td><td>Owner an der einzigen Subscription</td><td>Plattform-Team als Owner an Management Groups, Fachteams als Contributor an ihrer Resource Group</td></tr>
+<tr><td><strong>Sicherheit</strong></td><td>Gelegentlicher Blick in die Protokolle</td><td>Eigenes Team mit Security Reader, Protokolle zentral und außerhalb der Reichweite der Admins</td></tr>
+</tbody>
+</table></div>
+
+<p>Die kleine Firma kann Aufgaben nicht personell trennen, und das ist kein Versäumnis, sondern eine Folge ihrer Größe. Wegen dieser Konzentration zählen die wenigen günstigen Maßnahmen dort umso mehr: getrennte Admin-Konten, starke MFA, zwei Break-Glass-Konten, wenige hoch berechtigte Apps und Protokolle, die lange genug aufbewahrt werden. Liegt die Verwaltung bei einem externen Dienstleister, kommt die Frage hinzu, welche Rollen er hält und wie die Firma die Kontrolle behält (siehe <a href="14-it-dienstleister.html">Kapitel 14, Mit externem IT-Dienstleister</a>).</p>
+
+<p>In der großen Firma verschiebt sich das Problem. Die Rollen sind sauber getrennt, doch über viele Jahre sammeln sich Apps, Besitzer und alte Zuweisungen an. Dort sind es weniger die benannten Global Administrators, die übersehen werden, als die App mit weitreichenden Rechten, die niemand mehr einem Team zuordnen kann.</p>
+<nav style="display:flex;justify-content:space-between;gap:1rem;margin-top:3rem;border-top:1px solid var(--rule);padding-top:1rem;font-family:'Helvetica Neue',Arial,sans-serif;font-size:.9rem"><span><a href="03-rechtesysteme.html">← Zurück</a></span><a href="index.html">Übersicht</a><span><a href="05-daten-freigaben.html">Weiter →</a></span></nav>
+</body>
+</html>

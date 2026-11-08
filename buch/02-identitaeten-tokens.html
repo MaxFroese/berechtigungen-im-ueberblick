@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2. Identitäten und Tokens: Wer ist wer?</title>
+<style>
+:root { --bg:#fafaf7; --text:#1f2230; --muted:#5b6072; --accent:#2f5d8a;
+  --accent-soft:#d9e4ef; --leader:#b8472a; --node-fill:#ffffff;
+  --node-stroke:#2f5d8a; --rule:#c8ccd6; --code-bg:#eef1f5; }
+html,body { background:var(--bg); color:var(--text);
+  font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+  line-height:1.65; font-size:18px; }
+body { max-width:760px; margin:3rem auto 6rem; padding:0 1.5rem; }
+h1 { font-size:2rem; line-height:1.2; margin:0 0 2rem;
+  border-bottom:1px solid var(--rule); padding-bottom:0.6rem; }
+h2 { font-size:1.35rem; margin-top:2.4rem; margin-bottom:0.8rem;
+  color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif;
+  font-weight:600; letter-spacing:0.01em; }
+p { margin:0 0 1.1rem; }
+figure { margin:2rem auto; text-align:center; }
+figure svg { max-width:100%; height:auto; display:block; margin:0 auto; }
+figcaption { font-family:"Helvetica Neue",Arial,sans-serif; font-size:0.85rem;
+  color:var(--muted); margin-top:0.6rem; text-align:center; }
+svg text { font-family:"Helvetica Neue",Arial,sans-serif; fill:var(--text); }
+.legend-text { font-size:11px; fill:var(--muted); }
+pre { background:var(--code-bg); padding:0.9rem 1.1rem; overflow-x:auto;
+  border-radius:6px; font-size:0.82em; }
+code { background:var(--code-bg); font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:0.85em; padding:0.1em 0.3em; border-radius:3px; }
+pre code { background:none; padding:0; }
+.table-wrap { overflow-x:auto; margin:1.5rem 0; }
+table { border-collapse:collapse; width:100%; font-size:0.85em; line-height:1.45; }
+th { color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif; font-weight:600;
+  text-align:left; border-bottom:2px solid var(--accent); padding:0.45rem 0.7rem; }
+td { text-align:left; vertical-align:top; border-bottom:1px solid var(--rule); padding:0.45rem 0.7rem; }
+@media print { .table-wrap { overflow:visible; } tr { break-inside:avoid; } }
+</style>
+</head>
+<body>
+<h1>2. Identitäten und Tokens: Wer ist wer?</h1>
+<p>Bevor ein Dienst über ein Recht entscheiden kann, muss er wissen, wer anfragt. In der Microsoft-Welt ist dieses „Wer“ nicht immer ein Mensch. Es kann auch ein Skript, eine Web-App oder ein Workflow sein. Alle diese Akteure sind in Entra ID als Objekte hinterlegt. Der Oberbegriff dafür lautet <strong>Principal</strong>: alles, dem Rechte zugewiesen werden können. Das Grundmodell hat zwei Hälften. Die erste Hälfte ist das Verzeichnis, in dem die Identitäten dauerhaft liegen. Die zweite Hälfte sind die Tokens, also signierte und zeitlich begrenzte Ausweise, die Entra ID aus einer erfolgreichen Anmeldung erzeugt. Dienste sehen bei einer Anfrage nicht die Anmeldung, sondern nur das Token.</p>
+<h2>Menschen: Member und Gast</h2>
+<p>Ein <strong>Member</strong> ist ein reguläres internes Nutzerkonto des Tenants. Ein <strong>Gast</strong> ist ein externes Konto, das per Einladung als eigenes Objekt im Tenant vertreten ist. Beide sind Nutzerobjekte und unterscheiden sich unter anderem in der Eigenschaft <code>userType</code>, die <code>Member</code> oder <code>Guest</code> lautet.</p>
+<p>Der wichtige Unterschied liegt darin, wo die Anmeldung stattfindet. Ein Member meldet sich normalerweise mit den Anmeldedaten seines eigenen Tenants an. Ein Gast meldet sich bei seinem Heimat-Anbieter an, etwa dem Tenant seiner eigenen Firma. Der einladende Tenant speichert also kein Passwort des Gasts, verwaltet aber das Gastobjekt und dessen Rechte. Daraus folgt: Dieselbe Person kann in zwei Tenants zwei verschiedene Objekte mit verschiedenen IDs haben. Am Benutzernamen ist ein Gast oft erkennbar, weil er typischerweise den Zusatz <code>#EXT#</code> enthält, zum Beispiel <code>nutzer_contoso.com#EXT#@fabrikam.onmicrosoft.com</code>.</p>
+<p>Eine Anwendung sollte Nutzer nicht am Benutzernamen wiedererkennen, denn dieser kann sich ändern. Stabil ist die Object ID, die im Token als <code>oid</code> erscheint, zusammen mit der Tenant-ID.</p>
+<h2>Gruppen: Sicherheitsgruppe und Microsoft-365-Gruppe</h2>
+<p>Rechte direkt an einzelne Personen zu vergeben, skaliert schlecht. Gruppen bündeln deshalb Principals, und Rechte hängen dann an der Gruppe. Entra ID kennt dafür zwei Arten mit unterschiedlichem Zweck. Eine <strong>Sicherheitsgruppe</strong> dient vor allem zum Zuweisen von Rechten. Sie hat außer ihren Mitgliedern keine eigenen Inhalte. Mitglieder können Nutzer, Service Principals, Geräte und andere Gruppen sein.</p>
+<p>Eine <strong>Microsoft-365-Gruppe</strong> ist dagegen ein Arbeitsraum mit Mitgliederliste. An ihr hängen gemeinsame Dienste wie Team, Site und Postfach. Wer zur Gruppe hinzugefügt wird, bekommt damit Zugang zu diesen Inhalten (siehe Kapitel 5, Daten und Freigaben). Ihre Mitglieder sind Nutzer, verschachtelte Gruppen sind nicht vorgesehen.</p>
+<p>Mitgliedschaften können fest eingetragen oder bei entsprechender Lizenz dynamisch aus Nutzerattributen berechnet werden. Praktisch ist noch eine Eigenheit von Tokens: Sie können Gruppen-IDs im Claim <code>groups</code> tragen, wenn die App das so konfiguriert. Bei sehr vielen Gruppen steht dort jedoch nur ein Hinweis, dass die vollständige Liste separat abzufragen ist. Eine App darf sich also nicht blind darauf verlassen, dass der Claim vollständig vorhanden ist.</p>
+<h2>Apps: App-Registrierung und Service Principal</h2>
+<p>Auch Software meldet sich an, und dafür braucht sie eine Identität. Hier trennt Entra ID zwei Objekte, die oft verwechselt werden. Die <strong>App-Registrierung</strong> ist der globale Steckbrief der App. Sie liegt im Heimat-Tenant und beschreibt Name, Redirect-URIs, angeforderte Rechte und Anmeldedaten. Ein Redirect-URI ist die Adresse, an die Entra ID den Browser nach der Anmeldung zurückschickt. Die App-Registrierung ist der Bauplan. Sie selbst erhält aber keine Rollen und keine Zustimmungen.</p>
+<p>Der <strong>Service Principal</strong> ist die lokale Vertretung dieser App in einem bestimmten Tenant. An ihm hängen die Zustimmungen und Rollen, und er ist der Principal, der tatsächlich handelt. Im Portal erscheint er als <strong>Enterprise Application</strong>, was nur ein anderer Name für dasselbe Objekt ist.</p>
+<p>Sinnvoll wird die Trennung bei Apps, die in mehreren Tenants laufen. Es gibt genau eine App-Registrierung, aber je Tenant, der die App nutzt, einen eigenen Service Principal. Jeder Tenant entscheidet dadurch selbst, was die App bei ihm darf, ob sie aktiv ist und welche Nutzer sie verwenden dürfen. Auch Dienste von Microsoft wie die Graph API sind in jedem Tenant als Service Principal vertreten, obwohl ihre App-Registrierung nicht dort liegt.</p>
+<figure id="kap02-registrierung-service-principal">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 422" width="680" role="img" aria-labelledby="d1-t d1-d">
+<title id="d1-t">App-Registrierung und Service Principals in zwei Tenants</title>
+<desc id="d1-d">Eine App-Registrierung im Heimat-Tenant und je ein davon abgeleiteter Service Principal im Heimat-Tenant und in einem Kunden-Tenant. Die App-Registrierung ist der einmalige Bauplan; wirksame Rechte hängen am Service Principal und gelten daher immer nur in dessen Tenant.</desc>
+<defs><marker id="d1-a" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="10" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,0 L10,4 L0,8 z" fill="#2f5d8a"/></marker><marker id="d1-r" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="10" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,0 L10,4 L0,8 z" fill="#b8472a"/></marker><marker id="d1-m" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="10" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,0 L10,4 L0,8 z" fill="#5b6072"/></marker></defs>
+<line x1="340" y1="12" x2="340" y2="368" stroke="#5b6072" stroke-width="1.5" stroke-dasharray="7 5"/>
+<text x="170" y="26" text-anchor="middle" font-size="14" font-weight="600" style="fill:#2f5d8a">Tenant A (Heimat)</text>
+<text x="510" y="26" text-anchor="middle" font-size="14" font-weight="600" style="fill:#2f5d8a">Tenant B (Kunde)</text>
+<text x="225" y="52" text-anchor="middle" font-size="12" font-weight="600" style="fill:#5b6072">einmaliger Bauplan</text>
+<text x="225" y="67" text-anchor="middle" font-size="11" style="fill:#5b6072">ohne Rollen und Zustimmungen</text>
+<circle cx="225" cy="125" r="50" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="225" y="121.5" text-anchor="middle" font-size="12">App-</text>
+<text x="225" y="136.5" text-anchor="middle" font-size="12">Registrierung</text>
+<line x1="145" y1="92" x2="176" y2="108.5" stroke="#5b6072" stroke-width="1"/>
+<rect x="20" y="80" width="125" height="24" rx="2" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.2"/>
+<text x="82.5" y="96.0" text-anchor="middle" font-size="11">Redirect-URIs</text>
+<line x1="145" y1="125" x2="176" y2="125.0" stroke="#5b6072" stroke-width="1"/>
+<rect x="20" y="113" width="125" height="24" rx="2" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.2"/>
+<text x="82.5" y="129.0" text-anchor="middle" font-size="11">angeforderte Rechte</text>
+<line x1="145" y1="158" x2="176" y2="141.5" stroke="#5b6072" stroke-width="1"/>
+<rect x="20" y="146" width="125" height="24" rx="2" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.2"/>
+<text x="82.5" y="162.0" text-anchor="middle" font-size="11">Anmeldedaten</text>
+<line x1="225" y1="175" x2="225" y2="245" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d1-a)"/>
+<line x1="266" y1="154" x2="436" y2="258" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d1-a)"/>
+<text x="372" y="188" text-anchor="start" font-size="12">gemeinsame</text>
+<text x="372" y="204" text-anchor="start" font-size="12">Application (client) ID</text>
+<text x="233" y="214" text-anchor="start" font-size="11" style="fill:#5b6072">gleiche ID</text>
+<circle cx="225" cy="295" r="50" fill="#ffffff" stroke="#b8472a" stroke-width="3"/>
+<text x="225" y="291.5" text-anchor="middle" font-size="12">Service</text>
+<text x="225" y="306.5" text-anchor="middle" font-size="12">Principal A</text>
+<circle cx="470" cy="295" r="50" fill="#ffffff" stroke="#b8472a" stroke-width="3"/>
+<text x="470" y="291.5" text-anchor="middle" font-size="12">Service</text>
+<text x="470" y="306.5" text-anchor="middle" font-size="12">Principal B</text>
+<line x1="145" y1="280" x2="176" y2="290.2" stroke="#b8472a" stroke-width="1"/>
+<rect x="20" y="268" width="125" height="24" rx="2" fill="#ffffff" stroke="#b8472a" stroke-width="1.2"/>
+<text x="82.5" y="284.0" text-anchor="middle" font-size="11">eigene Zustimmungen</text>
+<line x1="519" y1="290.2" x2="535" y2="280" stroke="#b8472a" stroke-width="1"/>
+<rect x="535" y="268" width="125" height="24" rx="2" fill="#ffffff" stroke="#b8472a" stroke-width="1.2"/>
+<text x="597.5" y="284.0" text-anchor="middle" font-size="11">eigene Zustimmungen</text>
+<line x1="145" y1="312" x2="176" y2="299.8" stroke="#b8472a" stroke-width="1"/>
+<rect x="20" y="300" width="125" height="24" rx="2" fill="#ffffff" stroke="#b8472a" stroke-width="1.2"/>
+<text x="82.5" y="316.0" text-anchor="middle" font-size="11">eigene Rollen</text>
+<line x1="519" y1="299.8" x2="535" y2="312" stroke="#b8472a" stroke-width="1"/>
+<rect x="535" y="300" width="125" height="24" rx="2" fill="#ffffff" stroke="#b8472a" stroke-width="1.2"/>
+<text x="597.5" y="316.0" text-anchor="middle" font-size="11">eigene Rollen</text>
+<text x="225" y="365" text-anchor="middle" font-size="12" font-weight="600" style="fill:#b8472a">Rechte gelten nur in Tenant A</text>
+<text x="470" y="365" text-anchor="middle" font-size="12" font-weight="600" style="fill:#b8472a">Rechte gelten nur in Tenant B</text>
+<text x="340" y="402" text-anchor="middle" class="legend-text">Kreis: Objekt in Entra ID  |  Rechteck: am Objekt hinterlegt  |  gestrichelt: Tenant-Grenze  |  rot: wirksame Rechte</text>
+</svg>
+<figcaption>Die App-Registrierung ist der einmalige Bauplan; wirksame Rechte hängen am Service Principal und gelten daher immer nur in dessen Tenant.</figcaption>
+</figure>
+<p>Die Verwirrung im Alltag entsteht vor allem durch die vielen IDs. Eine App hat mindestens drei davon:</p>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Kennung</th><th>Gehört zu</th><th>Eigenschaft</th><th>Typische Verwendung</th></tr></thead>
+<tbody>
+<tr><td>Application (client) ID</td><td>App-Registrierung</td><td>in allen Tenants gleich</td><td><code>client_id</code> bei der Anmeldung, im Token als <code>appid</code> oder <code>azp</code></td></tr>
+<tr><td>Object ID der App-Registrierung</td><td>App-Registrierung</td><td>nur im Heimat-Tenant</td><td>Verwaltung der Registrierung</td></tr>
+<tr><td>Object ID des Service Principals</td><td>Service Principal</td><td>je Tenant verschieden</td><td>Rollenzuweisungen, im reinen App-Token als <code>oid</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>Ein häufiger Fehler ist es, in einer Rollenzuweisung die falsche Object ID einzutragen, nämlich die der App-Registrierung. Azure-Rollen und andere Zuweisungen zielen immer auf den Service Principal (siehe Kapitel 3, Die drei Rechtesysteme).</p>
+<p>In der Azure CLI wird die Trennung gut sichtbar, weil es zwei getrennte Befehle gibt:</p>
+<pre><code class="language-bash">az ad app create --display-name meine-app
+az ad sp create --id &lt;client-id&gt;
+az ad sp show --id &lt;client-id&gt; --query id -o tsv</code></pre>
+<p>Der erste Befehl erzeugt die App-Registrierung, der zweite den Service Principal im aktuellen Tenant. Der dritte gibt dessen Object ID aus. Das Portal legt beim Registrieren beide Objekte zusammen an und verbirgt die Trennung dadurch. Im Entra Admin Center liegen sie unter <em>Applications</em> in den getrennten Bereichen <em>App registrations</em> und <em>Enterprise applications</em>.</p>
+<h2>Managed Identity: Identität ohne gespeichertes Geheimnis</h2>
+<p>Läuft Code auf einer Azure-Ressource, stellt sich eine einfache Frage: Wo soll das Passwort liegen, mit dem sich der Code anmeldet? Jede Antwort verschiebt das Problem nur, denn auch das Geheimnis für den Geheimnisspeicher muss irgendwo stehen. Die <strong>Managed Identity</strong> löst das auf. Sie ist eine von Azure verwaltete Identität einer Ressource, die ohne gespeichertes Secret auskommt. Technisch ist sie ein Service Principal ohne selbst gepflegte App-Registrierung. Azure verwaltet die darunterliegenden Anmeldedaten und rotiert sie, ohne dass sie jemals im Code oder in der Konfiguration erscheinen. Die laufende App fragt ihr Token bei einem lokalen Endpunkt der Azure-Plattform an. Auf einem App Service stehen dessen Adresse und ein Prüfwert in den Umgebungsvariablen <code>IDENTITY_ENDPOINT</code> und <code>IDENTITY_HEADER</code>. Die Azure-SDKs erledigen das über Klassen wie <code>ManagedIdentityCredential</code>. Dieser Endpunkt ist nur von der Ressource aus erreichbar, weshalb sich das Verfahren nicht einfach auf einem Laptop nachstellen lässt.</p>
+<div class="table-wrap">
+<table>
+<thead><tr><th></th><th>System-assigned</th><th>User-assigned</th></tr></thead>
+<tbody>
+<tr><td>Lebenszyklus</td><td>gebunden an die Ressource, wird mit ihr gelöscht</td><td>eigene Ressource, unabhängig</td></tr>
+<tr><td>Zuordnung</td><td>genau eine Ressource</td><td>mehrere Ressourcen möglich</td></tr>
+<tr><td>Rechte vor dem Anlegen der Ressource vergebbar</td><td>nein</td><td>ja</td></tr>
+</tbody>
+</table>
+</div>
+<p>System-assigned ist die einfachere Wahl, wenn die Identität genau zu einer Ressource gehört, denn beim Löschen bleibt nichts zurück. User-assigned lohnt sich, wenn mehrere Ressourcen dieselben Rechte brauchen oder wenn Ressourcen häufig neu aufgebaut werden. Rollenzuweisungen müssen dann nicht jedes Mal neu entstehen, was auch Wartezeiten beim Ausrollen vermeidet.</p>
+<pre><code class="language-bash">az webapp identity assign --name meine-app --resource-group meine-rg</code></pre>
+<p>Der Befehl schaltet eine System-assigned Identity ein. Seine Ausgabe enthält eine <code>principalId</code>, die Object ID des zugehörigen Service Principals, an die Rollen vergeben werden. Eine User-assigned Identity wird separat mit <code>az identity create</code> angelegt und hat zusätzlich eine <code>clientId</code>. Der Code braucht diese, um die richtige Identität zu wählen, wenn einer Ressource mehrere zugeordnet sind. Im Portal erscheinen Managed Identities unter <em>Enterprise applications</em>, wenn der Filter auf den Anwendungstyp entsprechend gesetzt ist. Zwei Grenzen sind wichtig. Eine Managed Identity ist für Code auf Azure gedacht, nicht für Skripte auf fremden Rechnern. Außerdem speichert die Plattform ihre Tokens länger zwischen, teils bis zu rund 24 Stunden. Eine geänderte Gruppenmitgliedschaft wirkt deshalb unter Umständen erst deutlich verzögert.</p>
+<h2>Anmeldedaten von Apps im Vergleich</h2>
+<p>Eine App-Registrierung muss gegenüber Entra ID beweisen, dass der Aufrufer wirklich diese App ist. Dafür gibt es drei Mechanismen, die sich vor allem darin unterscheiden, was im Fall eines Abflusses verloren ist.</p>
+<p>Ein <strong>Client Secret</strong> ist das Passwort einer App. Es ist eine Zeichenkette, die bei jeder Token-Anfrage mitgeschickt wird. Es ist am einfachsten einzurichten und zugleich am leichtesten zu verlieren. Es landet in Konfigurationsdateien, Umgebungsvariablen oder Chatverläufen. Wer es kopiert hat, kann es von jedem Rechner aus nutzen, solange es gültig ist und Conditional Access nicht greift, also die Regeln in Entra ID, die anhand von Nutzer, App, Gerät und Risiko über Anmeldungen entscheiden. Außerdem läuft es ab, und ein vergessener Ablauf führt zu einem Ausfall.</p>
+<p>Bei einem <strong>Zertifikat</strong> wird nur der öffentliche Schlüssel an der App-Registrierung hinterlegt. Der private Schlüssel bleibt bei der App und signiert für jede Anfrage eine kurzlebige Bestätigung, die <code>client_assertion</code>. Über die Leitung läuft also kein wiederverwendbares Geheimnis. Der private Schlüssel lässt sich zudem im Key Vault oder in Hardware so ablegen, dass er nicht exportierbar ist. Der Preis ist mehr Aufwand beim Ausstellen und Erneuern.</p>
+<p>Ein <strong>Federated Credential</strong> ist eine konkrete Vertrauensregel an einer Identität, die Issuer, Subject und Audience festlegt. Es gibt dabei gar kein Geheimnis in Entra ID. Stattdessen stellt ein externes System der laufenden Software ein eigenes Token aus. Entra ID prüft dieses Token gegen die Regel und tauscht es gegen ein Entra-Token. Dieses Verfahren heißt <strong>Workload Identity Federation</strong>. Eine Regel für GitHub legt beispielsweise das Subject <code>repo:contoso/meine-app:ref:refs/heads/main</code> fest und vertraut damit nur Tokens für diesen Branch in diesem Repository. Auch eine User-assigned Managed Identity kann eine solche Regel tragen und ist dann ausnahmsweise von außerhalb von Azure nutzbar (siehe Kapitel 7, Server und GitHub).</p>
+<div class="table-wrap">
+<table>
+<thead><tr><th></th><th>Client Secret</th><th>Zertifikat</th><th>Federated Credential</th></tr></thead>
+<tbody>
+<tr><td>Was der Aufrufer besitzt</td><td>Zeichenkette</td><td>privaten Schlüssel</td><td>externes, kurzlebiges Token</td></tr>
+<tr><td>Was Entra ID kennt</td><td>das Secret</td><td>den öffentlichen Schlüssel</td><td>die Vertrauensregel</td></tr>
+<tr><td>Dauerhaft kopierbar</td><td>ja</td><td>nur wenn der Schlüssel exportierbar ist</td><td>nein</td></tr>
+<tr><td>Pflege</td><td>regelmäßig erneuern und verteilen</td><td>regelmäßig erneuern</td><td>Regel pflegen, keine Rotation</td></tr>
+<tr><td>Voraussetzung</td><td>keine</td><td>Schlüsselverwaltung</td><td>Aussteller, der OIDC unterstützt, den Standard für signierte Herkunftsnachweise</td></tr>
+</tbody>
+</table>
+</div>
+<p>Für die Auswahl ergibt sich eine einfache Rangfolge. Code auf Azure nutzt eine Managed Identity. Externe Systeme mit eigenem Aussteller, etwa GitHub Actions, nutzen ein Federated Credential. Andere externe Systeme nutzen ein Zertifikat. Ein Client Secret bleibt für Experimente und für Fälle, in denen nichts anderes möglich ist.</p>
+<h2>Die drei Tokens einer Anmeldung</h2>
+<p>Entra ID stellt bei einer Nutzeranmeldung bis zu drei Tokens mit unterschiedlichen Empfängern und Aufgaben aus.</p>
+<p>Das <strong>ID-Token</strong> ist für die App selbst bestimmt und sagt ihr, wer sich angemeldet hat. Seine Audience ist deshalb die Client-ID der App. Es berechtigt zu nichts und gehört nicht als Ausweis an eine API.</p>
+<p>Das <strong>Access Token</strong> ist für genau einen Zieldienst bestimmt und trägt Rechte in <code>scp</code> oder <code>roles</code>. Die App schickt es als <code>Authorization: Bearer &lt;token&gt;</code> mit. Bearer bedeutet: Wer das Token hat, kann es benutzen. Deshalb ist es kurzlebig, typischerweise etwa eine Stunde. Für die App ist es eine undurchsichtige Zeichenkette, die sie nur weiterreicht. Prüfen muss es der Zieldienst.</p>
+<p>Das <strong>Refresh Token</strong> ist länger gültig, oft Tage bis Wochen, und wird nur an Entra ID geschickt, um neue Access Tokens zu holen. Es ist kein JWT, das die App auswerten soll, und gehört wie ein Passwort geschützt. Eine App, die sich ohne Nutzer selbst anmeldet, erhält kein Refresh Token. Sie meldet sich bei Bedarf einfach erneut mit ihren Anmeldedaten an.</p>
+<h2>Was im Access Token steht</h2>
+<p>Ein Access Token ist in vielen Fällen ein JWT, dessen Inhalt sich dekodieren lässt, etwa lokal mit einem eigenen Skript oder mit dem Werkzeug <code>jwt.ms</code>. Das folgende Beispiel ist ein gekürztes Token für die Graph API, das eine App im Namen eines Nutzers erhalten hat:</p>
+<pre><code class="language-json">{
+  "aud": "https://graph.microsoft.com",
+  "iss": "https://sts.windows.net/&lt;tenant-id&gt;/",
+  "tid": "&lt;tenant-id&gt;",
+  "oid": "&lt;object-id-des-nutzers&gt;",
+  "appid": "&lt;client-id&gt;",
+  "upn": "nutzer@contoso.onmicrosoft.com",
+  "scp": "Files.Read User.Read",
+  "exp": 1793900000
+}</code></pre>
+<p>Fordert eine App das Token ohne Nutzer an, fehlen <code>upn</code> und <code>scp</code>. Stattdessen steht dort etwa <code>"roles": ["Sites.Selected"]</code>, und <code>oid</code> zeigt auf den Service Principal.</p>
+<p>Die wichtigsten Claims bedeuten Folgendes:</p>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Claim</th><th>Bedeutung</th><th>Prüffrage</th></tr></thead>
+<tbody>
+<tr><td><code>aud</code></td><td>die Audience, also der Dienst, für den das Token gilt</td><td>Bin ich als Dienst gemeint?</td></tr>
+<tr><td><code>iss</code></td><td>der Aussteller</td><td>Kommt es von einem vertrauten Aussteller?</td></tr>
+<tr><td><code>tid</code></td><td>der Tenant, in dem das Token ausgestellt wurde</td><td>Ist es der erwartete Tenant?</td></tr>
+<tr><td><code>oid</code></td><td>die Object ID des handelnden Principals in diesem Tenant</td><td>Wer genau handelt?</td></tr>
+<tr><td><code>appid</code> oder <code>azp</code></td><td>die Client-ID der aufrufenden App, je nach Token-Version</td><td>Welche App ruft auf?</td></tr>
+<tr><td><code>scp</code></td><td>Delegierte Berechtigungen, durch Leerzeichen getrennt</td><td>Was darf die App im Namen des Nutzers?</td></tr>
+<tr><td><code>roles</code></td><td>Anwendungsberechtigungen als Liste</td><td>Was darf die App selbst?</td></tr>
+<tr><td><code>exp</code></td><td>Ablaufzeitpunkt als Unix-Zeit</td><td>Ist es noch gültig?</td></tr>
+</tbody>
+</table>
+</div>
+<p>Mit <code>scp</code> und <code>roles</code> lassen sich die beiden Betriebsarten schnell auseinanderhalten: Steht <code>scp</code> im Token, handelt eine App für einen Nutzer. Steht dort kein <code>scp</code> und <code>oid</code> zeigt auf einen Service Principal, handelt die App für sich. Bei eigenen APIs kann <code>roles</code> zusätzlich App-Rollen eines Nutzers enthalten (siehe Kapitel 3, Die drei Rechtesysteme).</p>
+<p>Das Token enthält aber längst nicht jedes Recht. Azure-Rollen oder die Mitgliedschaft in einer Site stehen nicht darin. Der jeweilige Dienst liest die <code>oid</code> und schlägt diese Rechte selbst nach. Ein gültiges Token bedeutet deshalb nur: Die Identität ist bestätigt und das Token passt zum Dienst. Es bedeutet nicht, dass die konkrete Aktion erlaubt ist. Die Prüfung beim Zieldienst folgt immer demselben Muster. Der Dienst holt die öffentlichen Signaturschlüssel von Entra ID und prüft die Signatur. Dann prüft er Gültigkeitszeit, Aussteller und Audience und erst danach die Rechte. Weil die Prüfung mit öffentlichen Schlüsseln erfolgt, muss er Entra ID dafür nicht bei jeder Anfrage kontaktieren.</p>
+<h2>Warum jeder Zieldienst ein eigenes Access Token braucht</h2>
+<p>Ein Access Token für die Graph API wird von Azure abgelehnt, obwohl es echt und gültig ist. Der Grund ist die Audience. Jeder Dienst akzeptiert nur Tokens, deren <code>aud</code> auf ihn zeigt. Diese Regel ist eine Sicherheitsgrenze. Ein Dienst sieht zwangsläufig jedes Token, das er empfängt. Gälte das Token überall, könnte ein kompromittierter oder bösartiger Dienst es gegen alle anderen einsetzen. Mit der Audience-Bindung ist der Schaden auf den Dienst begrenzt, der es ohnehin schon hat. Außerdem bleiben die Tokens klein und enthalten nur die Rechte für dieses eine Ziel. Eine App, die mehrere Dienste aufruft, hält deshalb mehrere Access Tokens parallel. Beim Anfordern nennt sie jeweils das Ziel, zum Beispiel:</p>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Zieldienst</th><th>Typische Audience beziehungsweise Ressource</th></tr></thead>
+<tbody>
+<tr><td>Graph API</td><td><code>https://graph.microsoft.com</code></td></tr>
+<tr><td>Azure-Verwaltung (Control Plane)</td><td><code>https://management.azure.com</code></td></tr>
+<tr><td>Key Vault (Data Plane)</td><td><code>https://vault.azure.net</code></td></tr>
+<tr><td>Azure OpenAI und andere Cognitive Services (Data Plane)</td><td><code>https://cognitiveservices.azure.com</code></td></tr>
+<tr><td>SharePoint direkt</td><td><code>https://contoso.sharepoint.com</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>Die Azure CLI zeigt das Verhalten direkt: <code>az account get-access-token --resource &lt;ziel&gt;</code> liefert demselben Konto je nach Ziel ein anderes Token.</p>
+<p>Ein einzelnes Refresh Token kann dabei oft Access Tokens für mehrere Dienste beschaffen, sofern die nötigen Zustimmungen vorliegen. Der Nutzer muss sich deshalb nicht für jeden Dienst neu anmelden. Die Anfrage nennt das Ziel über den Parameter <code>scope</code>, etwa <code>https://graph.microsoft.com/Files.Read</code>. Dieser OAuth-Scope ist nicht mit dem <strong>Scope (Azure)</strong> einer Rollenzuweisung zu verwechseln. Die Schreibweise <code>https://graph.microsoft.com/.default</code> fordert alle bereits für die App hinterlegten Rechte an und ist bei Apps ohne Nutzer der Normalfall.</p>
+<figure id="kap02-token-pro-zieldienst">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 470" width="680" role="img" aria-labelledby="d2-t d2-d">
+<title id="d2-t">Ein Access Token pro Zieldienst</title>
+<desc id="d2-d">Eine App erhält von Entra ID getrennte Access Tokens für drei Zieldienste, und ein falsch adressiertes Token wird abgelehnt. Die Audience bindet jedes Access Token an genau einen Dienst und begrenzt so den Schaden, wenn ein Dienst oder Token kompromittiert wird.</desc>
+<defs><marker id="d2-a" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="10" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,0 L10,4 L0,8 z" fill="#2f5d8a"/></marker><marker id="d2-r" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="10" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,0 L10,4 L0,8 z" fill="#b8472a"/></marker><marker id="d2-m" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="10" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,0 L10,4 L0,8 z" fill="#5b6072"/></marker></defs>
+<text x="80" y="150" text-anchor="middle" font-size="11" style="fill:#5b6072">stellt je Ziel</text>
+<text x="80" y="165" text-anchor="middle" font-size="11" style="fill:#5b6072">ein Access Token aus</text>
+<circle cx="80" cy="215" r="44" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="80" y="219.0" text-anchor="middle" font-size="12" font-weight="600">Entra ID</text>
+<circle cx="270" cy="215" r="52" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="270" y="204" text-anchor="middle" font-size="13" font-weight="600">App</text>
+<rect x="232" y="214" width="76" height="22" rx="2" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.2"/>
+<text x="270.0" y="229.0" text-anchor="middle" font-size="10">MSAL-Cache</text>
+<rect x="131" y="178" width="80" height="24" rx="2" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.2"/>
+<text x="171.0" y="194.0" text-anchor="middle" font-size="10.5">Refresh Token</text>
+<line x1="125" y1="215" x2="217" y2="215" stroke="#5b6072" stroke-width="1.5" marker-start="url(#d2-m)" marker-end="url(#d2-m)"/>
+<text x="171" y="233" text-anchor="middle" font-size="11" style="fill:#5b6072">nur zwischen</text>
+<text x="171" y="248" text-anchor="middle" font-size="11" style="fill:#5b6072">App und Entra ID</text>
+<circle cx="600" cy="75" r="42" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="600" y="79.0" text-anchor="middle" font-size="12" font-weight="600">Graph API</text>
+<circle cx="600" cy="215" r="42" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="600" y="211.5" text-anchor="middle" font-size="12" font-weight="600">Azure-</text>
+<text x="600" y="226.5" text-anchor="middle" font-size="12" font-weight="600">Verwaltung</text>
+<circle cx="600" cy="355" r="42" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="600" y="359.0" text-anchor="middle" font-size="12" font-weight="600">Key Vault</text>
+<line x1="300" y1="172" x2="561" y2="91" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d2-a)"/>
+<rect x="350" y="113" width="160" height="36" rx="2" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.2"/>
+<text x="430.0" y="128.0" text-anchor="middle" font-size="11" font-weight="600">Access Token</text>
+<text x="430.0" y="142.0" text-anchor="middle" font-size="11">aud: graph.microsoft.com</text>
+<line x1="316" y1="190" x2="566" y2="190" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d2-a)"/>
+<rect x="350" y="172" width="160" height="36" rx="2" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.2"/>
+<text x="430.0" y="187.25" text-anchor="middle" font-size="10.5" font-weight="600">Access Token</text>
+<text x="430.0" y="200.75" text-anchor="middle" font-size="10.5">aud: management.azure.com</text>
+<line x1="316" y1="240" x2="566" y2="240" stroke="#b8472a" stroke-width="2" marker-end="url(#d2-r)"/>
+<rect x="330" y="222" width="150" height="36" rx="2" fill="#ffffff" stroke="#b8472a" stroke-width="2"/>
+<text x="405.0" y="237.25" text-anchor="middle" font-size="10.5" font-weight="600">Access Token</text>
+<text x="405.0" y="250.75" text-anchor="middle" font-size="10.5">aud: graph.microsoft.com</text>
+<text x="522" y="232" text-anchor="middle" font-size="12" font-weight="600" style="fill:#b8472a">401</text>
+<text x="522" y="256" text-anchor="middle" font-size="11" font-weight="600" style="fill:#b8472a">abgewiesen</text>
+<line x1="300" y1="258" x2="562" y2="338" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d2-a)"/>
+<rect x="350" y="281" width="160" height="36" rx="2" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.2"/>
+<text x="430.0" y="296.0" text-anchor="middle" font-size="11" font-weight="600">Access Token</text>
+<text x="430.0" y="310.0" text-anchor="middle" font-size="11">aud: vault.azure.net</text>
+<text x="340" y="425" text-anchor="middle" font-size="12" font-weight="600" style="fill:#b8472a">Die Audience bindet jedes Token an genau einen Dienst: Wer es erbeutet, kann nur diesen einen erreichen.</text>
+<text x="340" y="452" text-anchor="middle" class="legend-text">Kreis: Beteiligter  |  Rechteck: Token bzw. Cache  |  Pfeil: Token wird mitgeschickt  |  rot: falsche Audience</text>
+</svg>
+<figcaption>Die Audience bindet jedes Access Token an genau einen Dienst und begrenzt so den Schaden, wenn ein Dienst oder Token kompromittiert wird.</figcaption>
+</figure>
+<p>Ein 401 mit Hinweis auf eine ungültige Audience ist daher ein Token-Problem. Die Lösung ist kein zusätzliches Recht, sondern ein Token für das richtige Ziel.</p>
+<h2>Ablauf einer Browser-Anmeldung mit MSAL</h2>
+<p><strong>MSAL</strong> ist Microsofts Bibliothek, mit der Apps Tokens holen und zwischenspeichern. Sie nimmt der App das Protokoll ab, das bei einer Browser-Anmeldung meist der OAuth-Authorization-Code-Flow mit PKCE ist. Bei PKCE erzeugt die App für jede Anmeldung einen Zufallswert und sendet zunächst nur dessen Hash. Den Wert selbst zeigt sie erst beim Einlösen des Codes vor, sodass ein abgefangener Code wertlos bleibt.</p>
+<p>Der Ablauf gilt hier für eine Web-App, deren eigener Server den Code einlöst und danach die Graph API aufruft.</p>
+<figure id="kap02-msal-browser-anmeldung">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 630" width="680" role="img" aria-labelledby="d3-t d3-d">
+<title id="d3-t">Authorization-Code-Flow mit PKCE</title>
+<desc id="d3-d">Authorization-Code-Flow mit PKCE von der ersten Anfrage im Browser bis zum Graph-Aufruf und zur späteren stillen Erneuerung. Bei einer App mit eigenem Server sieht der Browser nur den kurzlebigen Code, während die Tokens im direkten Austausch zwischen Server und Entra ID entstehen und jedes einen eigenen Empfänger hat.</desc>
+<defs><marker id="d3-a" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="10" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,0 L10,4 L0,8 z" fill="#2f5d8a"/></marker><marker id="d3-r" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="10" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,0 L10,4 L0,8 z" fill="#b8472a"/></marker><marker id="d3-m" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="10" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,0 L10,4 L0,8 z" fill="#5b6072"/></marker></defs>
+<line x1="85" y1="80" x2="85" y2="590" stroke="#5b6072" stroke-width="1"/>
+<line x1="255" y1="80" x2="255" y2="590" stroke="#5b6072" stroke-width="1"/>
+<line x1="460" y1="80" x2="460" y2="590" stroke="#5b6072" stroke-width="1"/>
+<line x1="610" y1="80" x2="610" y2="590" stroke="#5b6072" stroke-width="1"/>
+<circle cx="85" cy="45" r="34" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="85" y="49.0" text-anchor="middle" font-size="11.5" font-weight="600">Browser</text>
+<circle cx="255" cy="45" r="34" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="255" y="41.75" text-anchor="middle" font-size="11.5" font-weight="600">Web-App</text>
+<text x="255" y="56.25" text-anchor="middle" font-size="11.5" font-weight="600">mit MSAL</text>
+<circle cx="460" cy="45" r="34" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="460" y="49.0" text-anchor="middle" font-size="11.5" font-weight="600">Entra ID</text>
+<circle cx="610" cy="45" r="34" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="610" y="49.0" text-anchor="middle" font-size="11.5" font-weight="600">Graph API</text>
+<line x1="85" y1="110" x2="255" y2="110" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d3-a)"/>
+<text x="170.0" y="104" text-anchor="middle" font-size="11.5" style="paint-order:stroke;stroke:#fafaf7;stroke-width:5px;stroke-linejoin:round">geschützte Seite aufrufen</text>
+<line x1="255" y1="142" x2="85" y2="142" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d3-a)"/>
+<text x="170.0" y="136" text-anchor="middle" font-size="11.5" style="paint-order:stroke;stroke:#fafaf7;stroke-width:5px;stroke-linejoin:round">Weiterleitung auf authorize</text>
+<line x1="85" y1="174" x2="460" y2="174" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d3-a)"/>
+<text x="272.5" y="168" text-anchor="middle" font-size="11.5" style="paint-order:stroke;stroke:#fafaf7;stroke-width:5px;stroke-linejoin:round">authorize: Client-ID, Scopes, PKCE-Hash</text>
+<rect x="400" y="186" width="120" height="38" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.2"/>
+<text x="460.0" y="202.0" text-anchor="middle" font-size="11">Anmeldung und</text>
+<text x="460.0" y="216.0" text-anchor="middle" font-size="11">Zugriffsprüfung</text>
+<line x1="460" y1="254" x2="85" y2="254" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d3-a)"/>
+<text x="272.5" y="248" text-anchor="middle" font-size="11.5" style="paint-order:stroke;stroke:#fafaf7;stroke-width:5px;stroke-linejoin:round">Rückleitung mit kurzlebigem Code</text>
+<line x1="85" y1="286" x2="255" y2="286" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d3-a)"/>
+<text x="170.0" y="280" text-anchor="middle" font-size="11.5" style="paint-order:stroke;stroke:#fafaf7;stroke-width:5px;stroke-linejoin:round">Code an Redirect-URI</text>
+<text x="357" y="310" text-anchor="middle" font-size="11" font-weight="600" style="fill:#b8472a">token-Endpunkt: Code, PKCE-Wert,</text>
+<text x="357" y="325" text-anchor="middle" font-size="11" font-weight="600" style="fill:#b8472a">App-Anmeldedaten</text>
+<line x1="255" y1="333" x2="460" y2="333" stroke="#b8472a" stroke-width="2.5" marker-end="url(#d3-r)"/>
+<text x="357" y="351" text-anchor="middle" font-size="11" font-weight="600" style="fill:#b8472a">Rückgabe der Tokens</text>
+<line x1="460" y1="358" x2="255" y2="358" stroke="#b8472a" stroke-width="2.5" marker-end="url(#d3-r)"/>
+<rect x="268" y="368" width="178" height="20" rx="2" fill="#ffffff" stroke="#b8472a" stroke-width="1.2"/>
+<text x="357.0" y="382.0" text-anchor="middle" font-size="11">ID-Token: für die App</text>
+<rect x="268" y="392" width="178" height="20" rx="2" fill="#ffffff" stroke="#b8472a" stroke-width="1.2"/>
+<text x="357.0" y="406.0" text-anchor="middle" font-size="11">Access Token: für Graph API</text>
+<rect x="268" y="416" width="178" height="20" rx="2" fill="#ffffff" stroke="#b8472a" stroke-width="1.2"/>
+<text x="357.0" y="430.0" text-anchor="middle" font-size="11">Refresh Token: für Entra ID</text>
+<text x="85" y="348" text-anchor="middle" font-size="12" font-weight="600" style="fill:#b8472a;paint-order:stroke;stroke:#fafaf7;stroke-width:5px;stroke-linejoin:round">Browser sieht</text>
+<text x="85" y="364" text-anchor="middle" font-size="12" font-weight="600" style="fill:#b8472a;paint-order:stroke;stroke:#fafaf7;stroke-width:5px;stroke-linejoin:round">nur den Code,</text>
+<text x="85" y="380" text-anchor="middle" font-size="12" font-weight="600" style="fill:#b8472a;paint-order:stroke;stroke:#fafaf7;stroke-width:5px;stroke-linejoin:round">keine Tokens</text>
+<line x1="255" y1="466" x2="610" y2="466" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d3-a)"/>
+<text x="432.5" y="460" text-anchor="middle" font-size="11.5" style="paint-order:stroke;stroke:#fafaf7;stroke-width:5px;stroke-linejoin:round">Graph-Aufruf mit Bearer-Token</text>
+<rect x="195" y="484" width="120" height="36" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.2"/>
+<text x="255.0" y="499.0" text-anchor="middle" font-size="11">stille Erneuerung</text>
+<text x="255.0" y="513.0" text-anchor="middle" font-size="11">aus dem Cache</text>
+<line x1="255" y1="548" x2="460" y2="548" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d3-a)"/>
+<text x="357.5" y="542" text-anchor="middle" font-size="11.5" style="paint-order:stroke;stroke:#fafaf7;stroke-width:5px;stroke-linejoin:round">falls abgelaufen: Refresh Token</text>
+<line x1="460" y1="576" x2="255" y2="576" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d3-a)"/>
+<text x="357.5" y="570" text-anchor="middle" font-size="11.5" style="paint-order:stroke;stroke:#fafaf7;stroke-width:5px;stroke-linejoin:round">neues Access Token</text>
+<text x="340" y="615" text-anchor="middle" class="legend-text">Pfeil: Nachricht, Zeit läuft von oben nach unten  |  rot: direkter Austausch zwischen Server und Entra ID</text>
+</svg>
+<figcaption>Bei einer App mit eigenem Server sieht der Browser nur den kurzlebigen Code, während die Tokens im direkten Austausch zwischen Server und Entra ID entstehen und jedes einen eigenen Empfänger hat.</figcaption>
+</figure>
+<ol>
+<li><strong>Einstieg.</strong> Ein Nutzer ruft eine geschützte Seite auf. Die App findet keine Sitzung und lässt MSAL eine Anmelde-URL erzeugen. Sie zeigt auf den <code>authorize</code>-Endpunkt des Tenants und enthält Client-ID, Redirect-URI, gewünschte Scopes, den PKCE-Hash sowie die Prüfwerte <code>state</code> und <code>nonce</code>.</li>
+<li><strong>Anmeldung.</strong> Der Browser landet bei Entra ID. Dort finden Passworteingabe und MFA, also die Anmeldung mit mehr als einem Faktor, statt. Entra ID wertet auch Conditional Access aus (siehe Kapitel 6, Geräte und Zugriffsregeln). Fehlt die Zustimmung für die App, wird sie jetzt abgefragt (siehe Kapitel 3, Die drei Rechtesysteme).</li>
+<li><strong>Rückleitung.</strong> Entra ID schickt den Browser mit einem kurzlebigen Code zurück an den Redirect-URI. Diese Adresse muss exakt in der App-Registrierung eingetragen sein, sonst bricht der Vorgang mit dem Fehler <code>AADSTS50011</code> ab. Die Prüfung verhindert, dass ein Code an eine fremde Adresse gelangt.</li>
+<li><strong>Einlösen.</strong> Der Server der App schickt Code, PKCE-Wert und seine App-Anmeldedaten direkt an den <code>token</code>-Endpunkt. Der Browser ist daran nicht beteiligt und sieht die Tokens nicht.</li>
+<li><strong>Antwort.</strong> Entra ID liefert ID-Token, Access Token und, falls <code>offline_access</code> angefordert wurde (der Scope, der ein Refresh Token anfordert), ein Refresh Token. MSAL kümmert sich dabei um Teile der Protokollprüfung und legt die Tokens im Cache ab. Die App wertet die Identität aus dem ID-Token aus und richtet ihre eigene Sitzung ein.</li>
+<li><strong>Dienstaufruf.</strong> Die App sendet das Access Token an die Graph API. Die Graph API prüft Signatur, Audience und Ablauf und wertet dann die Rechte in <code>scp</code> aus.</li>
+<li><strong>Erneuerung.</strong> Für spätere Aufrufe fragt die App MSAL erneut nach einem Token, etwa mit <code>acquire_token_silent</code> in Python oder <code>acquireTokenSilent</code> in JavaScript. MSAL liefert ein noch gültiges Token aus dem Cache oder holt mit dem Refresh Token still ein neues. Der Nutzer bemerkt davon nichts, solange keine erneute Interaktion nötig ist.</li>
+</ol>
+<p>Eine Browser-App, die den Code ohne eigenen Server einlöst, also eine Single-Page Application, läuft nach demselben Muster ab, verlagert aber die Serverschritte in den Browser. Sie kann kein Geheimnis bewahren und meldet sich deshalb nur über PKCE ohne App-Anmeldedaten an. Der JavaScript-Code im Browser schickt Code und PKCE-Wert ohne Client Secret direkt an den <code>token</code>-Endpunkt, Schritt 4 gilt hier also nicht. Zudem liegen ihre Tokens im Browser, wodurch sich das Risiko durch Script-Angriffe erhöht. Ihr Refresh Token ist deshalb kürzer gültig. Auch die Anmelde-URL aus Schritt 1 entsteht im Browser, der Graph-Aufruf aus Schritt 6 geht direkt vom Browser aus, und die serverseitige Sitzung aus Schritt 5 entfällt. Der Redirect-URI muss in der App-Registrierung als Plattform „Single-page application“ eingetragen sein, sonst schlägt der Code-Tausch aus dem Browser fehl.</p>
+<figure id="kap02-server-app-spa-vergleich">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 440" width="680" role="img" aria-labelledby="d4-t d4-d">
+<title id="d4-t">Server-App und Single-Page Application im Vergleich</title>
+<desc id="d4-d">Server-App und Single-Page Application nebeneinander beim Einlösen des Codes und bei der Ablage der Tokens. Die beiden Varianten unterscheiden sich darin, wer den Code einlöst, mit welchem Nachweis, und wo danach die Tokens liegen.</desc>
+<defs><marker id="d4-a" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="10" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,0 L10,4 L0,8 z" fill="#2f5d8a"/></marker><marker id="d4-r" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="10" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,0 L10,4 L0,8 z" fill="#b8472a"/></marker><marker id="d4-m" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="10" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,0 L10,4 L0,8 z" fill="#5b6072"/></marker></defs>
+<line x1="340" y1="12" x2="340" y2="395" stroke="#5b6072" stroke-width="1"/>
+<text x="170" y="28" text-anchor="middle" font-size="14" font-weight="600" style="fill:#2f5d8a">Server-App</text>
+<text x="510" y="28" text-anchor="middle" font-size="14" font-weight="600" style="fill:#2f5d8a">Single-Page Application (SPA)</text>
+<circle cx="90" cy="100" r="40" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="90" y="104.0" text-anchor="middle" font-size="12">Browser</text>
+<circle cx="250" cy="100" r="40" fill="#ffffff" stroke="#b8472a" stroke-width="3"/>
+<text x="250" y="92" text-anchor="middle" font-size="12" font-weight="600">Server</text>
+<rect x="222" y="100" width="56" height="20" rx="2" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/>
+<text x="250.0" y="114.0" text-anchor="middle" font-size="11">Tokens</text>
+<line x1="130" y1="100" x2="209" y2="100" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d4-a)"/>
+<text x="170" y="92" text-anchor="middle" font-size="11.5">Code</text>
+<circle cx="250" cy="265" r="40" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="250" y="261.5" text-anchor="middle" font-size="12">token-</text>
+<text x="250" y="276.5" text-anchor="middle" font-size="12">Endpunkt</text>
+<line x1="240" y1="139" x2="240" y2="225" stroke="#b8472a" stroke-width="2" marker-end="url(#d4-r)"/>
+<line x1="260" y1="226" x2="260" y2="140" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d4-a)"/>
+<text x="268" y="186" text-anchor="start" font-size="11.5">Tokens</text>
+<text x="228" y="160" text-anchor="end" font-size="11.5">Code mit Nachweis</text>
+<rect x="105" y="168" width="123" height="22" rx="2" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.2"/>
+<text x="166.5" y="183.0" text-anchor="middle" font-size="11">PKCE-Wert</text>
+<rect x="105" y="194" width="123" height="22" rx="2" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.2"/>
+<text x="166.5" y="209.0" text-anchor="middle" font-size="11">App-Anmeldedaten</text>
+<circle cx="510" cy="100" r="60" fill="#ffffff" stroke="#b8472a" stroke-width="3"/>
+<text x="510" y="72" text-anchor="middle" font-size="12" font-weight="600">Browser</text>
+<rect x="464" y="82" width="92" height="20" rx="2" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.2"/>
+<text x="510.0" y="96.0" text-anchor="middle" font-size="10.5">JavaScript-Code</text>
+<rect x="482" y="110" width="56" height="20" rx="2" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/>
+<text x="510.0" y="124.0" text-anchor="middle" font-size="11">Tokens</text>
+<circle cx="510" cy="265" r="40" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="510" y="261.5" text-anchor="middle" font-size="12">token-</text>
+<text x="510" y="276.5" text-anchor="middle" font-size="12">Endpunkt</text>
+<line x1="500" y1="160" x2="500" y2="225" stroke="#b8472a" stroke-width="2" marker-end="url(#d4-r)"/>
+<line x1="520" y1="226" x2="520" y2="160" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d4-a)"/>
+<text x="528" y="196" text-anchor="start" font-size="11.5">Tokens</text>
+<text x="488" y="184" text-anchor="end" font-size="11.5">Code mit Nachweis</text>
+<rect x="365" y="192" width="123" height="22" rx="2" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.2"/>
+<text x="426.5" y="207.0" text-anchor="middle" font-size="11">PKCE-Wert</text>
+<text x="20" y="335" text-anchor="start" font-size="12" font-weight="600" style="fill:#2f5d8a">Einlöser:</text>
+<text x="88" y="335" text-anchor="start" font-size="12">der Server</text>
+<text x="360" y="335" text-anchor="start" font-size="12" font-weight="600" style="fill:#2f5d8a">Einlöser:</text>
+<text x="428" y="335" text-anchor="start" font-size="12">JavaScript-Code im Browser</text>
+<text x="20" y="357" text-anchor="start" font-size="12" font-weight="600" style="fill:#2f5d8a">Nachweis:</text>
+<text x="88" y="357" text-anchor="start" font-size="12">PKCE-Wert und App-Anmeldedaten</text>
+<text x="360" y="357" text-anchor="start" font-size="12" font-weight="600" style="fill:#2f5d8a">Nachweis:</text>
+<text x="428" y="357" text-anchor="start" font-size="12">nur PKCE-Wert</text>
+<text x="20" y="379" text-anchor="start" font-size="12" font-weight="600" style="fill:#2f5d8a">Tokens:</text>
+<text x="88" y="379" text-anchor="start" font-size="12">auf dem Server</text>
+<text x="360" y="379" text-anchor="start" font-size="12" font-weight="600" style="fill:#2f5d8a">Tokens:</text>
+<text x="428" y="379" text-anchor="start" font-size="12">im Browser</text>
+<text x="340" y="425" text-anchor="middle" class="legend-text">dicker roter Rand: löst den Code ein  |  rotes Rechteck: Ablageort der Tokens  |  roter Pfeil: Einlösen</text>
+</svg>
+<figcaption>Die beiden Varianten unterscheiden sich darin, wer den Code einlöst, mit welchem Nachweis, und wo danach die Tokens liegen.</figcaption>
+</figure>
+<p>Zwischen dem Lebenszyklus der Tokens und dem der App-Sitzung besteht keine feste Kopplung. Eine Sitzung kann weiterlaufen, während das Access Token längst abgelaufen ist. Umgekehrt beendet das Abmelden aus der App nicht automatisch die Sitzung bei Entra ID. Nach einer Sperrung des Kontos kann ein bereits ausgestelltes Access Token bis zu seinem Ablauf weiter funktionieren, weil der Zieldienst es meist nur lokal prüft. Das ist der Preis dafür, dass Tokens ohne Rückfrage geprüft werden können.</p>
+<nav style="display:flex;justify-content:space-between;gap:1rem;margin-top:3rem;border-top:1px solid var(--rule);padding-top:1rem;font-family:'Helvetica Neue',Arial,sans-serif;font-size:.9rem"><span><a href="01-landkarte.html">← Zurück</a></span><a href="index.html">Übersicht</a><span><a href="03-rechtesysteme.html">Weiter →</a></span></nav>
+</body>
+</html>

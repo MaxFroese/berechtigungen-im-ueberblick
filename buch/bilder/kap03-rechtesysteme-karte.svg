@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 425" width="680" height="425" role="img" aria-labelledby="k1-title k1-desc" style="background:#ffffff"><style>text{font-family:"Helvetica Neue",Arial,sans-serif;fill:#1f2230}.legend-text{font-size:11px;fill:#5b6072}</style><title id="k1-title">Die drei Rechtesysteme und die Dienstrechte</title><desc id="k1-desc">Ein Principal aus Entra ID steht oben. Darunter stehen drei getrennte Säulen: Entra-Rollen mit dem Beispiel Global Administrator, Azure RBAC mit dem Beispiel Owner und App-Rechte mit dem Beispiel Files.Read.All. Unter ihnen liegt die uneinheitliche Schicht der Dienstrechte mit dem Beispiel Site-Mitgliedschaft. Gestrichelte Linien trennen alle Bereiche: Es gibt keine automatische Weitergabe.</desc><defs><marker id="k1-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="k1-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker><marker id="k1-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker></defs>
+<path d="M298 52 H26 V321" fill="none" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#k1-b)"/>
+<line x1="300.9" y1="67.3" x2="140" y2="129" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#k1-b)"/>
+<line x1="340" y1="94" x2="340" y2="129" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#k1-b)"/>
+<line x1="379.1" y1="67.3" x2="540" y2="129" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#k1-b)"/>
+<text x="165" y="43" text-anchor="middle" font-size="12" style="fill:#5b6072">Je System eine eigene Zuweisung</text>
+<circle cx="340" cy="52" r="42" fill="#ffffff" stroke="#b8472a" stroke-width="2.5"/>
+<text x="340" y="50" text-anchor="middle" font-size="13" font-weight="600">Principal</text>
+<text x="340" y="66" text-anchor="middle" font-size="11" style="fill:#5b6072">aus Entra ID</text>
+<rect x="50" y="130" width="180" height="132" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="140" y="156" text-anchor="middle" font-size="15" font-weight="600" style="fill:#2f5d8a">Entra-Rollen</text>
+<text x="140" y="176" text-anchor="middle" font-size="12">Ziel: Tenant-Verwaltung</text>
+<text x="140" y="204" text-anchor="middle" font-size="11" style="fill:#5b6072">Beispiel</text>
+<rect x="65" y="212" width="150" height="34" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="140" y="233" text-anchor="middle" font-size="12">Global Administrator</text>
+<rect x="250" y="130" width="180" height="132" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="340" y="156" text-anchor="middle" font-size="15" font-weight="600" style="fill:#2f5d8a">Azure RBAC</text>
+<text x="340" y="176" text-anchor="middle" font-size="12">Ziel: Azure-Ressourcen</text>
+<text x="340" y="204" text-anchor="middle" font-size="11" style="fill:#5b6072">Beispiel</text>
+<rect x="265" y="212" width="150" height="34" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="340" y="233" text-anchor="middle" font-size="12">Owner</text>
+<rect x="450" y="130" width="180" height="132" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="540" y="156" text-anchor="middle" font-size="15" font-weight="600" style="fill:#2f5d8a">App-Rechte</text>
+<text x="540" y="176" text-anchor="middle" font-size="12">Ziel: Graph API</text>
+<text x="540" y="204" text-anchor="middle" font-size="11" style="fill:#5b6072">Beispiel</text>
+<rect x="465" y="212" width="150" height="34" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="540" y="233" text-anchor="middle" font-size="12">Files.Read.All</text>
+<line x1="240" y1="120" x2="240" y2="294" stroke="#b8472a" stroke-width="1.6" stroke-dasharray="6 5"/>
+<line x1="440" y1="120" x2="440" y2="294" stroke="#b8472a" stroke-width="1.6" stroke-dasharray="6 5"/>
+<line x1="50" y1="294" x2="630" y2="294" stroke="#b8472a" stroke-width="1.6" stroke-dasharray="6 5"/>
+<rect x="240" y="284" width="200" height="20" fill="#fafaf7"/>
+<text x="340" y="298" text-anchor="middle" font-size="12" style="fill:#b8472a">keine automatische Weitergabe</text>
+<rect x="10" y="322" width="660" height="70" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="50" y="350" text-anchor="start" font-size="15" font-weight="600" style="fill:#2f5d8a">Dienstrechte</text>
+<text x="50" y="372" text-anchor="start" font-size="12">Uneinheitliche Schicht. Ziel: Sites, Postfächer, Teams</text>
+<text x="462" y="361" text-anchor="end" font-size="11" style="fill:#5b6072">Beispiel</text>
+<rect x="470" y="340" width="180" height="34" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="560" y="361" text-anchor="middle" font-size="12">Site-Mitgliedschaft</text>
+<line x1="100" y1="411" x2="130" y2="411" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#k1-b)"/>
+<text x="138" y="415" text-anchor="start" class="legend-text">Eigene Zuweisung an denselben Principal</text>
+<line x1="400" y1="411" x2="430" y2="411" stroke="#b8472a" stroke-width="1.6" stroke-dasharray="6 5"/>
+<text x="438" y="415" text-anchor="start" class="legend-text">Keine automatische Weitergabe</text>
+</svg>

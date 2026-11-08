@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>14. Mit externem IT-Dienstleister: Wer hält die Rollen, wer entscheidet, wer zahlt?</title>
+<style>
+:root { --bg:#fafaf7; --text:#1f2230; --muted:#5b6072; --accent:#2f5d8a;
+  --accent-soft:#d9e4ef; --leader:#b8472a; --node-fill:#ffffff;
+  --node-stroke:#2f5d8a; --rule:#c8ccd6; --code-bg:#eef1f5; }
+html,body { background:var(--bg); color:var(--text);
+  font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+  line-height:1.65; font-size:18px; }
+body { max-width:760px; margin:3rem auto 6rem; padding:0 1.5rem; }
+h1 { font-size:2rem; line-height:1.2; margin:0 0 2rem;
+  border-bottom:1px solid var(--rule); padding-bottom:0.6rem; }
+h2 { font-size:1.35rem; margin-top:2.4rem; margin-bottom:0.8rem;
+  color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif;
+  font-weight:600; letter-spacing:0.01em; }
+p { margin:0 0 1.1rem; }
+figure { margin:2rem auto; text-align:center; }
+figure svg { max-width:100%; height:auto; display:block; margin:0 auto; }
+figcaption { font-family:"Helvetica Neue",Arial,sans-serif; font-size:0.85rem;
+  color:var(--muted); margin-top:0.6rem; text-align:center; }
+svg text { font-family:"Helvetica Neue",Arial,sans-serif; fill:var(--text); }
+.legend-text { font-size:11px; fill:var(--muted); }
+pre { background:var(--code-bg); padding:0.9rem 1.1rem; overflow-x:auto;
+  border-radius:6px; font-size:0.82em; }
+code { background:var(--code-bg); font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:0.85em; padding:0.1em 0.3em; border-radius:3px; }
+pre code { background:none; padding:0; }
+.table-wrap { overflow-x:auto; margin:1.5rem 0; }
+table { border-collapse:collapse; width:100%; font-size:0.85em; line-height:1.45; }
+th { text-align:left; color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif;
+  font-weight:600; border-bottom:2px solid var(--accent); padding:0.45rem 0.6rem;
+  vertical-align:bottom; }
+td { border-bottom:1px solid var(--rule); padding:0.45rem 0.6rem; vertical-align:top; }
+tr { break-inside:avoid; }
+</style>
+</head>
+<body>
+<h1>14. Mit externem IT-Dienstleister: Wer hält die Rollen, wer entscheidet, wer zahlt?</h1>
+
+<p>Viele kleine Firmen haben keine eigene IT. Tenant, Geräte, Lizenzen und Support liegen bei einem <strong>IT-Dienstleister</strong>, oft Managed Service Provider oder kurz MSP genannt. Die Technik bleibt dabei genau dieselbe: Tenant, Entra ID, Tokens, Azure RBAC und Consent funktionieren wie in einem selbst verwalteten Tenant. Anders ist, wer die Rollen hält, wer entscheidet und wer bezahlt. Genau diese drei Fragen bestimmen, was jemand, der in einer solchen Firma mit KI bauen will, selbst tun kann und wofür eine Anfrage nötig ist.</p>
+
+<h2>Geteilte Verantwortung: drei Parteien</h2>
+
+<p>An einem Tenant mit Dienstleister sind drei Parteien beteiligt. Jede verantwortet etwas anderes.</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Wer</th><th>Verantwortet</th><th>Beispiele</th></tr></thead>
+<tbody>
+<tr><td>Microsoft</td><td>den Dienst selbst</td><td>Rechenzentren, Verfügbarkeit, Sicherheit der Plattform, Updates von Microsoft 365</td></tr>
+<tr><td>IT-Dienstleister</td><td>Konfiguration und Betrieb des Tenants</td><td>Nutzer anlegen und sperren, Lizenzen, Geräte mit Intune, MFA, Conditional Access, Backup, Support</td></tr>
+<tr><td>Firma</td><td>Entscheidungen und Inhalte</td><td>wer welche Daten sieht, welche Werkzeuge genutzt werden, Ordnung in SharePoint und Teams, Verträge und AVV, Freigaben, Prozesse</td></tr>
+</tbody>
+</table></div>
+
+<p>Der wichtigste Punkt der Tabelle steckt in der dritten Zeile. Der Dienstleister weiß, <strong>wie</strong> man Rechte vergibt, aber nicht, <strong>wer</strong> sie fachlich bekommen soll. Ob die Projektleitung die Site der Buchhaltung sehen darf, kann nur die Firma beantworten. Fehlt intern jemand, der solche Fragen beantwortet, vergibt der Dienstleister im Zweifel großzügig, damit niemand blockiert ist. So entsteht Oversharing (siehe <a href="05-daten-freigaben.html">Kapitel 5, Daten und Freigaben</a>), ohne dass jemand einen Fehler im technischen Sinn gemacht hätte.</p>
+
+<p>Zwei weitere Grundsätze gelten unabhängig vom Vertrag:</p>
+
+<ul>
+<li><strong>Der Tenant gehört der Firma, nicht dem Dienstleister.</strong> Die Firma braucht deshalb ein eigenes Break-Glass-Konto mit Global Administrator (siehe <a href="04-admin-rollen.html">Kapitel 4, Admin-Rollen</a>). Ohne dieses Konto hängt die Firma beim Wechsel oder Ausfall des Dienstleisters an dessen Mitwirkung. Dasselbe gilt sinngemäß für den Zugang zur Domain und zum DNS, an dem Anmeldung und Mail hängen.</li>
+<li><strong>Microsoft sichert die Inhalte nicht gegen eigene Fehler.</strong> Microsoft hält den Dienst verfügbar und repliziert Daten gegen Hardwareausfälle. Gegen Löschen, Überschreiben oder Verschlüsseln durch ein kompromittiertes Konto helfen Papierkorb und Versionen nur für begrenzte Zeit. Ein echtes Backup ist Aufgabe der Firma, umgesetzt meist durch den Dienstleister.</li>
+</ul>
+
+<h2>Konstellationen zwischen Firma, Dienstleister und Microsoft</h2>
+
+<p>Die Aufteilung zwischen Firma und Dienstleister ist nicht überall gleich. In der Praxis kommen fünf Grundmodelle vor.</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Modell</th><th>Lizenzen von</th><th>Verwaltung</th><th>Typisch für</th></tr></thead>
+<tbody>
+<tr><td>Vollständig betreut</td><td>Dienstleister als CSP-Partner</td><td>Dienstleister; intern nur ein Ansprechpartner</td><td>kleine Firmen ohne IT</td></tr>
+<tr><td>Geteilter Betrieb (co-managed)</td><td>Partner oder direkt</td><td>Dienstleister: Geräte und Sicherheit; intern: Apps, Inhalte, Projekte</td><td>Mittelstand mit ein bis drei IT-Leuten</td></tr>
+<tr><td>Selbst verwaltet</td><td>direkt bei Microsoft über eine MCA</td><td>interne IT; Dienstleister nur für Projekte</td><td>größere Firmen</td></tr>
+<tr><td>Betrieb plus Spezialist</td><td>wie oben</td><td>Betriebsdienstleister plus zweite Firma für Copilot, Power Platform oder Security</td><td>wenn dem Betriebsdienstleister KI-Wissen fehlt</td></tr>
+<tr><td>Nur Lizenzhändler</td><td>CSP</td><td>niemand oder die Firma selbst</td><td>Kleinstfirmen; riskant, weil niemand den Tenant pflegt</td></tr>
+</tbody>
+</table></div>
+
+<p>Hinter jedem Modell steht eine Kette von Verträgen. Die Firma beauftragt den Dienstleister und gibt ihm Freigaben. Der Dienstleister hat einen Partnervertrag mit Microsoft und kauft dort ein. Microsoft betreibt die Dienste. Technisch verläuft der Zugriff anders als der Vertrag: Der Dienstleister greift direkt in den Tenant der Firma zu, nicht über Microsoft.</p>
+
+<figure id="kap14-vertragskette">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 400" role="img" aria-labelledby="d14-vk-title d14-vk-desc"><title id="d14-vk-title">Vertragskette und technischer Zugriff</title><desc id="d14-vk-desc">Links die Vertragskette: Firma mit Auftrag, AVV und Freigaben an den IT-Dienstleister, dieser mit Partnervertrag und CSP an Microsoft. Rechts der Tenant der Firma mit Entra ID, Microsoft 365 und Azure. Die Firma greift über ihr Break-Glass-Konto zu, der Dienstleister über GDAP mit befristeten Rollen, Microsoft betreibt den Tenant.</desc><defs><marker id="d14-vk-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="d14-vk-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker><marker id="d14-vk-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker></defs><text x="30" y="30" font-size="14" text-anchor="start" font-weight="600" style="fill:#2f5d8a">Vertrag</text><text x="380" y="30" font-size="14" text-anchor="start" font-weight="600" style="fill:#2f5d8a">Technischer Zugriff</text><rect x="30" y="50" width="250" height="56" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="155.0" y="76" font-size="12.5" text-anchor="middle" font-weight="600">Firma</text><text x="155.0" y="90" font-size="11" text-anchor="middle" style="fill:#5b6072">entscheidet, verantwortet</text><rect x="30" y="160" width="250" height="56" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="155.0" y="186" font-size="12.5" text-anchor="middle" font-weight="600">IT-Dienstleister</text><text x="155.0" y="200" font-size="11" text-anchor="middle" style="fill:#5b6072">betreibt, rechnet ab</text><rect x="30" y="270" width="250" height="56" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="155.0" y="296" font-size="12.5" text-anchor="middle" font-weight="600">Microsoft</text><text x="155.0" y="310" font-size="11" text-anchor="middle" style="fill:#5b6072">betreibt die Dienste</text><path d="M155 106 L155 158" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d14-vk-a)"/><text x="163" y="137" font-size="11" text-anchor="start">Auftrag, AVV, Freigaben</text><path d="M155 216 L155 268" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d14-vk-a)"/><text x="163" y="247" font-size="11" text-anchor="start">Partnervertrag, CSP</text><rect x="380" y="50" width="280" height="276" rx="6" fill="none" stroke="#2f5d8a" stroke-width="1.5"/><text x="520" y="72" font-size="13" text-anchor="middle" font-weight="600" style="fill:#2f5d8a">Tenant der Firma</text><rect x="400" y="88" width="240" height="40" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="520.0" y="106" font-size="12.5" text-anchor="middle" font-weight="600">Entra ID</text><text x="520.0" y="120" font-size="11" text-anchor="middle" style="fill:#5b6072">Rollen, Konten, Consent</text><rect x="400" y="140" width="240" height="40" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="520.0" y="158" font-size="12.5" text-anchor="middle" font-weight="600">Microsoft 365</text><text x="520.0" y="172" font-size="11" text-anchor="middle" style="fill:#5b6072">SharePoint, Teams, Exchange</text><rect x="400" y="192" width="240" height="40" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="520.0" y="210" font-size="12.5" text-anchor="middle" font-weight="600">Azure</text><text x="520.0" y="224" font-size="11" text-anchor="middle" style="fill:#5b6072">Subscriptions, Ressourcen</text><text x="520" y="258" font-size="11" text-anchor="middle" style="fill:#5b6072">Audit-Log und Sign-in-Log</text><text x="520" y="272" font-size="11" text-anchor="middle" style="fill:#5b6072">zeigen auch Zugriffe des Partners</text><path d="M280 78 L378 78" fill="none" stroke="#b8472a" stroke-width="1.5" marker-end="url(#d14-vk-r)"/><text x="329" y="58" font-size="11" text-anchor="middle" font-weight="600" style="fill:#b8472a">Break-Glass-</text><text x="329" y="71" font-size="11" text-anchor="middle" font-weight="600" style="fill:#b8472a">Konto</text><path d="M280 188 L378 188" fill="none" stroke="#2f5d8a" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#d14-vk-a)"/><text x="329" y="180" font-size="11" text-anchor="middle" font-weight="600" style="fill:#2f5d8a">GDAP</text><text x="329" y="204" font-size="10.5" text-anchor="middle" style="fill:#5b6072">befristete</text><text x="329" y="217" font-size="10.5" text-anchor="middle" style="fill:#5b6072">Rollen</text><path d="M280 298 L378 298" fill="none" stroke="#5b6072" stroke-width="1.5" marker-end="url(#d14-vk-m)"/><text x="329" y="290" font-size="11" text-anchor="middle" style="fill:#5b6072">betreibt</text><rect x="20" y="346" width="640" height="44" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/><text x="340.0" y="372" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">Der Vertrag läuft über den Dienstleister, der Zugriff direkt in den Tenant der Firma.</text></svg>
+<figcaption>Der Vertrag läuft über den Dienstleister zu Microsoft, der Zugriff aber direkt in den Tenant der Firma. Nur das eigene Break-Glass-Konto sichert, dass die Firma dort selbst bestimmt.</figcaption>
+</figure>
+
+<h3>CSP: der Dienstleister als Händler</h3>
+
+<p><strong>CSP</strong> (Cloud Solution Provider) ist das Programm, in dem ein Partner Lizenzen und Azure-Verbrauch im eigenen Namen weiterverkauft und dem Kunden selbst in Rechnung stellt. Für die Firma hat das einige Folgen, die in einem Direktvertrag nicht auftreten:</p>
+
+<ul>
+<li><strong>Rechnung vom Partner.</strong> Für diese Produkte gibt es kein Rechnungskonto der Firma unter einer MCA (siehe <a href="11-lizenzen-abrechnung.html">Kapitel 11, Lizenzen und Abrechnung</a>). Kaufen, Erhöhen und Kündigen laufen über den Dienstleister. Die Abos erscheinen im Microsoft 365 Admin Center trotzdem, lassen sich dort aber nicht immer selbst ändern.</li>
+<li><strong>Laufzeiten.</strong> Bei Jahresverträgen lassen sich Lizenzen nach einer kurzen Frist meist nicht mehr reduzieren. Die genauen Bedingungen nennt der Partner.</li>
+<li><strong>Azure in CSP.</strong> Die Subscription hängt an der Abrechnung des Partners. Ob die Firma im Azure-Portal Kosten sieht, hängt davon ab, ob der Partner die Kostenansicht freigegeben hat. Ein Budget ist dann das Mittel für Warnungen; ein Ausgabenlimit wie bei einem Guthaben-Angebot gibt es dort in der Regel nicht.</li>
+<li><strong>Verbrauch in Foundry und Power Platform.</strong> Modellaufrufe, Copilot Credits und eine Abrechnungsrichtlinie (siehe <a href="12-plattformen-verwaltung.html">Kapitel 12, Plattformen und Verwaltungsorte</a>) landen auf der CSP-Rechnung des Dienstleisters. Wer einen Versuch mit Modellen plant, sollte deshalb vorher klären, wie Verbrauch weiterberechnet wird.</li>
+</ul>
+
+<h3>GDAP: wie der Dienstleister in den Tenant kommt</h3>
+
+<p>Der Dienstleister braucht Admin-Rechte im Tenant der Firma. Der saubere Weg dafür heißt <strong>GDAP</strong> (Granular Delegated Admin Privileges). Der Ablauf:</p>
+
+<ol>
+<li>Der Partner fragt im Partner Center eine Beziehung an. Die Anfrage nennt eine Liste von Entra-Rollen und eine Laufzeit, höchstens zwei Jahre.</li>
+<li>Ein Global Administrator der Firma bestätigt die Anfrage über einen Link. Erst damit gilt die Beziehung.</li>
+<li>Der Partner weist die Rollen Sicherheitsgruppen <strong>in seinem eigenen Tenant</strong> zu. Seine Techniker bekommen keine Konten im Tenant der Firma, sondern melden sich mit ihren Partnerkonten an.</li>
+</ol>
+
+<p>Daraus ergibt sich, wo die Firma hinschauen kann. Die Beziehungen stehen im Microsoft 365 Admin Center unter den Einstellungen bei den Partnerbeziehungen; dort sind Rollen und Laufzeit sichtbar, und die Firma kann eine Beziehung beenden. Anmeldungen der Partnerkonten erscheinen im Sign-in-Log als Zugriffe aus einem fremden Tenant, ihre Änderungen im Audit-Log. Conditional Access kann Dienstleister-Konten als eigene Gruppe externer Nutzer ansprechen, etwa um MFA oder bestimmte Standorte zu verlangen.</p>
+
+<p>Der Vorläufer DAP gab dem Partner dauerhaft Global Administrator in allen Kundentenants. Microsoft hat ihn abgelöst. Eine GDAP-Beziehung kann aber ebenfalls Global Administrator enthalten. Ein dauerhafter Global Administrator für den Partner gilt als Risiko, weil ein kompromittierter Partner-Tenant dann alle Kunden zugleich trifft. Besser ist eine Rollenliste, die zu den Aufgaben passt, etwa User Administrator, Groups Administrator, Intune Administrator und Exchange Administrator, und Global Administrator nur befristet für Sonderfälle.</p>
+
+<p>In Azure sieht die Firma den Zugriff des Partners in den Rollenzuweisungen der Subscription. Bei Subscriptions aus CSP steht dort typischerweise eine Zuweisung des Partners, die nicht zu einem Konto der Firma gehört:</p>
+
+<pre><code class="language-bash">az role assignment list --all --include-inherited \
+  --query "[].{wer:principalName, typ:principalType, rolle:roleDefinitionName, scope:scope}" \
+  -o table</code></pre>
+
+<p>Einträge des Partners fallen dabei durch ihren Typ auf, etwa als Gruppe aus einem fremden Tenant. Für Azure gibt es zusätzlich Azure Lighthouse. Damit delegiert die Firma einzelne Subscriptions oder Resource Groups an den Tenant des Dienstleisters; im Azure-Portal steht das unter „Service providers“.</p>
+
+<h3>Der Dienstleister ist selbst Auftragsverarbeiter</h3>
+
+<p>Wer Global Administrator oder Exchange Administrator hält, kann sich Zugang zu Postfächern und Dateien verschaffen (siehe <a href="04-admin-rollen.html">Kapitel 4, Admin-Rollen</a>). Der Dienstleister verarbeitet damit Personenbezogene Daten im Auftrag der Firma. Die Firma braucht deshalb auch mit ihm einen AVV, nicht nur mit Microsoft (siehe <a href="13-recht-datenweg.html">Kapitel 13, Rechtliche Einordnung</a>). Setzt der Dienstleister selbst Werkzeuge mit Datenzugriff ein, etwa für Backup oder Fernwartung, sind deren Anbieter Unterauftragsverarbeiter und gehören in diesen AVV.</p>
+
+<h3>Prüffragen an den Dienstleister</h3>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Frage</th><th>Warum sie zählt</th><th>Wo die Firma es selbst sieht</th></tr></thead>
+<tbody>
+<tr><td>Hat die Firma ein eigenes Break-Glass-Konto?</td><td>Sonst gehört der Tenant faktisch dem Dienstleister</td><td>Entra Admin Center, Rollen: wer hält Global Administrator</td></tr>
+<tr><td>Nutzt der Dienstleister GDAP, und mit welchen Rollen?</td><td>Dauerhafter Global Administrator für den Partner ist ein Risiko</td><td>Microsoft 365 Admin Center, Partnerbeziehungen</td></tr>
+<tr><td>Laufen Lizenzen und Azure-Kosten über CSP oder direkt bei Microsoft?</td><td>Entscheidet, wer kaufen und kündigen kann und wer Kosten sieht</td><td>Microsoft 365 Admin Center, Abrechnung; Azure-Portal, Kostenverwaltung</td></tr>
+<tr><td>Gibt es einen AVV mit dem Dienstleister?</td><td>Der Dienstleister hat Zugriff auf alle Daten</td><td>Vertragsunterlagen</td></tr>
+<tr><td>Was ist Betrieb (pauschal), was ist Projekt (nach Stunden)?</td><td>Jede Anfrage mit Rechten kann sonst eine Rechnung erzeugen</td><td>Dienstleistungsvertrag</td></tr>
+<tr><td>Gibt es ein Backup, und wer hat einen Wiederherstellungstest gesehen?</td><td>Microsoft sichert nicht gegen eigene Fehler</td><td>Bericht des Dienstleisters</td></tr>
+</tbody>
+</table></div>
+
+<h2>Vier-Augen-Prinzip in kleinen Firmen</h2>
+
+<p>Eine große Firma trennt Rollen auf verschiedene Personen (siehe <a href="04-admin-rollen.html">Kapitel 4, Admin-Rollen</a>). Eine kleine Firma kann das nicht. Mit einem Dienstleister lässt sich trotzdem eine leichte Form des Vier-Augen-Prinzips herstellen. Die zwei Augen sind dabei zwei Parteien, nicht zwei Techniker:</p>
+
+<ul>
+<li><strong>Die Firma beantragt und gibt frei</strong>, durch die Geschäftsführung oder einen benannten Ansprechpartner, per Ticket oder E-Mail. Sie entscheidet, <strong>ob</strong> etwas geschieht, nicht <strong>wie</strong>.</li>
+<li><strong>Der Dienstleister setzt um</strong> und gibt sich keine eigenen Aufträge.</li>
+<li><strong>Es bleibt ein Nachweis</strong>: das Ticket mit der Freigabe und der Eintrag im Audit-Log.</li>
+</ul>
+
+<figure id="kap14-vier-augen">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 300" role="img" aria-labelledby="d14-va-title d14-va-desc"><title id="d14-va-title">Vier-Augen-Prinzip mit zwei Parteien</title><desc id="d14-va-desc">Ablauf in vier Schritten: Die Firma beantragt und gibt frei, der Dienstleister setzt mit befristeter Rolle um, das Audit-Log hält die Änderung fest, ein Alarm bei Änderungen an Rollen oder Conditional Access geht an die Firma zurück. Darunter: Break-Glass-Konto versiegelt bei der Geschäftsführung; der Dienstleister gibt sich keine eigenen Aufträge.</desc><defs><marker id="d14-va-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="d14-va-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker><marker id="d14-va-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker></defs><text x="77.5" y="42" font-size="11" text-anchor="middle" font-weight="600" style="fill:#5b6072">Firma</text><text x="252.5" y="42" font-size="11" text-anchor="middle" font-weight="600" style="fill:#5b6072">Dienstleister</text><text x="427.5" y="42" font-size="11" text-anchor="middle" font-weight="600" style="fill:#5b6072">Plattform</text><text x="602.5" y="42" font-size="11" text-anchor="middle" font-weight="600" style="fill:#5b6072">Plattform</text><rect x="5" y="56" width="145" height="84" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="77.5" y="88" font-size="12.5" text-anchor="middle" font-weight="600">1 Antrag</text><text x="77.5" y="104" font-size="11" text-anchor="middle" style="fill:#5b6072">beantragt, gibt frei</text><text x="77.5" y="118" font-size="11" text-anchor="middle" style="fill:#5b6072">Ticket, E-Mail</text><rect x="180" y="56" width="145" height="84" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="252.5" y="88" font-size="12.5" text-anchor="middle" font-weight="600">2 Umsetzung</text><text x="252.5" y="104" font-size="11" text-anchor="middle" style="fill:#5b6072">setzt um, mit</text><text x="252.5" y="118" font-size="11" text-anchor="middle" style="fill:#5b6072">befristeter Rolle</text><rect x="355" y="56" width="145" height="84" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="427.5" y="88" font-size="12.5" text-anchor="middle" font-weight="600">3 Audit-Log</text><text x="427.5" y="104" font-size="11" text-anchor="middle" style="fill:#5b6072">hält die Änderung</text><text x="427.5" y="118" font-size="11" text-anchor="middle" style="fill:#5b6072">fest</text><rect x="530" y="56" width="145" height="84" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="602.5" y="88" font-size="12.5" text-anchor="middle" font-weight="600">4 Alarm</text><text x="602.5" y="104" font-size="11" text-anchor="middle" style="fill:#5b6072">bei Rollen und</text><text x="602.5" y="118" font-size="11" text-anchor="middle" style="fill:#5b6072">Conditional Access</text><path d="M150 98 L178 98" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d14-va-a)"/><path d="M325 98 L353 98" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d14-va-a)"/><path d="M500 98 L528 98" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d14-va-a)"/><path d="M602.5 140 L602.5 186 L77.5 186 L77.5 142" fill="none" stroke="#b8472a" stroke-width="1.5" marker-end="url(#d14-va-r)"/><text x="340" y="206" font-size="11.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">Der Nachweis läuft an die Firma zurück</text><rect x="5" y="228" width="320" height="56" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/><text x="165.0" y="246" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">Break-Glass-Konto</text><text x="165.0" y="262" font-size="11" text-anchor="middle" style="fill:#5b6072">versiegelt bei der Geschäftsführung,</text><text x="165.0" y="276" font-size="11" text-anchor="middle" style="fill:#5b6072">nicht beim Dienstleister</text><rect x="355" y="228" width="320" height="56" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="515.0" y="246" font-size="12.5" text-anchor="middle" font-weight="600">Keine eigenen Aufträge</text><text x="515.0" y="262" font-size="11" text-anchor="middle" style="fill:#5b6072">Der Dienstleister setzt nur um,</text><text x="515.0" y="276" font-size="11" text-anchor="middle" style="fill:#5b6072">was die Firma freigegeben hat</text></svg>
+<figcaption>Die Kontrolle entsteht nicht durch eine zweite Person im selben Team, sondern dadurch, dass Antrag, Umsetzung und Nachweis bei verschiedenen Parteien liegen.</figcaption>
+</figure>
+
+<p>Für die fehlende zweite Person gibt es technischen Ersatz:</p>
+
+<ul>
+<li><strong>PIM:</strong> Hohe Rechte sind nur befristet aktiv und verlangen eine Begründung. PIM setzt eine Entra-ID-P2-Lizenz voraus.</li>
+<li><strong>Break-Glass-Konto:</strong> Die Zugangsdaten und der zweite Faktor liegen versiegelt bei der Geschäftsführung, nicht beim Dienstleister.</li>
+<li><strong>Alarme:</strong> Änderungen an Admin-Rollen, an Conditional Access und an Partnerbeziehungen lösen eine Meldung aus, die auch an ein Postfach der Firma geht. Entscheidend ist, dass der Dienstleister diese Meldung nicht unbemerkt abschalten kann; sonst gilt dasselbe wie für Protokolle, die nur bei einer zweiten Stelle Beweiskraft haben (siehe <a href="04-admin-rollen.html">Kapitel 4, Admin-Rollen</a>).</li>
+<li><strong>Admin-Consent-Workflow:</strong> Entra ID kann Nutzern erlauben, für eine App ohne Consent-Recht eine Freigabe zu <strong>beantragen</strong>. Die Anfrage landet bei benannten Prüfern, die zustimmen oder ablehnen. Das ist das eingebaute Vier-Augen-Prinzip für App-Rechte und passt genau zur Aufteilung „Firma beantragt, Dienstleister prüft“.</li>
+</ul>
+
+<p>Genau das prüfen Auditoren und Cyber-Versicherer bei kleinen Firmen: nicht, ob es ein Sicherheitsteam gibt, sondern dass niemand unbemerkt allein alles kann.</p>
+
+<h2>Was intern selbst geht und was nur mit Dienstleister</h2>
+
+<p>Was die bauende Person selbst tun kann, hängt von zwei Dingen ab: welche Einstellungen der Dienstleister gesperrt hat und welche Rollen ihr Konto hat. Die folgende Tabelle beschreibt den typischen Fall.</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Vorhaben</th><th>Selbst möglich?</th><th>Dienstleister nötig für</th></tr></thead>
+<tbody>
+<tr><td>Agent in Copilot Studio bauen</td><td>oft ja, in der Standardumgebung, sofern nicht gesperrt</td><td>Veröffentlichen für alle in Teams und Copilot, DLP-Richtlinie und Connectors, eigene Umgebung, Abrechnung von Copilot Credits</td></tr>
+<tr><td>Power Apps und Flows in Teams</td><td>oft ja</td><td>Premium-Connectors, Lizenzen, DLP-Richtlinie</td></tr>
+<tr><td>App-Registrierung anlegen</td><td>standardmäßig ja, oft vom Dienstleister abgeschaltet</td><td>Admin Consent für Graph-Rechte, vor allem Anwendungsberechtigungen; Freigabe pro Site bei Sites.Selected</td></tr>
+<tr><td>Graph mit eigenem Konto testen (delegiert)</td><td>oft ja, geringes Risiko</td><td>nur wenn der Consent durch Nutzer gesperrt ist</td></tr>
+<tr><td>Eigene Teams-App hochladen</td><td>je nach Teams-Richtlinie</td><td>Freigabe der App für die Organisation</td></tr>
+<tr><td>Azure-Ressourcen wie App Service, Container, Key Vault</td><td>nein</td><td>Subscription und eine Rolle, etwa Contributor auf einer Resource Group</td></tr>
+<tr><td>Modelle in Foundry</td><td>nein, weil Azure-Ressource</td><td>wie Azure, dazu Data-Plane-Rollen, Region, Deployment-Typ und gegebenenfalls Azure Policy</td></tr>
+<tr><td>Rechte für eine Managed Identity</td><td>nein</td><td>Rollenzuweisung in Azure oder Graph-Consent</td></tr>
+</tbody>
+</table></div>
+
+<p>Wo die Sperren sitzen, lässt sich meist selbst nachsehen, auch ohne Admin-Rolle, oder gezielt erfragen:</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Einstellung</th><th>Ort</th><th>Wirkung</th></tr></thead>
+<tbody>
+<tr><td>Nutzer dürfen Apps registrieren</td><td>Entra Admin Center, Nutzer, Benutzereinstellungen</td><td>Steht sie auf „Nein“, legt der Dienstleister jede App-Registrierung an</td></tr>
+<tr><td>Consent durch Nutzer</td><td>Entra Admin Center, Enterprise Applications, Consent und Berechtigungen</td><td>Gesperrt heißt: auch delegierte Rechte brauchen Admin Consent</td></tr>
+<tr><td>Admin-Consent-Workflow</td><td>Entra Admin Center, Enterprise Applications, Admin-Consent-Einstellungen</td><td>Ob Nutzer Freigaben beantragen können und wer sie prüft</td></tr>
+<tr><td>Hochladen eigener Apps</td><td>Teams Admin Center, Teams-Apps, Einrichtungsrichtlinien</td><td>Ob ein App-Paket außerhalb des Katalogs hochgeladen werden darf</td></tr>
+<tr><td>Anlegen von Umgebungen</td><td>Power Platform Admin Center, Einstellungen des Tenants</td><td>Ob Developer-Umgebungen selbst angelegt werden dürfen</td></tr>
+</tbody>
+</table></div>
+
+<p>Die eigene Lage zeigt sich schnell. <code>az login</code> mit dem Firmenkonto und danach <code>az account list</code> zeigt, ob überhaupt eine Subscription sichtbar ist; ohne Rollenzuweisung bleibt die Liste leer. Im Graph Explorer zeigt <code>GET /me/memberOf</code>, in welchen Gruppen und Rollen das eigene Konto steckt.</p>
+
+<p>Als Faustregel gilt: Bauen geht oft selbst. Alles, was an echte Firmendaten anbindet, Rechte vergibt oder Geld kostet, läuft über den Dienstleister. Der Dienstleister ist dabei der Wächter über die Einstellungen. Er baut nicht selbst, er öffnet einen Rahmen.</p>
+
+<h2>Ein Rahmen für KI-Versuche</h2>
+
+<p>Statt jede Kleinigkeit einzeln anzufragen, lohnt es sich, beim Dienstleister einmal einen festen Rahmen zu beantragen. Er grenzt ab, wo die bauende Person frei arbeitet, und lässt den Rest des Tenants unberührt.</p>
+
+<figure id="kap14-rahmen">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 420" role="img" aria-labelledby="d14-rh-title d14-rh-desc"><title id="d14-rh-title">Rahmen für KI-Versuche im Tenant der Firma</title><desc id="d14-rh-desc">Im Tenant der Firma liegt ein hervorgehobener Rahmen mit Entwicklungsumgebung (Environment Maker, eigene DLP-Richtlinie), Resource Group rg-ki-test (Contributor, Budget mit Alarm), vom Dienstleister angelegten App-Registrierungen mit Admin Consent pro App und Regeln für Agenten. Außerhalb liegen Standardumgebung, produktive Subscription und Firmendaten, erreichbar nur über eine neue Freigabe.</desc><defs><marker id="d14-rh-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="d14-rh-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker><marker id="d14-rh-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker></defs><rect x="10" y="10" width="660" height="400" rx="6" fill="none" stroke="#c8ccd6" stroke-width="1.5"/><text x="24" y="34" font-size="14" text-anchor="start" font-weight="600" style="fill:#2f5d8a">Tenant der Firma</text><rect x="30" y="50" width="400" height="310" rx="6" fill="#d9e4ef" fill-opacity="0.35" stroke="#2f5d8a" stroke-width="2.5"/><text x="46" y="74" font-size="13" text-anchor="start" font-weight="600" style="fill:#2f5d8a">Rahmen für KI-Versuche</text><rect x="45" y="88" width="180" height="90" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="135.0" y="124" font-size="12.5" text-anchor="middle" font-weight="600">Umgebung Entwicklung</text><text x="135.0" y="138" font-size="11" text-anchor="middle" style="fill:#5b6072">Environment Maker</text><text x="135.0" y="152" font-size="11" text-anchor="middle" style="fill:#5b6072">eigene DLP-Richtlinie</text><rect x="235" y="88" width="180" height="90" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="325.0" y="124" font-size="12.5" text-anchor="middle" font-weight="600">rg-ki-test</text><text x="325.0" y="138" font-size="11" text-anchor="middle" style="fill:#5b6072">Contributor</text><text x="325.0" y="152" font-size="11" text-anchor="middle" style="fill:#5b6072">Budget mit Alarm</text><rect x="45" y="190" width="180" height="90" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="135.0" y="226" font-size="12.5" text-anchor="middle" font-weight="600">App-Registrierungen</text><text x="135.0" y="240" font-size="11" text-anchor="middle" style="fill:#5b6072">vom Dienstleister angelegt</text><text x="135.0" y="254" font-size="11" text-anchor="middle" style="fill:#5b6072">Admin Consent pro App</text><rect x="235" y="190" width="180" height="90" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="325.0" y="226" font-size="12.5" text-anchor="middle" font-weight="600">Regeln für Agenten</text><text x="325.0" y="240" font-size="11" text-anchor="middle" style="fill:#5b6072">wer veröffentlicht,</text><text x="325.0" y="254" font-size="11" text-anchor="middle" style="fill:#5b6072">für wen, welche Quellen</text><text x="230" y="310" font-size="11.5" text-anchor="middle" font-weight="600">Die bauende Person arbeitet hier</text><text x="230" y="326" font-size="11.5" text-anchor="middle" font-weight="600">ohne Einzelanfragen.</text><text x="560" y="74" font-size="11" text-anchor="middle" font-weight="600" style="fill:#5b6072">außerhalb des Rahmens</text><rect x="460" y="88" width="200" height="50" rx="4" fill="#ffffff" stroke="#c8ccd6" stroke-width="1.5"/><text x="560.0" y="110" font-size="12.5" text-anchor="middle" font-weight="600">Standardumgebung</text><text x="560.0" y="126" font-size="11" text-anchor="middle" style="fill:#5b6072">Power Platform</text><rect x="460" y="150" width="200" height="50" rx="4" fill="#ffffff" stroke="#c8ccd6" stroke-width="1.5"/><text x="560.0" y="172" font-size="12.5" text-anchor="middle" font-weight="600">Produktive Subscription</text><text x="560.0" y="188" font-size="11" text-anchor="middle" style="fill:#5b6072">Azure</text><rect x="460" y="212" width="200" height="50" rx="4" fill="#ffffff" stroke="#c8ccd6" stroke-width="1.5"/><text x="560.0" y="234" font-size="12.5" text-anchor="middle" font-weight="600">Firmendaten</text><text x="560.0" y="250" font-size="11" text-anchor="middle" style="fill:#5b6072">SharePoint, Teams, Mail</text><path d="M432 237 L458 237" fill="none" stroke="#b8472a" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#d14-rh-r)"/><text x="560" y="290" font-size="11.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">erreichbar nur über</text><text x="560" y="306" font-size="11.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">eine neue Freigabe</text><text x="340" y="388" font-size="12" text-anchor="middle" font-weight="600" style="fill:#b8472a">Der Dienstleister öffnet und bewacht den Rahmen; er baut nicht mit.</text></svg>
+<figcaption>Der Dienstleister öffnet einen begrenzten Bereich, in dem ohne Einzelanfragen gebaut wird. Firmendaten und Produktion bleiben hinter einer neuen Freigabe.</figcaption>
+</figure>
+
+<p>Typische Bausteine eines solchen Rahmens:</p>
+
+<ul>
+<li><strong>Power-Platform-Umgebung für Entwicklung</strong>, getrennt von der Standardumgebung, mit der Umgebungsrolle <code>Environment Maker</code> für die bauende Person und einer eigenen DLP-Richtlinie (siehe <a href="12-plattformen-verwaltung.html">Kapitel 12, Plattformen und Verwaltungsorte</a>).</li>
+<li><strong>Resource Group</strong> wie <code>rg-ki-test</code> mit <code>Contributor</code> für die bauende Person und einem Budget mit Alarm (siehe <a href="11-lizenzen-abrechnung.html">Kapitel 11, Lizenzen und Abrechnung</a>). Contributor kann keine Rollen vergeben. Braucht eine Managed Identity eine Rolle, etwa <code>Cognitive Services OpenAI User</code>, muss der Dienstleister sie setzen. Alternativ kann er die Rolle <code>Role Based Access Control Administrator</code> auf die Resource Group vergeben, mit einer Bedingung, die nur bestimmte Rollen zuweisbar macht. Zu beachten ist außerdem, dass Contributor die Schlüssel einer Foundry-Ressource lesen darf, solange sie nicht abgeschaltet sind (siehe <a href="12-plattformen-verwaltung.html">Kapitel 12, Plattformen und Verwaltungsorte</a>).</li>
+<li><strong>App-Registrierungen</strong> legt der Dienstleister an, oder er erlaubt es. Admin Consent erteilt er pro App nach Prüfung eines Rechtekonzepts.</li>
+<li><strong>Regeln für Agenten</strong>: wer veröffentlichen darf, für wen und mit welchen Datenquellen.</li>
+<li><strong>Klärung der Kosten</strong>: was mit den vorhandenen Lizenzen geht und was zusätzlich kostet, etwa Copilot Credits, Premium-Connectors oder Verbrauch in Azure.</li>
+</ul>
+
+<p>Eine gebündelte Anfrage ist dann eine kurze Liste, die der Dienstleister ohne Rückfragen umsetzen kann:</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Punkt</th><th>Inhalt</th></tr></thead>
+<tbody>
+<tr><td>Was</td><td>App-Registrierung <code>meine-app</code>, Single-Tenant</td></tr>
+<tr><td>Rechte</td><td>delegiert: <code>User.Read</code>, <code>Files.Read</code>; Anwendung: Sites.Selected mit Lesen auf genau einer Site</td></tr>
+<tr><td>Warum</td><td>Auswertung der Projektsite für eine Übersicht; keine anderen Sites nötig</td></tr>
+<tr><td>Azure</td><td><code>Contributor</code> auf <code>rg-ki-test</code>; Rolle <code>Cognitive Services OpenAI User</code> für die Managed Identity der Web-App auf der Foundry-Ressource</td></tr>
+<tr><td>Daten und Ort</td><td>nur interne Testdaten; Deployment-Typ Data Zone EU</td></tr>
+<tr><td>Verantwortlich</td><td>benannte Person für Betrieb und Löschung</td></tr>
+<tr><td>Laufzeit</td><td>Versuch bis zu einem festen Datum, danach Prüfung oder Rückbau</td></tr>
+<tr><td>Freigabe</td><td>Geschäftsführung per E-Mail vom Datum</td></tr>
+</tbody>
+</table></div>
+
+<h2>Bewährte Arbeitsweise</h2>
+
+<p>Der Weg, der in kleinen Firmen mit Dienstleister am wenigsten reibt, entspricht dem Weg von Test zu Produktion in großen Firmen (siehe <a href="08-projekt.html">Kapitel 8, Ein Beispielprojekt eingeordnet</a>):</p>
+
+<ol>
+<li><strong>Frei bauen im eigenen Test-Tenant.</strong> App-Registrierung, Foundry, Managed Identity und Consent lassen sich dort ohne Dienstleister ausprobieren, weil die bauende Person dort selbst Global Administrator und Owner ist.</li>
+<li><strong>Eine fertige Liste an den Dienstleister.</strong> Wenn es funktioniert und sich lohnt, geht eine Anfrage wie oben hinaus: welche App, welche Rechte, welche Rolle auf welcher Resource Group, und warum.</li>
+<li><strong>Anfragen bündeln.</strong> Viele Verträge rechnen pro Ticket eine Mindestzeit ab, oft 15 bis 60 Minuten. Fünf Einzelanfragen kosten dann deutlich mehr als eine gebündelte.</li>
+<li><strong>Vorher klären, wer die Lösung danach betreut.</strong> Sonst landen Updates, Fehler und Fragen beim Dienstleister und werden nach Stunden abgerechnet.</li>
+</ol>
+
+<p>Was im Betrieb typischerweise anfällt, ist vorhersehbar:</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Ereignis</th><th>Folge ohne Zuständigkeit</th></tr></thead>
+<tbody>
+<tr><td>Client Secret oder Zertifikat läuft ab</td><td>App fällt aus, Ticket beim Dienstleister</td></tr>
+<tr><td>Person mit Flow-Verbindung verlässt die Firma</td><td>Flow läuft nicht mehr oder unter einem gesperrten Konto</td></tr>
+<tr><td>Modellversion wird von Microsoft zurückgezogen</td><td>Deployment muss umgestellt und getestet werden</td></tr>
+<tr><td>Neue Mitarbeitende brauchen Zugriff</td><td>Rechtevergabe über Gruppe oder Einzelfreigabe</td></tr>
+<tr><td>Testzeitraum oder Budget endet</td><td>Ressourcen laufen weiter oder stoppen unangekündigt</td></tr>
+</tbody>
+</table></div>
+
+<h2>Kosten: Richtwerte</h2>
+
+<p>Die folgenden Zahlen sind Richtwerte für 2026 nach Angaben von Anbietern, netto. Sie sind keine Angebote und schwanken stark nach Region und Vertrag.</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Posten</th><th>Richtwert</th></tr></thead>
+<tbody>
+<tr><td>Pauschale für Managed Service (Monitoring, Patches, Helpdesk, Basis-Sicherheit, Lizenzverwaltung; Lizenzen meist extra)</td><td>ca. 50–90 € pro Arbeitsplatz und Monat</td></tr>
+<tr><td>Änderungen und Projekte nach Stunden</td><td>ca. 110–140 € je Stunde, Spanne 90–180 €</td></tr>
+<tr><td>Spezialisten für Security oder Architektur von Microsoft 365</td><td>ca. 140–220 € je Stunde</td></tr>
+</tbody>
+</table></div>
+
+<p>Geschätzter Aufwand pro Anfrage:</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Anfrage</th><th>Aufwand</th></tr></thead>
+<tbody>
+<tr><td>Resource Group mit Rolle und Budget-Alarm</td><td>0,5–1 h</td></tr>
+<tr><td>App-Registrierung mit Admin Consent nach Prüfung</td><td>0,5–2 h</td></tr>
+<tr><td>Power-Platform-Umgebung für Entwicklung mit DLP-Richtlinie</td><td>1–3 h</td></tr>
+<tr><td>Prüfung eines Rechtekonzepts</td><td>1–4 h</td></tr>
+<tr><td>Mini-App in Teams (Registrierung, Consent, Freigabe)</td><td>1–2 h, ca. 150–300 €</td></tr>
+<tr><td>Ganzer Rahmen auf einmal</td><td>ca. 400–1.500 € einmalig</td></tr>
+</tbody>
+</table></div>
+
+<p>Dazu kommt der Verbrauch in Azure und Foundry, oft über die CSP-Abrechnung des Dienstleisters. Günstiger ohne eigene Infrastruktur sind Power Apps oder Copilot Studio in Teams, weil sie meist weder App-Registrierung noch Azure brauchen.</p>
+
+<p>Die eigentlichen Kosten entstehen im Betrieb danach, nicht bei der Einrichtung. Eine eigene Lösung lohnt sich nur, wenn klar ist, wer sie betreut und wofür sie spürbar Zeit spart.</p>
+
+<h2>Copilot und KI in solchen Firmen</h2>
+
+<p>In Firmen mit Dienstleister funktionieren Anstöße am besten vom Fachbereich her, also von einem echten Problem aus. Die Technik zeigt Möglichkeiten und Grenzen, der Fachbereich entscheidet. Der Dienstleister ist dabei selten der Treiber, weil er für Betrieb bezahlt wird und nicht für Experimente.</p>
+
+<p>Vor Copilot steht die Frage nach den Rechten im Datenbestand: Freigabelinks für „Jeder“, offene Teams und Sites. Copilot findet alles, worauf jemand Zugriff hat (siehe <a href="05-daten-freigaben.html">Kapitel 5, Daten und Freigaben</a>). In einem Tenant mit Dienstleister ist diese Prüfung doppelt wichtig, weil die Rechte oft über Jahre auf Zuruf vergeben wurden.</p>
+
+<p>Statt „Copilot für alle oder keiner“ hat sich ein Pilot bewährt: wenige Lizenzen über zwei bis drei Monate, echte Aufgaben, die mit Copilot, mit agentischen Funktionen und mit einem starken Modell direkt verglichen werden, und eine Messung der Nutzung.</p>
+
+<p>In der Praxis ist Copilot meist stark bei Aufgaben direkt in den Apps, etwa Meetings zusammenfassen, Mails entwerfen oder Fragen an ein Dokument stellen. Bei tiefer Analyse über viele Dokumente ist er oft schwach. Die Gründe sind strukturell: Er sieht nur Ausschnitte aus der Suche, arbeitet mit Leitplanken und begrenztem Kontext und kann kaum in mehreren Schritten arbeiten.</p>
+
+<p>Ein Mittelweg mit besseren Ergebnissen ist Foundry mit Zugriff über die Graph API innerhalb der Microsoft-Welt. Die Daten bleiben im Microsoft-Vertrag, die Rechte laufen über Entra ID, Managed Identity und Sites.Selected (siehe <a href="12-plattformen-verwaltung.html">Kapitel 12, Plattformen und Verwaltungsorte</a>). Der Preis dafür: Die Firma betreibt eigene Software, braucht Freigaben vom Dienstleister und muss den Datenweg prüfen, also den Deployment-Typ Global oder Data Zone EU und bei Fremdmodellen in Foundry die Bedingungen der Inferenz (siehe <a href="13-recht-datenweg.html">Kapitel 13, Rechtliche Einordnung</a>).</p>
+
+<h2>Was sich gegenüber einem selbst verwalteten Tenant ändert</h2>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Thema</th><th>Selbst verwaltet</th><th>Mit Dienstleister</th></tr></thead>
+<tbody>
+<tr><td>Admin-Rollen</td><td>intern, mit PIM</td><td>überwiegend beim Dienstleister über GDAP; die Firma hält das Break-Glass-Konto</td></tr>
+<tr><td>Geräte</td><td>interne IT</td><td>komplett beim Dienstleister</td></tr>
+<tr><td>Projekte mit Rechten</td><td>intern umsetzbar</td><td>jeder Schritt mit Rechten wird zur Anfrage, die Zeit und Geld kostet</td></tr>
+<tr><td>Rolle der bauenden Person</td><td>gegebenenfalls Admin</td><td>Antragsteller; frei bauen nur im Test-Tenant</td></tr>
+<tr><td>Lizenzen und Abrechnung</td><td>Rechnungskonto unter einer MCA bei der Firma</td><td>oft über den CSP-Partner; Abrechnungsrollen teils beim Dienstleister</td></tr>
+<tr><td>Datenschutz</td><td>AVV mit Microsoft und gegebenenfalls dem KI-Anbieter</td><td>zusätzlich AVV mit dem Dienstleister</td></tr>
+<tr><td>Nachweise</td><td>interne Protokolle</td><td>Ticket mit Freigabe, Audit-Log, Alarm an die Firma</td></tr>
+</tbody>
+</table></div>
+
+<p>Die Technik bleibt gleich: Tenant, Entra ID, Tokens, Azure RBAC und Consent. Es ändert sich, wer die Rollen hält, wer entscheidet und wer bezahlt.</p>
+<nav style="display:flex;justify-content:space-between;gap:1rem;margin-top:3rem;border-top:1px solid var(--rule);padding-top:1rem;font-family:'Helvetica Neue',Arial,sans-serif;font-size:.9rem"><span><a href="13-recht-datenweg.html">← Zurück</a></span><a href="index.html">Übersicht</a><span><a href="15-power-platform-bausteine.html">Weiter →</a></span></nav>
+</body>
+</html>

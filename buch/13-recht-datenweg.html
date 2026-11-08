@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>13. Rechtliche Einordnung, technisch gedacht: Welche Daten dürfen wohin?</title>
+<style>
+:root { --bg:#fafaf7; --text:#1f2230; --muted:#5b6072; --accent:#2f5d8a;
+  --accent-soft:#d9e4ef; --leader:#b8472a; --node-fill:#ffffff;
+  --node-stroke:#2f5d8a; --rule:#c8ccd6; --code-bg:#eef1f5; }
+html,body { background:var(--bg); color:var(--text);
+  font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+  line-height:1.65; font-size:18px; }
+body { max-width:760px; margin:3rem auto 6rem; padding:0 1.5rem; }
+h1 { font-size:2rem; line-height:1.2; margin:0 0 2rem;
+  border-bottom:1px solid var(--rule); padding-bottom:0.6rem; }
+h2 { font-size:1.35rem; margin-top:2.4rem; margin-bottom:0.8rem;
+  color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif;
+  font-weight:600; letter-spacing:0.01em; }
+p { margin:0 0 1.1rem; }
+figure { margin:2rem auto; text-align:center; }
+figure svg { max-width:100%; height:auto; display:block; margin:0 auto; }
+figcaption { font-family:"Helvetica Neue",Arial,sans-serif; font-size:0.85rem;
+  color:var(--muted); margin-top:0.6rem; text-align:center; }
+svg text { font-family:"Helvetica Neue",Arial,sans-serif; fill:var(--text); }
+.legend-text { font-size:11px; fill:var(--muted); }
+pre { background:var(--code-bg); padding:0.9rem 1.1rem; overflow-x:auto;
+  border-radius:6px; font-size:0.82em; }
+code { background:var(--code-bg); font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:0.85em; padding:0.1em 0.3em; border-radius:3px; }
+pre code { background:none; padding:0; }
+.table-wrap { overflow-x:auto; margin:1.5rem 0; }
+table { border-collapse:collapse; width:100%; font-size:0.85em; line-height:1.45; }
+th { text-align:left; color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif;
+  font-weight:600; border-bottom:2px solid var(--accent); padding:0.45rem 0.6rem;
+  vertical-align:bottom; }
+td { border-bottom:1px solid var(--rule); padding:0.45rem 0.6rem; vertical-align:top; }
+tr { break-inside:avoid; }
+</style>
+</head>
+<body>
+<h1>13. Rechtliche Einordnung, technisch gedacht: Welche Daten dürfen wohin?</h1>
+
+<p>Rechtsfragen bei KI-Läufen über Kundendaten wirken abstrakt, folgen aber einem sehr technischen Muster. Daten wandern von einer Station zur nächsten, und an jeder Station gibt es einen Vertrag, einen Ort und eine Rolle. Wer den Datenweg so zeichnen kann wie einen Token-Fluss, kann auch die Rechtsfragen sortieren.</p>
+
+<p>Alles hier ist Einordnung und keine Rechtsberatung, Stand November 2026; unsichere Punkte sind als solche gekennzeichnet (siehe <a href="10-bauen-ohne-admin-rechte.html">Kapitel 10, Bauen ohne Admin-Rechte</a>).</p>
+
+<h2>Der Datenweg als Kette</h2>
+
+<p>Die DSGVO unterscheidet den <strong>Verantwortlichen</strong> (Art. 4 Nr. 7) und den <strong>Auftragsverarbeiter</strong> (Art. 4 Nr. 8) (siehe <a href="10-bauen-ohne-admin-rechte.html">Kapitel 10, Bauen ohne Admin-Rechte</a>). Setzt ein Auftragsverarbeiter selbst wieder einen Dienstleister ein, ist das ein <strong>Unterauftragsverarbeiter</strong>. Er darf nur mit vorheriger schriftlicher Genehmigung des Verantwortlichen eingesetzt werden, entweder einzeln oder allgemein (Art. 28 Abs. 2). Bei einer allgemeinen Genehmigung muss jede geplante Änderung angekündigt werden, und der Verantwortliche kann widersprechen.</p>
+
+<p>Eine dritte Rolle ist die <strong>gemeinsame Verantwortlichkeit</strong> (Art. 26). Sie liegt vor, wenn zwei Stellen Zwecke und Mittel gemeinsam festlegen. Dann braucht es eine eigene Vereinbarung, und Betroffene können sich an jede der beiden Stellen wenden.</p>
+
+<p>Für eine Beratung, die für eine Behörde arbeitet, sieht die Kette typischerweise so aus:</p>
+
+<ol>
+<li><strong>Betroffene Personen</strong>, etwa Bürger, deren Anträge in den Unterlagen liegen.</li>
+<li><strong>Die Behörde</strong> als Verantwortliche, weil sie die Daten für ihre gesetzliche Aufgabe erhebt.</li>
+<li><strong>Die Beratung</strong>, meist als Auftragsverarbeiter, wenn sie nach Vorgabe der Behörde auswertet oder baut.</li>
+<li><strong>Microsoft</strong> als Auftrags- oder Unterauftragsverarbeiter, je nachdem, in wessen Tenant gearbeitet wird.</li>
+<li><strong>Microsofts Unterauftragsverarbeiter</strong>, darunter inzwischen auch Modellanbieter wie Anthropic und OpenAI.</li>
+</ol>
+
+<h3>In wessen Tenant gearbeitet wird, ändert die Kette</h3>
+
+<p>Die wichtigste technische Entscheidung für die Rechtslage ist, wo die Daten verarbeitet werden. Es gibt zwei Varianten.</p>
+
+<p><strong>Variante A: im Tenant der Behörde.</strong> Die Beratung bekommt ein Gast- oder eigenes Konto im Tenant der Behörde und arbeitet dort, etwa mit Copilot Studio in einer Umgebung der Behörde. Die Behörde ist dann selbst Kundin von Microsoft. Microsoft ist ihr Auftragsverarbeiter nach dem Vertrag, den die Behörde mit Microsoft geschlossen hat. Die Beratung steht nicht zwischen Behörde und Microsoft, sondern daneben: als eigener Auftragsverarbeiter mit Zugriff. Für Microsofts Seite ist die Behörde zuständig.</p>
+
+<p><strong>Variante B: im eigenen Tenant der Beratung.</strong> Die Beratung kopiert Unterlagen in die eigene SharePoint-Site oder schickt sie an ein Modell in der eigenen Azure-Subscription. Jetzt ist die Beratung Kundin von Microsoft. Laut Microsofts Datenschutzvertrag ist Microsoft dann <strong>Unterauftragsverarbeiter</strong>, und die Beratung sichert zu, dass der Verantwortliche das genehmigt hat. Die Behörde muss Microsoft und dessen Unterauftragsverarbeiter also über den AVV mit der Beratung genehmigt haben. Ändert Microsoft seine Liste der Unterauftragsverarbeiter, muss die Beratung das an die Behörde weitergeben, damit deren Widerspruchsrecht greifen kann. Diese Pflicht zur Weitergabe ist eine Ableitung aus Art. 28 und kein ausdrücklicher Satz im Vertrag.</p>
+
+<figure id="kap13-zwei-varianten">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 470" role="img" aria-labelledby="d13-zv-title d13-zv-desc"><title id="d13-zv-title">Zwei Varianten der Kette</title><desc id="d13-zv-desc">Links arbeitet die Beratung im Tenant der Behörde: Die Behörde hat Vertrag und DPA direkt mit Microsoft, die Beratung ist über einen AVV angebunden und greift im Tenant der Behörde zu. Rechts verarbeitet die Beratung die Daten im eigenen Tenant: Behörde, AVV, Beratung als Kundin von Microsoft, Vertrag und DPA, Microsoft als Unterauftragsverarbeiter und dessen Unterauftragsverarbeiter; Genehmigung und Änderungen laufen über die Beratung.</desc><defs><marker id="d13-zv-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="d13-zv-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker></defs><rect x="10" y="10" width="320" height="380" rx="6" fill="none" stroke="#c8ccd6" stroke-width="1.5"/><text x="24" y="34" font-size="14" text-anchor="start" font-weight="600" style="fill:#2f5d8a">A: im Tenant der Behörde</text><rect x="30" y="56" width="170" height="50" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="115.0" y="78" font-size="12.5" text-anchor="middle" font-weight="600">Behörde</text><text x="115.0" y="92" font-size="11" text-anchor="middle" style="fill:#5b6072">Verantwortliche</text><rect x="30" y="290" width="170" height="50" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="115.0" y="312" font-size="12.5" text-anchor="middle" font-weight="600">Microsoft</text><text x="115.0" y="326" font-size="11" text-anchor="middle" style="fill:#5b6072">Auftragsverarbeiter</text><path d="M115 106 L115 288" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d13-zv-a)"/><text x="123" y="200" font-size="11" text-anchor="start">Vertrag + DPA</text><rect x="215" y="150" width="105" height="60" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="267.5" y="169" font-size="12.5" text-anchor="middle" font-weight="600">Beratung</text><text x="267.5" y="184" font-size="11" text-anchor="middle" style="fill:#5b6072">Auftrags-</text><text x="267.5" y="199" font-size="11" text-anchor="middle" style="fill:#5b6072">verarbeiter</text><path d="M267 150 L267 81 L202 81" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d13-zv-a)"/><text x="274" y="120" font-size="11" text-anchor="start">AVV</text><path d="M267 210 L267 315 L202 315" fill="none" stroke="#2f5d8a" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#d13-zv-a)"/><text x="260" y="248" font-size="11" text-anchor="end" style="fill:#5b6072">Zugriff im</text><text x="260" y="262" font-size="11" text-anchor="end" style="fill:#5b6072">Tenant der</text><text x="260" y="276" font-size="11" text-anchor="end" style="fill:#5b6072">Behörde</text><text x="170" y="368" font-size="11" text-anchor="middle" style="fill:#5b6072">Die Kette zu Microsoft prüft die Behörde selbst.</text><rect x="350" y="10" width="320" height="380" rx="6" fill="none" stroke="#c8ccd6" stroke-width="1.5"/><text x="364" y="34" font-size="14" text-anchor="start" font-weight="600" style="fill:#2f5d8a">B: im eigenen Tenant der Beratung</text><rect x="380" y="52" width="260" height="44" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="510.0" y="70" font-size="12.5" text-anchor="middle" font-weight="600">Behörde</text><text x="510.0" y="86" font-size="11" text-anchor="middle" style="fill:#5b6072">Verantwortliche</text><path d="M510 96 L510 124" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d13-zv-a)"/><text x="518" y="114" font-size="11" text-anchor="start">AVV</text><rect x="380" y="126" width="260" height="50" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="510.0" y="148" font-size="12.5" text-anchor="middle" font-weight="600">Beratung</text><text x="510.0" y="162" font-size="11" text-anchor="middle" style="fill:#5b6072">Auftragsverarbeiter, Kundin von Microsoft</text><path d="M510 176 L510 204" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d13-zv-a)"/><text x="518" y="194" font-size="11" text-anchor="start">Vertrag + DPA</text><rect x="380" y="206" width="260" height="44" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="510.0" y="224" font-size="12.5" text-anchor="middle" font-weight="600">Microsoft</text><text x="510.0" y="240" font-size="11" text-anchor="middle" style="fill:#5b6072">Unterauftragsverarbeiter</text><path d="M510 250 L510 278" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d13-zv-a)"/><text x="518" y="268" font-size="11" text-anchor="start">Unterauftragnehmerliste</text><rect x="380" y="280" width="260" height="44" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="510.0" y="298" font-size="12.5" text-anchor="middle" font-weight="600">Microsofts Unterauftragsverarbeiter</text><text x="510.0" y="314" font-size="11" text-anchor="middle" style="fill:#5b6072">etwa Modellanbieter</text><rect x="380" y="338" width="260" height="40" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/><text x="510" y="355" font-size="11.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">Genehmigung und Änderungen</text><text x="510" y="370" font-size="11.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">laufen über die Beratung</text><rect x="20" y="406" width="640" height="50" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/><text x="340" y="427" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">Wo die Daten liegen, entscheidet, ob Microsoft der Behörde</text><text x="340" y="445" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">direkt oder nur über die Beratung verpflichtet ist.</text></svg>
+<figcaption>Wo die Daten technisch liegen, entscheidet, ob Microsoft der Behörde direkt oder nur über die Beratung verpflichtet ist, und damit, wer für die Kette geradestehen muss.</figcaption>
+</figure>
+
+<p>Variante A ist für die Beratung meist einfacher. Die Kette Behörde–Microsoft prüft die Behörde selbst, und die Beratung bringt keine eigenen Unterauftragsverarbeiter ein. Variante B ist technisch bequemer, lädt der Beratung aber die Verantwortung für die ganze Kette auf. Der erste Auftragsverarbeiter haftet gegenüber dem Verantwortlichen dafür, dass seine Unterauftragsverarbeiter ihre Pflichten erfüllen (Art. 28 Abs. 4).</p>
+
+<h3>Wann die Beratung selbst Verantwortliche wird</h3>
+
+<p>Ein Auftragsverarbeiter, der selbst über Zwecke und Mittel entscheidet, gilt insoweit als Verantwortlicher (Art. 28 Abs. 10). Für eine Beratung ist das typisch in drei Fällen:</p>
+
+<ul>
+<li>Sie nutzt Kundendaten für eigene Zwecke, etwa um ein eigenes Werkzeug zu verbessern, Vorlagen zu bauen oder Vergleichswerte zu sammeln.</li>
+<li>Sie erbringt eine eigenständige Fachleistung mit eigenem Entscheidungsspielraum, wie es bei Rechts- oder Steuerberatung üblich ist.</li>
+<li>Sie behält Daten über den Auftrag hinaus.</li>
+</ul>
+
+<p>Bloßes Betreiben, Entwickeln oder Testen nach Vorgabe des Kunden spricht dagegen für Auftragsverarbeitung. Die Abgrenzung ist im Einzelfall zu prüfen. Für den KI-Einsatz ist der erste Punkt der heikle: Ein Agent, der aus den Unterlagen von Kunde A eine Vorlage für Kunde B destilliert, dürfte einen eigenen Zweck der Beratung verfolgen.</p>
+
+<h2>Welche Verträge an welcher Stelle gelten</h2>
+
+<p>An jeder Kante der Kette hängt mindestens ein Vertrag. Sie sind getrennt zu lesen, weil keiner den anderen ersetzt.</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Kante</th><th>Vertrag</th><th>Regelt</th><th>Typische Falle</th></tr></thead>
+<tbody>
+<tr><td>Behörde → Beratung</td><td>Projektvertrag, oft nach EVB-IT; AVV nach Art. 28; Vertraulichkeitsvereinbarung</td><td>Leistung, Weisungen, erlaubte Unterauftragnehmer, Vertraulichkeit</td><td>Der AVV nennt Microsoft oder Modellanbieter nicht als Unterauftragnehmer</td></tr>
+<tr><td>Beratung → Microsoft</td><td>MCA, darunter Product Terms, darin das DPA</td><td>Microsofts Pflichten als (Unter-)Auftragsverarbeiter, Standorte, Unterauftragnehmer</td><td>Annahme, dass Microsofts DPA auch das Verhältnis zur Behörde regelt</td></tr>
+<tr><td>Microsoft → Modellanbieter</td><td>Microsofts Untervertrag, nicht Teil der Kundenverträge; sichtbar ist die Unterauftragnehmerliste</td><td>Bindung des Modellanbieters an Microsofts Pflichten</td><td>Modellanbieter mit eigenen Bedingungen außerhalb dieser Kette</td></tr>
+<tr><td>Beratung → Modellanbieter direkt</td><td>Bedingungen und DPA des Modellanbieters</td><td>Eigenständige Verarbeitung durch den Anbieter</td><td>Wird beim Kauf über einen Marketplace leicht übersehen</td></tr>
+</tbody></table></div>
+
+<h3>Microsofts Seite: Product Terms und DPA</h3>
+
+<p>Der Datenschutzvertrag heißt „Microsoft Products and Services Data Protection Addendum“, kurz <strong>DPA</strong>. Er wird nicht eigens unterschrieben. Er ist per Verweis Teil der <strong>Product Terms</strong>, der Nutzungsbedingungen für alle Microsoft-Produkte, und diese gelten unter dem Kundenvertrag, etwa der MCA (siehe <a href="11-lizenzen-abrechnung.html">Kapitel 11, Lizenzen und Abrechnung</a>). Wer Microsoft-Dienste kauft, hat das DPA also bereits.</p>
+
+<p>Vier Punkte aus dem DPA sind für die Praxis wichtig:</p>
+
+<ul>
+<li><strong>Rollen:</strong> Der Kunde ist Verantwortlicher, Microsoft Auftragsverarbeiter. Ist der Kunde selbst Auftragsverarbeiter, wie in Variante B, wird Microsoft Unterauftragsverarbeiter.</li>
+<li><strong>Eigene Zwecke von Microsoft:</strong> Für Abrechnung, Kontoverwaltung, interne Berichte und Geschäftsplanung handelt Microsoft als unabhängiger Verantwortlicher, laut DPA ohne Zugriff auf den Inhalt der Kundendaten. Werbung und Profiling sind ausgeschlossen.</li>
+<li><strong>Kundendaten:</strong> Gemeint sind alle Daten, die der Kunde über den Online-Dienst an Microsoft gibt, also Dateien, Prompts und Antworten. Konfigurationsdaten wie Ressourcennamen gehören laut Doku zur EU Data Boundary nicht dazu. Ein Ressourcenname wie <code>rg-behoerde-sozialamt</code> ist deshalb schlechter geschützt als der Inhalt und sollte keine sensiblen Angaben tragen.</li>
+<li><strong>Unterauftragsverarbeiter:</strong> Mit dem DPA erteilt der Kunde eine allgemeine Genehmigung. Microsoft kündigt neue Unterauftragsverarbeiter sechs Monate vorher an. Für Unterauftragsverarbeiter, die KI-Funktionen erbringen, sind es nur 30 Tage, dafür lässt sich deren Nutzung mindestens sechs Monate lang abschalten. Die Liste liegt im Service Trust Portal, Microsofts Ablage für Prüfberichte und Vertragsunterlagen. Wer nicht einverstanden ist, kann kündigen.</li>
+</ul>
+
+<p>Ein fünfter Punkt wird oft übersehen: <strong>Previews</strong>. Laut DPA können Vorschaufunktionen geringere Schutzmaßnahmen haben, und die Standortzusagen gelten für sie nicht. Previews sollen nicht mit Personenbezogenen Daten genutzt werden. Viele neue Funktionen erscheinen zuerst als Preview.</p>
+
+<h3>Modelle: wer im Vertrag steht, hängt am Einkaufsweg</h3>
+
+<p>Dasselbe Modell kann je nach Weg unter ganz verschiedenen Verträgen laufen. Für Claude-Modelle von Anthropic zeigt sich das besonders deutlich.</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Weg</th><th>Wer verarbeitet</th><th>Vertrag</th><th>Standort</th></tr></thead>
+<tbody>
+<tr><td>Foundry, Modell „sold by Azure“ (etwa GPT-Modelle über Azure OpenAI)</td><td>Microsoft</td><td>Microsoft-DPA</td><td>Je nach Deployment-Typ, siehe unten; kein Kontakt zu OpenAI-Diensten</td></tr>
+<tr><td>Foundry, Claude „Hosted on Azure“</td><td>Anthropic als unabhängiger Verarbeiter</td><td>Anthropics DPA und Commercial Terms</td><td>Prompts und Ausgaben bleiben in Azure</td></tr>
+<tr><td>Foundry, Claude „Hosted on Anthropic“</td><td>Anthropic als unabhängiger Verarbeiter</td><td>Anthropics DPA und Commercial Terms</td><td>Auch außerhalb von Azure und der gewählten Geografie möglich</td></tr>
+<tr><td>Claude in Microsoft 365 Copilot, Copilot Studio, Power Platform</td><td>Anthropic als Microsofts Unterauftragsverarbeiter</td><td>Microsoft-DPA</td><td>Ausgenommen von der EU Data Boundary</td></tr>
+<tr><td>Von OpenAI selbst betriebene Modelle in Copilot (seit 24.7.2026 standardmäßig an)</td><td>OpenAI als Microsofts Unterauftragsverarbeiter</td><td>Microsoft-DPA</td><td>Laut Microsoft in der EU Data Boundary, mit dokumentierten Ausnahmen; nicht unter In-Country-Zusagen</td></tr>
+</tbody></table></div>
+
+<p>Bemerkenswert ist die Foundry-Zeile für Claude. Auch bei „Hosted on Azure“ ist Anthropic laut Microsoft unabhängiger Verarbeiter unter eigenen Bedingungen. Microsoft verarbeitet nach seinem DPA nur Infrastruktur-, Abrechnungs- und Marketplace-Daten. Wer Claude über Foundry in einer Kundenkette einsetzt, für den spricht viel dafür, Anthropic als eigenen Eintrag in den AVV aufzunehmen, nicht nur Microsoft. Das klärt der Datenschutz.</p>
+
+<p>In Copilot ist Claude dagegen Unterauftragsverarbeiter von Microsoft; die frühere Option mit Anthropic als unabhängigem Verarbeiter wurde am 1. Mai 2026 abgeschaltet. In der EU, der EFTA und Großbritannien steht die Einstellung „AI providers operating as Microsoft subprocessors“ für Anthropic standardmäßig auf „No users“. Im Test-Tenant zeigte sich das ganz praktisch: Copilot Studio schlug ein Claude-Modell als Standard vor, der Aufruf scheiterte aber mit „You don't have access to the model“, bis ein anderes Modell gewählt wurde. Eine Ausnahme ist die eigene Einstellung „Copilot in Microsoft 365 apps with Anthropic models“ für Word, Excel und PowerPoint. Sie ist für EU-Tenants, die nach dem 25. März 2026 angelegt wurden, <strong>standardmäßig an</strong>, und die Verarbeitung liegt ausdrücklich außerhalb der EU Data Boundary. Ein Sonderfall sind „Anthropic models with Data Retention“: Hier handelt Anthropic als unabhängiger Verarbeiter, speichert Daten bis zu 30 Tage und bei Verstößen bis zu zwei Jahre. Sie sind standardmäßig aus.</p>
+
+<p>Die OpenAI-Zeile ist zugleich ein Beispiel für Variante B. Eine solche Änderung der Unterauftragnehmerliste müsste die Beratung an die Behörde weitergeben.</p>
+
+<h3>Kundenseite: AVV, Vertraulichkeit, EVB-IT</h3>
+
+<p>Öffentliche Auftraggeber nutzen in Deutschland oft die <strong>EVB-IT</strong>, standardisierte Vertragsbedingungen für IT-Beschaffung. Die EVB-IT Cloud-AGB (Fassung 1.0 von 2022) sind für einen KI-Lauf über eine Cloud besonders aufschlussreich:</p>
+
+<ul>
+<li>Vor einer Verarbeitung im Auftrag ist ein AVV zu schließen (Ziff. 6.1.3).</li>
+<li>Unterauftragnehmer und ihr Leistungsbereich müssen benannt werden. Die Behörde kann binnen 30 Tagen aus sachlichem Grund widersprechen. Gibt es nach 90 Tagen keine Einigung, darf sie außerordentlich kündigen (Ziff. 15.1). Wahlweise kann jede Änderung ausdrücklich zustimmungspflichtig sein (Ziff. 15.2).</li>
+<li>Die Regeln gelten für die gesamte Unterauftragnehmerkette (Ziff. 15.5), also auch für Microsofts Modellanbieter.</li>
+<li>Die Leistung ist unter Einhaltung der C5-Basiskriterien zu erbringen. C5 ist der Prüfkatalog des BSI für Cloud-Anbieter und in der Verwaltung eine verbreitete Mindestanforderung.</li>
+</ul>
+
+<p>Ob es eine neuere Fassung gibt und was die EVB-IT für Dienstleistungen ohne Cloud-Anteil genau sagen, ist nicht geprüft. Unabhängig vom Vertragsmuster gilt: Ob ein Kunde der Weitergabe an Microsoft oder einen Modellanbieter zugestimmt hat, folgt aus dem Einzelvertrag. Microsofts DPA ersetzt diese Zustimmung nicht.</p>
+
+<p>Daneben stehen zwei Rechte, die weniger nach Datenschutz klingen. Kundendokumente können urheberrechtlich geschützte Werke sein. Welche Nutzung erlaubt ist, richtet sich nach den eingeräumten Nutzungsrechten, im Zweifel nach dem Vertragszweck (§ 31 Abs. 5 UrhG). Eine Wiederverwendung für eigene Zwecke der Beratung ist davon nicht automatisch gedeckt. Für Geschäftsgeheimnisse gilt der Abschnitt in Kapitel 10 (Bauen ohne Admin-Rechte).</p>
+
+<h2>Technischer Zugriff ist keine Befugnis</h2>
+
+<p>Ein App-only-Token mit der Anwendungsberechtigung <code>Sites.Read.All</code> beweist, dass ein Admin Consent erteilt wurde. Es beweist nicht, dass die App die Daten für diesen Zweck lesen darf. Technisch kommt die Befugnis aus dem Consent im Tenant des Kunden, rechtlich aus Vertrag und AVV. Beides muss zusammenpassen.</p>
+
+<p>Das Rechtemodell ist hier ein Werkzeug für das Recht. Datenminimierung heißt technisch, nur so viel Zugriff zu holen, wie die Aufgabe braucht. Sites.Selected setzt das direkt um: Die App sieht nur die Sites, die einzeln freigegeben wurden (siehe <a href="05-daten-freigaben.html">Kapitel 5, Daten und Freigaben</a>). Eine App mit <code>Sites.Read.All</code> für eine Auswertung über drei Projekt-Sites ist nicht nur ein Sicherheitsproblem, sondern steht auch im Widerspruch zum Gedanken der Datenminimierung (Art. 5 Abs. 1 lit. c DSGVO).</p>
+
+<p>Microsoft verlangt dasselbe auch vertraglich. Die Microsoft APIs Terms of Use gelten für die Graph API und verlangen unter anderem:</p>
+
+<ul>
+<li>nicht mehr Daten und Rechte anzufordern als nötig,</li>
+<li>keine Kopien oder Datenbanken anzulegen, außer für den vorgesehenen Zweck der App,</li>
+<li>Daten nicht außerhalb der Rechte zu nutzen, die der Kunde erteilt hat,</li>
+<li>auf Weisung des Kunden zu löschen oder zurückzugeben.</li>
+</ul>
+
+<p>Die API-Terms begründen ausdrücklich kein Auftragsverhältnis mit Microsoft. Wer Daten über Graph abholt und woanders verarbeitet, steht für diese Verarbeitung selbst ein.</p>
+
+<p>Daraus folgt ein häufig übersehener Punkt. Jede Kopie ist eine eigene Verarbeitung. Wer Dokumente aus SharePoint in einen Vektorindex in Azure lädt, hat einen zweiten Datenbestand mit eigenem Standort, eigener Löschfrist und eigenen Rechten. Das Security Trimming von SharePoint gilt dort nicht mehr. Fehlt ein eigenes Abbild der Berechtigungen, sieht jeder Nutzer des Index alles (siehe <a href="05-daten-freigaben.html">Kapitel 5, Daten und Freigaben</a>). Wird das Projekt beendet, muss auch der Index gelöscht werden, nicht nur der Zugriff auf SharePoint.</p>
+
+<h2>Wo die Server stehen</h2>
+
+<p>„Wo stehen die Server?“ ist die häufigste Frage und zugleich die ungenaueste. Es gibt zwei getrennte Orte. Der <strong>Speicherort</strong> ist der Ort, an dem Daten ruhen: Dateien, Chatverläufe, Indizes. Der <strong>Verarbeitungsort</strong> ist der Ort, an dem gerechnet wird, für KI vor allem die Inferenz. Beide können auseinanderfallen. Ein Dokument kann in Deutschland liegen, während das Modell, das es zusammenfasst, in Schweden oder den USA rechnet.</p>
+
+<figure id="kap13-speicher-verarbeitung">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 430" role="img" aria-labelledby="d13-sv-title d13-sv-desc"><title id="d13-sv-title">Speicherort und Verarbeitungsort</title><desc id="d13-sv-desc">Gespeicherte Daten wie Dateien, Chatverlauf und der Abuse-Monitoring-Speicher bleiben in der Geografie der Ressource innerhalb der EU Data Boundary. Die Inferenz für einen Prompt kann je nach Einstellung in derselben Geografie, in der Data Zone EU, in jeder Azure-Region weltweit, per Flex Routing in den USA, Kanada oder Australien oder bei Ausnahmen wie Claude in Copilot, Bing-Websuche und Previews außerhalb der EU laufen.</desc><defs><marker id="d13-sv-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="d13-sv-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker></defs><rect x="10" y="40" width="460" height="330" rx="6" fill="none" stroke="#2f5d8a" stroke-width="1.5" stroke-dasharray="6 4"/><text x="24" y="30" font-size="13" text-anchor="start" font-weight="600" style="fill:#2f5d8a">EU Data Boundary (EU und EFTA)</text><text x="490" y="30" font-size="13" text-anchor="start" font-weight="600" style="fill:#5b6072">Außerhalb der EU</text><rect x="30" y="62" width="200" height="124" rx="4" fill="#d9e4ef" stroke="#2f5d8a" stroke-width="1.5"/><text x="130.0" y="98" font-size="12.5" text-anchor="middle" font-weight="600">Speicherort</text><text x="130.0" y="113" font-size="11" text-anchor="middle" style="fill:#5b6072">Geografie der Ressource</text><text x="130.0" y="128" font-size="11" text-anchor="middle" style="fill:#5b6072">Dateien, Indizes</text><text x="130.0" y="143" font-size="11" text-anchor="middle" style="fill:#5b6072">Chatverlauf, Zustand</text><text x="130.0" y="158" font-size="11" text-anchor="middle" style="fill:#5b6072">Abuse-Monitoring-Speicher</text><path d="M130 186 L130 258" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d13-sv-a)"/><text x="138" y="226" font-size="11" text-anchor="start" style="fill:#5b6072">Inhalt</text><rect x="30" y="260" width="200" height="50" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="130.0" y="282" font-size="12.5" text-anchor="middle" font-weight="600">Prompt mit Dokumentinhalt</text><text x="130.0" y="296" font-size="11" text-anchor="middle" style="fill:#5b6072">Inferenz: wo wird gerechnet?</text><path d="M230 285 L250 285 M250 98 L250 330" fill="none" stroke="#2f5d8a" stroke-width="1.5"/><rect x="270" y="76" width="185" height="44" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="362.5" y="94" font-size="12.5" text-anchor="middle" font-weight="600">Standard / Regional</text><text x="362.5" y="110" font-size="11" text-anchor="middle" style="fill:#5b6072">Foundry: gleiche Geografie</text><path d="M250 98 L268 98" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d13-sv-a)"/><rect x="270" y="128" width="185" height="44" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="362.5" y="146" font-size="12.5" text-anchor="middle" font-weight="600">Data Zone EU</text><text x="362.5" y="162" font-size="11" text-anchor="middle" style="fill:#5b6072">Foundry: EU und EFTA</text><path d="M250 150 L268 150" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d13-sv-a)"/><rect x="490" y="188" width="180" height="44" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="580.0" y="206" font-size="12.5" text-anchor="middle" font-weight="600">Global</text><text x="580.0" y="222" font-size="11" text-anchor="middle" style="fill:#5b6072">Foundry: jede Azure-Region</text><path d="M250 210 L488 210" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d13-sv-a)"/><rect x="490" y="246" width="180" height="52" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5" stroke-dasharray="5 4"/><text x="580.0" y="261" font-size="12.5" text-anchor="middle" font-weight="600">Flex Routing (Copilot)</text><text x="580.0" y="276" font-size="11" text-anchor="middle" style="fill:#5b6072">bei Lastspitzen: USA,</text><text x="580.0" y="291" font-size="11" text-anchor="middle" style="fill:#5b6072">Kanada, Australien</text><path d="M250 270 L488 270" fill="none" stroke="#b8472a" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#d13-sv-r)"/><rect x="490" y="308" width="180" height="52" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/><text x="580.0" y="323" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">Ausnahmen</text><text x="580.0" y="338" font-size="11" text-anchor="middle" style="fill:#5b6072">Claude in Copilot,</text><text x="580.0" y="353" font-size="11" text-anchor="middle" style="fill:#5b6072">Bing-Websuche, Previews</text><path d="M250 330 L488 330" fill="none" stroke="#b8472a" stroke-width="1.5" marker-end="url(#d13-sv-r)"/><rect x="20" y="386" width="640" height="34" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/><text x="340" y="408" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">Der Speicherort bleibt fest. Wo gerechnet wird, ist eine Einstellung.</text></svg>
+<figcaption>Der Speicherort bleibt fest, der Verarbeitungsort ist eine Einstellung; genau diese Einstellungen entscheiden, ob Daten die EU verlassen.</figcaption>
+</figure>
+
+<h3>EU Data Boundary</h3>
+
+<p>Die <strong>EU Data Boundary</strong> ist Microsofts Zusage, Kundendaten und Personenbezogene Daten für Azure, Dynamics 365, Power Platform und Microsoft 365 in der EU und der EFTA zu speichern und zu verarbeiten. Sie gilt nicht automatisch für jeden Tenant:</p>
+
+<ul>
+<li><strong>Microsoft 365:</strong> Das Land bei der Anmeldung des Tenants muss in der EU oder EFTA liegen. Tenants mit Multi-Geo, also Speicherorten in mehreren Regionen, fallen heraus.</li>
+<li><strong>Power Platform:</strong> Tenant und alle Umgebungen müssen in der Region „EU und EFTA“ liegen, und die Rechnungsadresse muss in einem dieser Länder sein.</li>
+<li><strong>Azure:</strong> Regionale Dienste in EU-Regionen fallen darunter. Nicht-regionale Dienste müssen gesondert eingerichtet werden.</li>
+</ul>
+
+<p>Die Grenze hat dokumentierte Lücken. Für Sicherheit, Support und einige globale Dienste übermittelt Microsoft weiterhin Daten, teils pseudonymisiert. Für KI kommen vier Ausnahmen hinzu, die man kennen muss:</p>
+
+<ul>
+<li><strong>Claude als Unterauftragsverarbeiter</strong> in Copilot und Copilot Studio ist ausgenommen, ebenso Claude in Word, Excel und PowerPoint.</li>
+<li><strong>Bing-Websuche</strong> läuft auch für Copilot Studio in den USA.</li>
+<li><strong>Flex Routing:</strong> Bei Lastspitzen kann Copilot die Inferenz außerhalb der EU Data Boundary rechnen, laut Microsoft in den USA, Kanada oder Australien. Gespeicherte Daten bleiben in der EU, bis auf begrenzte pseudonymisierte Daten. Für Tenants, die nach dem 25. März 2026 angelegt wurden, ist Flex Routing <strong>standardmäßig an</strong>. Die Einstellung liegt im Microsoft 365 Admin Center unter Copilot, Settings, „Flex routing during peak load periods“ und erfordert die Rolle AI Administrator. Für Copilot Studio und Power Platform gibt es eine eigene Einstellung im Power Platform Admin Center. Sie folgt dem Wert aus Microsoft 365, wenn sie nicht strenger gesetzt ist.</li>
+<li><strong>Previews</strong> haben keine Standortzusage.</li>
+</ul>
+
+<p>Dazu kommt ein Begriff aus Foundry. Das <strong>Abuse Monitoring</strong> prüft Prompts und Ausgaben automatisch auf Missbrauch und speichert markierte Inhalte für eine mögliche menschliche Prüfung.</p>
+
+<p>Für eine Behörde heißt das: Ein neuer EU-Tenant ist nicht automatisch EU-only. Mindestens Flex Routing und die Anthropic-Einstellung für die Office-Apps müssen bewusst geprüft und gegebenenfalls abgeschaltet werden.</p>
+
+<h3>Foundry: der Deployment-Typ entscheidet</h3>
+
+<p>In Foundry wird der Verarbeitungsort pro Deployment gewählt (siehe <a href="12-plattformen-verwaltung.html">Kapitel 12, Plattformen und Verwaltungsorte</a>). Der Deployment-Typ steht als SKU-Name am Deployment.</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Deployment-Typ</th><th>Inferenz</th><th>Eignung für EU-gebundene Daten</th></tr></thead>
+<tbody>
+<tr><td>Global (etwa <code>GlobalStandard</code>)</td><td>In jeder Azure-Region</td><td>Nur, wenn Verarbeitung außerhalb der EU vertraglich zulässig ist</td></tr>
+<tr><td>Data Zone EU (etwa <code>DataZoneStandard</code>)</td><td>In Rechenzentren der EU Data Boundary, also auch Norwegen und Schweiz</td><td>Meist die passende Wahl</td></tr>
+<tr><td>Standard / Regional</td><td>In der Geografie der Ressource</td><td>Wenn ein bestimmtes Land gefordert ist</td></tr>
+<tr><td>Developer</td><td>Keine Standortzusage</td><td>Nicht für Kundendaten</td></tr>
+</tbody></table></div>
+
+<p>Für alle Typen gilt: Daten at rest bleiben in der Geografie der Ressource, also hochgeladene Dateien, gespeicherter Zustand und der Speicher für das Abuse Monitoring. Nur der Ort der Rechnung ändert sich. Microsoft kann einer Data Zone neue Regionen hinzufügen, ohne das anzukündigen.</p>
+
+<p>Der Typ lässt sich per Kommandozeile prüfen:</p>
+
+<pre><code class="language-bash">az cognitiveservices account deployment list \
+  -g &lt;resource-group&gt; -n &lt;foundry-ressource&gt; \
+  --query "[].{name:name, typ:sku.name, modell:properties.model.name}" -o table</code></pre>
+
+<p>Ein <code>GlobalStandard</code> in dieser Liste ist für ein Behördenprojekt ein Befund. Mit Azure Policy lässt sich der Typ für eine Subscription sperren, sodass niemand versehentlich ein globales Deployment anlegt. Im Test-Tenant liefen die Deployments als <code>GlobalStandard</code>, was für erfundene Daten unkritisch ist und für echte Daten geändert werden müsste.</p>
+
+<h3>Power Platform und Copilot Studio</h3>
+
+<p>Bei der Power Platform bestimmt die Region der Umgebung den Speicherort. Für Umgebungen in Europa, Deutschland, der Schweiz und einigen weiteren europäischen Ländern läuft Azure OpenAI laut Microsoft innerhalb der EU Data Boundary.</p>
+
+<p>Die Einstellung <strong>„Move data across regions“</strong> im Power Platform Admin Center, je Umgebung unter Generative AI features, erlaubt Inferenz außerhalb der Region. Laut Microsoft geschieht das nur, wenn das Modell lokal nicht bereitsteht, die Kapazität erschöpft ist oder es Störungen gibt, und ohne Speicherung. Zwei Haken stehen in der Doku:</p>
+
+<ul>
+<li>Ohne diese Einstellung lassen sich Bing-Suche und einige Microsoft-365-Funktionen in Copilot Studio nicht nutzen.</li>
+<li>Manche Modelle in Copilot Studio verarbeiten Daten auch dann außerhalb der Region, wenn die Einstellung aus ist.</li>
+</ul>
+
+<p>Bereits erfolgte Bewegungen lassen sich nicht zurücknehmen. Wer die Einstellung prüft, sollte sie deshalb vor dem ersten Lauf mit echten Daten prüfen.</p>
+
+<h2>Drittland, CLOUD Act und souveräne Angebote</h2>
+
+<p>Daten dürfen die EU nur unter den Bedingungen der Art. 44 ff. DSGVO verlassen. Es gibt zwei übliche Wege:</p>
+
+<ul>
+<li>Ein <strong>Angemessenheitsbeschluss</strong> der EU-Kommission erklärt das Schutzniveau eines Landes für ausreichend (Art. 45). Für die USA ist das das <strong>EU-US Data Privacy Framework</strong> von 2023. Es gilt nur für US-Unternehmen, die sich danach zertifiziert haben.</li>
+<li><strong>Standardvertragsklauseln</strong> sind von der Kommission vorgegebene Vertragstexte (Art. 46). Sie verlangen zusätzlich eine Prüfung der Rechtslage im Zielland, das Transfer Impact Assessment, und gegebenenfalls Zusatzmaßnahmen.</li>
+</ul>
+
+<p>Microsoft stützt sich auf beides. Laut DPA stehen alle Übermittlungen aus EU, EWR, Großbritannien und der Schweiz unter den Standardvertragsklauseln. Zusätzlich ist Microsoft nach dem Data Privacy Framework zertifiziert.</p>
+
+<p>Das Data Privacy Framework ist rechtlich nicht endgültig gesichert. Das Gericht der EU hat eine Klage dagegen im September 2025 abgewiesen. Ein Rechtsmittel beim Europäischen Gerichtshof ist anhängig (C-703/25 P). Ein Urteil gab es nach Stand der Recherche noch nicht. Der Vorgänger Privacy Shield wurde vom EuGH gekippt (C-311/18). Wer eine Lösung baut, die allein auf diesem Beschluss steht, sollte das als Risiko festhalten.</p>
+
+<h3>CLOUD Act: der Ort löst nicht alles</h3>
+
+<p>Der <strong>CLOUD Act</strong> ist ein US-Gesetz von 2018. Danach können US-Anbieter verpflichtet werden, Daten herauszugeben, die in ihrem Besitz oder unter ihrer Kontrolle sind, auch wenn sie im Ausland gespeichert sind. Die EU Data Boundary regelt Speicher- und Verarbeitungsorte. Sie regelt nicht, welchem Recht der Anbieter unterliegt. Ein Rechenzentrum in Frankfurt ändert also nichts daran, dass Microsoft ein US-Unternehmen ist. Microsofts französischer Rechtsdirektor hat 2025 vor dem französischen Senat sinngemäß eingeräumt, dass Microsoft bei einer bindenden US-Anordnung nicht garantieren könne, keine Daten herauszugeben (Sekundärquellen).</p>
+
+<p>Microsoft antwortet darauf vertraglich. Laut DPA gibt Microsoft Daten an Strafverfolgungsbehörden nur heraus, wenn das Gesetz es verlangt, und versucht, die Anfrage an den Kunden umzuleiten. In Anhang C verpflichtet sich Microsoft, Anordnungen anzufechten, nur das Minimum offenzulegen und Betroffene zu entschädigen, wenn eine Offenlegung gegen Kapitel V DSGVO verstößt. Anhang D verspricht Regierungskunden in der EU, gegen Anordnungen zur Abschaltung von Diensten zu klagen. Das sind echte Zusagen. Sie verringern das Risiko, beseitigen es aber nicht.</p>
+
+<h3>Souveräne Angebote</h3>
+
+<p>Für den öffentlichen Sektor baut Microsoft Angebote, bei denen ein europäischer Betreiber zwischen Microsoft und den Daten steht:</p>
+
+<ul>
+<li><strong>Delos Cloud</strong> ist eine SAP-Tochter, die Microsoft-Technologie für Bund, Länder und Kommunen betreibt. Laut einer Meldung von Anfang November 2026 hat Delos den Betrieb im Oktober 2026 übernommen. Zugriffe von Microsoft brauchen eine Freigabe durch Delos und werden protokolliert. Die Verfügbarkeit für die Verwaltung ist für Anfang 2027 geplant. Das C5-Testat steht noch aus (alles Sekundärquelle). Ob Copilot und KI-Dienste enthalten sind, ist nicht geprüft.</li>
+<li><strong>Microsoft Sovereign Cloud</strong>, 2025 angekündigt, umfasst unter anderem eine öffentliche Variante mit „Data Guardian“: Fernzugriffe von Microsoft-Technikern auf EU-Systeme sollen nur über Personal in Europa laufen. Dazu kommen private Varianten auf eigener Hardware und Partner-Clouds wie Delos.</li>
+</ul>
+
+<p>Für eine Beratung heißt das vor allem: Die Frage „Darf die Behörde überhaupt Microsofts öffentliche Cloud nutzen?“ entscheidet die Behörde, nicht die Beratung. Die Datenschutzkonferenz der deutschen Aufsichtsbehörden hielt 2022 einen datenschutzkonformen Einsatz von Microsoft 365 für nicht nachgewiesen. Der hessische Datenschutzbeauftragte hielt 2025 einen Einsatz in Landesbehörden unter Auflagen für möglich (Sekundärquelle). Eine neue Gesamtbewertung wurde nicht gefunden.</p>
+
+<h2>Was nicht ans Modell darf</h2>
+
+<p>Nicht alle Personenbezogenen Daten sind gleich. Manche Arten dürfen nur unter strengen Bedingungen verarbeitet werden, für manche gelten deutsche Sondergesetze, und manche gehören gar nicht in eine öffentliche Cloud. Die Tabelle ordnet die wichtigsten Fälle von streng nach sehr streng.</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Art der Daten</th><th>Regel</th><th>Folge für einen KI-Lauf</th></tr></thead>
+<tbody>
+<tr><td>Gewöhnliche Personenbezogene Daten (Namen, Kontaktdaten in Protokollen)</td><td>DSGVO allgemein: Rechtsgrundlage, Zweckbindung, Datenminimierung</td><td>Möglich mit AVV-Kette und passendem Standort; nur nötige Abschnitte schicken</td></tr>
+<tr><td>Besondere Kategorien (Gesundheit, Religion, politische Meinung, Gewerkschaft, Ethnie, Sexualleben, Genetik, Biometrie)</td><td>Art. 9 DSGVO: grundsätzlich verboten, außer ein Ausnahmetatbestand greift</td><td>Vorher eigene Prüfung, meist mit Datenschutz-Folgenabschätzung</td></tr>
+<tr><td>Daten über Straftaten</td><td>Art. 10 DSGVO: nur unter behördlicher Aufsicht oder auf gesetzlicher Grundlage</td><td>Ohne klare Grundlage nicht verarbeiten</td></tr>
+<tr><td>Berufsgeheimnisse (Anwälte, Ärzte, Steuerberater; auch Amtsträger)</td><td>§ 203 StGB</td><td>Dienstleister müssen zur Geheimhaltung verpflichtet sein, auch in der Kette</td></tr>
+<tr><td>Sozialdaten bei Sozialleistungsträgern</td><td>§ 35 SGB I, § 80 SGB X</td><td>Anzeige bei der Aufsicht, Drittland nur mit Angemessenheitsbeschluss, private Auftragnehmer nur eingeschränkt</td></tr>
+<tr><td>Steuerdaten bei Finanzbehörden</td><td>§ 30 AO</td><td>Auftragsverarbeiter nur, wenn ausschließlich zur Geheimhaltung verpflichtete Personen verarbeiten</td></tr>
+<tr><td>Verschlusssachen der Stufe „Nur für den Dienstgebrauch“ (VS-NfD)</td><td>Verschlusssachenanweisung</td><td>Nach gängiger Praxis nicht in der normalen Public Cloud (Sekundärquellen)</td></tr>
+</tbody></table></div>
+
+<h3>Berufsgeheimnis: die Kette muss verpflichtet sein</h3>
+
+<p>§ 203 StGB stellt das unbefugte Offenbaren von Privatgeheimnissen unter Strafe. Betroffen sind Berufsgeheimnisträger wie Ärzte, Anwälte, Steuerberater und Sozialarbeiter, nach Abs. 2 aber auch Amtsträger, also Behördenpersonal. Seit 2017 ist es kein Offenbaren mehr, wenn das Geheimnis an „sonstige mitwirkende Personen“ geht, soweit das für deren Tätigkeit erforderlich ist (Abs. 3). Dazu gehören externe IT-Dienstleister. Der Geheimnisträger macht sich aber strafbar, wenn er nicht dafür sorgt, dass die mitwirkende Person zur Geheimhaltung verpflichtet wurde, und dasselbe gilt für deren Unterdienstleister (Abs. 4).</p>
+
+<p>Technisch übersetzt: Jede Station im Datenweg, die den Klartext sieht, muss nach § 203 Abs. 4 zur Geheimhaltung verpflichtet sein. Für Anwälte konkretisiert § 43e BRAO das. Dienstleister im Ausland sind nur bei einem vergleichbaren Schutz erlaubt, und bei Diensten für ein einzelnes Mandat braucht es die Einwilligung des Mandanten.</p>
+
+<h3>Sozialdaten: der Angemessenheitsbeschluss trägt allein</h3>
+
+<p>§ 80 SGB X ist für Behördenprojekte mit Sozialdaten besonders streng. Drei Regeln wirken direkt auf die Technik:</p>
+
+<ul>
+<li>Die Auftragsverarbeitung muss vorher bei der Aufsichtsbehörde angezeigt werden, samt Auftragnehmer und Unteraufträgen (Abs. 1).</li>
+<li>Verarbeitet werden darf nur im Inland, in der EU, in gleichgestellten Staaten oder in Drittstaaten mit Angemessenheitsbeschluss (Abs. 2). Standardvertragsklauseln allein reichen hier also nicht. Für die USA trägt allein das Data Privacy Framework, dessen Bestand vor dem EuGH offen ist. Ein Deployment mit <code>GlobalStandard</code> oder eingeschaltetes Flex Routing wirft hier eine eigene Prüffrage auf, weil die Zielländer nicht festgelegt sind.</li>
+<li>Nicht-öffentliche Auftragnehmer sind nur zulässig, wenn sonst Störungen im Betriebsablauf drohen oder die Arbeit erheblich kostengünstiger ist (Abs. 3).</li>
+</ul>
+
+<h3>Datenminimierung, Zweckbindung und Folgenabschätzung</h3>
+
+<p>Auch erlaubte Daten dürfen nicht beliebig ans Modell. Zwei Grundsätze aus Art. 5 Abs. 1 DSGVO wirken direkt auf Prompts:</p>
+
+<ul>
+<li><strong>Zweckbindung:</strong> Daten dürfen nicht für einen Zweck weiterverarbeitet werden, der mit dem ursprünglichen Zweck unvereinbar ist.</li>
+<li><strong>Datenminimierung:</strong> Nur das für den Zweck Nötige wird verarbeitet. Technisch heißt das: nur die Abschnitte schicken, die die Aufgabe braucht, nicht den ganzen Ordner.</li>
+</ul>
+
+<p>Eine <strong>Datenschutz-Folgenabschätzung</strong> (DSFA) ist eine dokumentierte Risikoprüfung vor der Verarbeitung (Art. 35). Sie ist Pflicht bei voraussichtlich hohem Risiko, besonders bei neuen Technologien. Die DSK-Muss-Liste für den nicht-öffentlichen Bereich nennt den Einsatz von KI zur Bewertung persönlicher Aspekte ausdrücklich. Für den öffentlichen Bereich gibt es eigene Listen je Aufsichtsbehörde. Bei KI über Bürgerdaten ist eine DSFA eher die Regel als die Ausnahme.</p>
+
+<p>Entscheidet ein KI-Lauf über Menschen, kommt Art. 22 DSGVO hinzu. Niemand muss eine ausschließlich automatisierte Entscheidung mit rechtlicher oder ähnlich erheblicher Wirkung hinnehmen, außer ein Gesetz, ein Vertrag oder eine ausdrückliche Einwilligung erlaubt sie. Für Bescheide verlangt das Verwaltungsrecht zusätzlich eine Rechtsgrundlage für vollautomatische Verwaltungsakte (§ 35a VwVfG, nicht im Wortlaut geprüft). Ein Agent, der Anträge vorsortiert, ist etwas anderes als ein Agent, der sie ablehnt. Die Grenze dazwischen sollte im Ablauf sichtbar sein, etwa durch eine menschliche Prüfung vor jedem Ergebnis mit Wirkung nach außen.</p>
+
+<h3>Pseudonymisieren hilft, beendet die DSGVO aber nicht</h3>
+
+<p>Namen vor dem Senden durch Kennungen zu ersetzen, ist eine sinnvolle technische Maßnahme. Rechtlich bleiben pseudonymisierte Daten aber Personenbezogene Daten (Art. 4 Nr. 5 DSGVO). Pseudonymisierung senkt das Risiko, die DSGVO gilt trotzdem. Die Zuordnungstabelle bleibt beim Verantwortlichen und getrennt von den Daten, die ans Modell gehen. Bei Projektunterlagen ist die Wirkung oft begrenzt, weil Rolle, Ort und Datum eine Person auch ohne Namen erkennbar machen.</p>
+
+<h2>Technische Hebel für rechtliche Vorgaben</h2>
+
+<p>Viele rechtliche Anforderungen haben ein technisches Gegenstück. Die Tabelle ordnet sie zu. Mehrere Hebel brauchen eigene Lizenzen, etwa SharePoint Advanced Management oder Purview-Funktionen.</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Vorgabe</th><th>Hebel</th><th>Wo eingestellt</th><th>Grenze</th></tr></thead>
+<tbody>
+<tr><td>Verarbeitung in der EU</td><td>Data Zone EU oder Standard statt Global; Azure Policy gegen <code>GlobalStandard</code></td><td>Foundry, Azure Policy</td><td>Microsoft kann Regionen zur Zone hinzufügen</td></tr>
+<tr><td>Keine Inferenz außerhalb der EU in Copilot</td><td>Flex Routing aus; Anthropic-Einstellungen prüfen</td><td>Microsoft 365 Admin Center, Power Platform Admin Center</td><td>Ausnahmen der EU Data Boundary bleiben</td></tr>
+<tr><td>Keine Verarbeitung außerhalb der Region in Copilot Studio</td><td>„Move data across regions“ aus</td><td>Power Platform Admin Center, je Umgebung</td><td>Manche Modelle trotzdem außerhalb; Bing dann nicht nutzbar</td></tr>
+<tr><td>Bestimmte Inhalte nicht an Copilot</td><td>Purview-DLP (nicht die DLP-Richtlinie der Power Platform) für den Ort „Microsoft 365 Copilot and Copilot Chat“, Dateien mit Sensitivity Label ausschließen</td><td>Purview</td><td>In Prompts hochgeladene Dateien prüft DLP nicht; Änderungen brauchen bis zu vier Stunden</td></tr>
+<tr><td>Site nicht in Copilot-Antworten</td><td>Restricted Content Discovery</td><td>SharePoint Admin Center oder <code>Set-SPOSite -RestrictContentOrgWideSearch $true</code></td><td>Ändert keine Rechte; ein geöffnetes Dokument wird weiter zusammengefasst</td></tr>
+<tr><td>Datenminimierung beim Lesen</td><td>Sites.Selected statt <code>Sites.Read.All</code></td><td>Entra ID, Graph</td><td>Muss je Site gepflegt werden</td></tr>
+<tr><td>Keine Speicherung von Prompts zur Missbrauchskontrolle</td><td>Modified Abuse Monitoring beantragen</td><td>Antrag bei Microsoft, Prüfung an der Ressource</td><td>Nur für berechtigte Kunden</td></tr>
+<tr><td>Weniger Personenbezug</td><td>Pseudonymisierung vor dem Senden</td><td>Eigener Code</td><td>Daten bleiben Personenbezogene Daten</td></tr>
+</tbody></table></div>
+
+<p>Zwei Begriffe aus der Tabelle brauchen eine Erklärung. Ein <strong>Sensitivity Label</strong> ist eine Kennzeichnung einer Datei oder E-Mail in Purview, Microsofts Dienst für Compliance und Datenschutz, etwa „Vertraulich“, an die Regeln wie Verschlüsselung oder Ausschluss aus Copilot geknüpft werden. Zwei Zeilen brauchen außerdem mehr Text. <strong>Restricted Content Discovery</strong> blendet eine Site aus der organisationsweiten Suche und aus Copilot aus. Wer die Site öffnen darf, darf das weiterhin. Es ist also ein Schutz gegen zufälliges Finden, kein Schutz gegen Zugriff. Microsoft beschreibt es selbst als vorübergehende Maßnahme, bis die Rechte aufgeräumt sind (siehe <a href="05-daten-freigaben.html">Kapitel 5, Daten und Freigaben</a>).</p>
+
+<p>Beim Abuse Monitoring in Foundry können markierte Inhalte von Menschen gesichtet werden, bei Deployments im EWR durch Prüfer im EWR. Wie lange sie gespeichert werden, nennt die aktuelle Doku nicht mehr, frühere Fassungen nannten bis zu 30 Tage. Ob die Ausnahme für eine Ressource gilt, zeigt die Ressource selbst:</p>
+
+<pre><code class="language-bash">az cognitiveservices account show -g &lt;resource-group&gt; -n &lt;foundry-ressource&gt; \
+  --query "properties.capabilities[?name=='ContentLogging']"</code></pre>
+
+<p>Steht dort <code>false</code>, ist die Speicherung abgeschaltet.</p>
+
+<p>Zum Training sagen Microsofts Zusagen sinngemäß dasselbe, mit Unterschieden im Wortlaut. Für Microsoft 365 Copilot werden Prompts, Antworten und über Graph gelesene Daten nicht zum Training der Basismodelle verwendet. Für Copilot Studio sagt Microsoft, dass die Daten nicht zum Training der Azure-OpenAI-Basismodelle dienen. In Foundry werden Prompts und Ausgaben bei den Modellen, die Microsoft selbst anbietet, nicht zum Training von Basismodellen genutzt, außer mit Erlaubnis oder Weisung des Kunden. Für Modelle unter eigenen Bedingungen eines Drittanbieters gelten dessen Bedingungen.</p>
+
+<h2>EU AI Act: was gilt, was verschoben ist</h2>
+
+<p>Die KI-Verordnung der EU (Verordnung (EU) 2024/1689) wurde 2026 durch den „Digital Omnibus on AI“ geändert. Diese Änderung ist als Verordnung (EU) 2026/1744 seit dem 27. Juli 2026 in Kraft. Für eine Beratung, die Agenten für Behörden baut, zählen vier Punkte.</p>
+
+<p><strong>KI-Kompetenz (Art. 4).</strong> Anbieter und Betreiber müssen Maßnahmen treffen, um die KI-Kompetenz ihres Personals zu unterstützen. Seit der Änderung steht ausdrücklich darin, dass kein bestimmtes Niveau garantiert werden muss. Eine dokumentierte Einweisung in Werkzeug, Datenregeln und Grenzen bleibt der vernünftige Weg.</p>
+
+<p><strong>Betreiber oder Anbieter.</strong> Wer ein KI-System in eigener Verantwortung nutzt, ist <strong>Betreiber</strong> (Art. 3 Nr. 4). Wer ein System unter eigenem Namen in Verkehr bringt oder wesentlich ändert, kann <strong>Anbieter</strong> werden (Art. 3 Nr. 3, Art. 25). Eine Beratung, die einen Agenten baut und an eine Behörde ausliefert, kann damit in die Anbieterrolle rutschen, mit deutlich mehr Pflichten. Die Pflichten für KI-Modelle mit allgemeinem Verwendungszweck (General Purpose AI, GPAI), also die großen Basismodelle, treffen dagegen die Modellanbieter wie OpenAI, Anthropic oder Microsoft, nicht die Beratung als Nutzerin.</p>
+
+<p><strong>Hochrisiko-Systeme, verschoben.</strong> Annex III der Verordnung listet Bereiche, in denen KI als hochriskant gilt. Für Behörden ist besonders Nr. 5 lit. a einschlägig: KI, mit der Behörden prüfen, ob jemand Anspruch auf wesentliche öffentliche Leistungen hat, oder mit der sie solche Leistungen gewähren, kürzen oder zurückfordern. Dazu kommen Beschäftigung, Bildung, Strafverfolgung, Migration und Justiz. Die Pflichten für diese Systeme gelten nach der Änderung ab dem <strong>2. Dezember 2027</strong> statt ab August 2026. Eine Ausnahme gibt es für eng begrenzte vorbereitende Aufgaben ohne wesentlichen Einfluss auf die Entscheidung (Art. 6 Abs. 3), nicht aber bei Profiling. Für Hochrisiko-Systeme, die vor dem Stichtag in Verkehr gebracht wurden und von Behörden genutzt werden, gilt eine Frist bis 2030 (nach Sekundärquellen unverändert).</p>
+
+<p><strong>Pflichten öffentlicher Betreiber.</strong> Sobald die Hochrisiko-Regeln gelten, müssen Einrichtungen des öffentlichen Rechts vor dem Einsatz eine Grundrechte-Folgenabschätzung durchführen (Art. 27) und die Nutzung in einer EU-Datenbank registrieren.</p>
+
+<p>Für die Praxis heißt das: Ein Agent, der Projektunterlagen einer Behörde durchsucht, dürfte in der Regel nicht unter Annex III fallen. Ein Agent, der Anträge auf Sozialleistungen vorbewertet, kann darunter fallen. Die Abgrenzung hängt am Zweck, nicht an der Technik. Daneben gibt es einen Vorschlag, auch die DSGVO über den Digital Omnibus zu ändern. Er ist nicht beschlossen, und sein Stand war im November 2026 unklar.</p>
+
+<h2>Mitbestimmung in der Behörde</h2>
+
+<p>In Firmen kann der Betriebsrat mitbestimmen (siehe <a href="10-bauen-ohne-admin-rechte.html">Kapitel 10, Bauen ohne Admin-Rechte</a>). In Behörden heißt das Gegenstück <strong>Personalrat</strong>. In Bundesbehörden bestimmt er nach § 80 BPersVG unter anderem bei Einrichtungen mit, die zur Überwachung von Verhalten oder Leistung geeignet sind (Abs. 1 Nr. 21), und bei grundlegend neuen Arbeitsmethoden (Nr. 20). In Landesbehörden gilt das jeweilige Landespersonalvertretungsgesetz. Ein Agent mit Nutzungsprotokollen kann beides berühren.</p>
+
+<p>Für die Beratung ist das keine eigene Pflicht, aber ein Zeitfaktor, den die Projektplanung berücksichtigen sollte.</p>
+
+<h2>Durchgespielt: Auswertung für eine Behörde</h2>
+
+<p>Ein fiktiver Fall bündelt die Fragen. Eine kleine Beratung soll für ein Landesamt zehn Jahre Projektberichte auswerten und eine Übersicht erstellen, welche Digitalisierungsprojekte welche Ergebnisse hatten. In den Berichten stehen Namen von Mitarbeitern und vereinzelt Bürgerbeschwerden mit Namen und Anliegen.</p>
+
+<figure id="kap13-behoerdenfall">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 545" role="img" aria-labelledby="d13-bf-title d13-bf-desc"><title id="d13-bf-title">Prüfschritte im Behördenfall</title><desc id="d13-bf-desc">Acht Schritte untereinander: Daten sichten, Rolle klären, Ort wählen, Kette prüfen, Standort einstellen, Daten begrenzen, Freigaben einholen und zuletzt Lauf und Löschung. Erst im letzten Schritt fließen echte Daten.</desc><defs><marker id="d13-bf-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="d13-bf-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker></defs><rect x="60" y="14" width="610" height="52" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="74" y="36" font-size="12.5" text-anchor="start" font-weight="600">Daten sichten</text><text x="74" y="54" font-size="11" text-anchor="start" style="fill:#5b6072">Personenbezug ja; besondere Kategorien in Beschwerden möglich</text><circle cx="34" cy="40" r="15" fill="#2f5d8a"/><text x="34" y="45" font-size="13" text-anchor="middle" font-weight="600" style="fill:#ffffff">1</text><path d="M34 55 L34 89" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d13-bf-a)"/><rect x="60" y="80" width="610" height="52" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="74" y="102" font-size="12.5" text-anchor="start" font-weight="600">Rolle klären</text><text x="74" y="120" font-size="11" text-anchor="start" style="fill:#5b6072">Beratung als Auftragsverarbeiter; Landesdatenschutzgesetz gilt</text><circle cx="34" cy="106" r="15" fill="#2f5d8a"/><text x="34" y="111" font-size="13" text-anchor="middle" font-weight="600" style="fill:#ffffff">2</text><path d="M34 121 L34 155" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d13-bf-a)"/><rect x="60" y="146" width="610" height="52" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="74" y="168" font-size="12.5" text-anchor="start" font-weight="600">Ort wählen</text><text x="74" y="186" font-size="11" text-anchor="start" style="fill:#5b6072">Arbeit im Tenant des Landesamts</text><circle cx="34" cy="172" r="15" fill="#2f5d8a"/><text x="34" y="177" font-size="13" text-anchor="middle" font-weight="600" style="fill:#ffffff">3</text><path d="M34 187 L34 221" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d13-bf-a)"/><rect x="60" y="212" width="610" height="52" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="74" y="234" font-size="12.5" text-anchor="start" font-weight="600">Kette prüfen</text><text x="74" y="252" font-size="11" text-anchor="start" style="fill:#5b6072">Vertrag des Landesamts mit Microsoft; kein Modellanbieter außerhalb der Kette</text><circle cx="34" cy="238" r="15" fill="#2f5d8a"/><text x="34" y="243" font-size="13" text-anchor="middle" font-weight="600" style="fill:#ffffff">4</text><path d="M34 253 L34 287" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d13-bf-a)"/><rect x="60" y="278" width="610" height="52" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="74" y="300" font-size="12.5" text-anchor="start" font-weight="600">Standort einstellen</text><text x="74" y="318" font-size="11" text-anchor="start" style="fill:#5b6072">Flex Routing, Anthropic-Einstellungen, „Move data across regions“ geprüft</text><circle cx="34" cy="304" r="15" fill="#2f5d8a"/><text x="34" y="309" font-size="13" text-anchor="middle" font-weight="600" style="fill:#ffffff">5</text><path d="M34 319 L34 353" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d13-bf-a)"/><rect x="60" y="344" width="610" height="52" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="74" y="366" font-size="12.5" text-anchor="start" font-weight="600">Daten begrenzen</text><text x="74" y="384" font-size="11" text-anchor="start" style="fill:#5b6072">Sites.Selected; Beschwerden ausfiltern oder pseudonymisieren</text><circle cx="34" cy="370" r="15" fill="#2f5d8a"/><text x="34" y="375" font-size="13" text-anchor="middle" font-weight="600" style="fill:#ffffff">6</text><path d="M34 385 L34 419" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d13-bf-a)"/><rect x="60" y="410" width="610" height="52" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="74" y="432" font-size="12.5" text-anchor="start" font-weight="600">Freigaben einholen</text><text x="74" y="450" font-size="11" text-anchor="start" style="fill:#5b6072">DSFA prüfen, Personalrat beteiligen, schriftlich festhalten</text><circle cx="34" cy="436" r="15" fill="#2f5d8a"/><text x="34" y="441" font-size="13" text-anchor="middle" font-weight="600" style="fill:#ffffff">7</text><path d="M34 451 L34 485" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d13-bf-a)"/><rect x="60" y="476" width="610" height="52" rx="4" fill="#d9e4ef" stroke="#b8472a" stroke-width="1.5"/><text x="74" y="498" font-size="12.5" text-anchor="start" font-weight="600">Lauf und Löschung</text><text x="74" y="516" font-size="11" text-anchor="start" style="fill:#5b6072">Ergebnis von Menschen prüfen; Kopien und Indizes löschen; dokumentieren</text><circle cx="34" cy="502" r="15" fill="#b8472a"/><text x="34" y="507" font-size="13" text-anchor="middle" font-weight="600" style="fill:#ffffff">8</text><text x="656" y="498" font-size="11.5" text-anchor="end" font-weight="600" style="fill:#b8472a">erst hier fließen echte Daten</text></svg>
+<figcaption>Die Reihenfolge stellt sicher, dass keine echten Daten fließen, bevor Rolle, Kette, Standort und Freigaben geklärt sind.</figcaption>
+</figure>
+
+<p>Die Schritte, wo sie über das Diagramm hinausgehen:</p>
+
+<ol>
+<li><strong>Daten sichten.</strong> Sozial- oder Steuerdaten liegen nicht vor, sonst gälten die Sonderregeln.</li>
+<li><strong>Rolle klären.</strong> Die Beratung wertet nach Vorgabe aus und behält nichts, das spricht für Auftragsverarbeitung. Für das Landesamt gilt das Landesdatenschutzgesetz, nicht das BDSG (§ 1 Abs. 1 BDSG).</li>
+<li><strong>Ort wählen.</strong> Variante A ist am saubersten. Ob das Landesamt Microsoft 365 überhaupt nutzen darf, entscheidet das Landesamt.</li>
+<li><strong>Kette prüfen.</strong> Ein lokaler KI-Agent mit einem Modellanbieter außerhalb des AVV scheidet für die Berichte aus.</li>
+<li><strong>Standort einstellen.</strong> Die Einstellungen setzt der Admin des Landesamts, nicht die Beratung.</li>
+<li><strong>Daten begrenzen.</strong> Bürgerbeschwerden sind für die Projektübersicht nicht nötig und bleiben deshalb draußen.</li>
+<li><strong>Freigaben einholen.</strong> Die Freigabe nennt Umfang und Zeitraum.</li>
+<li><strong>Lauf und Löschung.</strong> Auch Zwischendateien und Indizes werden gelöscht, und die Löschung wird festgehalten.</li>
+</ol>
+
+<p>Wäre der Auftrag stattdessen, Anträge auf Leistungen vorzubewerten, käme der EU AI Act als Hochrisiko-Frage hinzu, und Art. 22 DSGVO würde zentral.</p>
+
+<h2>Prüfliste vor einem Kundenprojekt</h2>
+
+<p>Die Fragen folgen dem Datenweg. Jede lässt sich mit Ja, Nein oder „klärt Stelle X“ beantworten.</p>
+
+<p><strong>Daten</strong></p>
+
+<ul>
+<li>Welche Arten von Daten liegen vor: gewöhnliche Personenbezogene Daten, besondere Kategorien, Berufs-, Sozial- oder Steuergeheimnisse, Verschlusssachen?</li>
+<li>Welche davon braucht die Aufgabe wirklich?</li>
+</ul>
+
+<p><strong>Rollen und Verträge</strong></p>
+
+<ul>
+<li>Ist die Beratung Auftragsverarbeiter oder verfolgt sie eigene Zwecke?</li>
+<li>In wessen Tenant wird verarbeitet?</li>
+<li>Nennt der AVV mit dem Kunden alle Unterauftragnehmer, einschließlich Microsoft und gegebenenfalls Modellanbieter mit eigenen Bedingungen?</li>
+<li>Erlaubt die Vertraulichkeitsvereinbarung die Weitergabe, und erlaubt der Vertrag die beabsichtigte Nutzung der Ergebnisse?</li>
+<li>Gelten EVB-IT mit Widerspruchsrecht bei Unterauftragnehmern?</li>
+</ul>
+
+<p><strong>Ort</strong></p>
+
+<ul>
+<li>Welcher Deployment-Typ läuft in Foundry? Ist Global per Policy gesperrt?</li>
+<li>Sind Flex Routing, die Anthropic-Einstellungen und „Move data across regions“ geprüft?</li>
+<li>Werden Preview-Funktionen genutzt?</li>
+<li>Reicht ein Drittlandtransfer mit Standardvertragsklauseln, oder verlangt eine Sonderregel wie § 80 SGB X mehr?</li>
+</ul>
+
+<p><strong>Technik</strong></p>
+
+<ul>
+<li>Ist der Zugriff auf das Nötige begrenzt, etwa mit Sites.Selected?</li>
+<li>Wo entstehen Kopien, und wann werden sie gelöscht?</li>
+<li>Gilt das Security Trimming auch in einem eigenen Index?</li>
+<li>Prüft ein Mensch Ergebnisse mit Wirkung auf Personen?</li>
+</ul>
+
+<p><strong>Freigaben</strong></p>
+
+<ul>
+<li>Ist eine DSFA nötig, und wer führt sie durch?</li>
+<li>Ist der Betriebs- oder Personalrat beteiligt?</li>
+<li>Fällt der Zweck unter Annex III des AI Act?</li>
+<li>Ist die Freigabe schriftlich, mit Umfang und Zeitraum?</li>
+</ul>
+
+<p>Bleibt eine Antwort offen, bleibt das Projekt draußen, bis sie da ist (siehe <a href="10-bauen-ohne-admin-rechte.html">Kapitel 10, Bauen ohne Admin-Rechte</a>).</p>
+<nav style="display:flex;justify-content:space-between;gap:1rem;margin-top:3rem;border-top:1px solid var(--rule);padding-top:1rem;font-family:'Helvetica Neue',Arial,sans-serif;font-size:.9rem"><span><a href="12-plattformen-verwaltung.html">← Zurück</a></span><a href="index.html">Übersicht</a><span><a href="14-it-dienstleister.html">Weiter →</a></span></nav>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>17. Apps und Flows bauen: Canvas, Model-driven, Cloud Flows</title>
+<style>
+:root { --bg:#fafaf7; --text:#1f2230; --muted:#5b6072; --accent:#2f5d8a;
+  --accent-soft:#d9e4ef; --leader:#b8472a; --node-fill:#ffffff;
+  --node-stroke:#2f5d8a; --rule:#c8ccd6; --code-bg:#eef1f5; }
+html,body { background:var(--bg); color:var(--text);
+  font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+  line-height:1.65; font-size:18px; }
+body { max-width:760px; margin:3rem auto 6rem; padding:0 1.5rem; }
+h1 { font-size:2rem; line-height:1.2; margin:0 0 2rem;
+  border-bottom:1px solid var(--rule); padding-bottom:0.6rem; }
+h2 { font-size:1.35rem; margin-top:2.4rem; margin-bottom:0.8rem;
+  color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif;
+  font-weight:600; letter-spacing:0.01em; }
+p { margin:0 0 1.1rem; }
+figure { margin:2rem auto; text-align:center; }
+figure svg { max-width:100%; height:auto; display:block; margin:0 auto; }
+figcaption { font-family:"Helvetica Neue",Arial,sans-serif; font-size:0.85rem;
+  color:var(--muted); margin-top:0.6rem; text-align:center; }
+svg text { font-family:"Helvetica Neue",Arial,sans-serif; fill:var(--text); }
+.legend-text { font-size:11px; fill:var(--muted); }
+pre { background:var(--code-bg); padding:0.9rem 1.1rem; overflow-x:auto;
+  border-radius:6px; font-size:0.82em; }
+code { background:var(--code-bg); font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:0.85em; padding:0.1em 0.3em; border-radius:3px; }
+pre code { background:none; padding:0; }
+.table-wrap { overflow-x:auto; margin:1.5rem 0; }
+table { border-collapse:collapse; width:100%; font-size:0.85em; line-height:1.45; }
+th { text-align:left; color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif;
+  font-weight:600; border-bottom:2px solid var(--accent); padding:0.45rem 0.6rem;
+  vertical-align:bottom; }
+td { border-bottom:1px solid var(--rule); padding:0.45rem 0.6rem; vertical-align:top; }
+tr { break-inside:avoid; }
+</style>
+</head>
+<body>
+<h1>17. Apps und Flows bauen: Canvas, Model-driven, Cloud Flows</h1>
+
+<p>Eine App oder einen Flow zum Laufen zu bringen, ist in der Power Platform selten schwer. Die Schwierigkeiten zeigen sich später: Eine App findet ab einer bestimmten Datenmenge Einträge nicht mehr, ein Flow handelt mit Rechten, die der auslösenden Person gar nicht zustehen, oder ein wichtiger Ablauf steht still, weil jemand die Firma verlassen hat. Alle drei Probleme haben dieselbe Wurzel. Sie entstehen, wenn man nicht weiß, wo eine Abfrage ausgeführt wird und mit wessen Identität ein Schritt läuft.</p>
+
+<h2>Canvas oder Model-driven</h2>
+
+<p>Die beiden App-Arten sind bereits beschrieben (siehe <a href="15-power-platform-bausteine.html">Kapitel 15, Power Platform von innen</a>). Für die Wahl hilft eine einfache Regel:</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Kriterium</th><th>Canvas App</th><th>Model-driven App</th></tr></thead>
+<tbody>
+<tr><td>Typischer Einsatz</td><td>aufgabenbezogene App mit wenigen Bildschirmen, oft mobil</td><td>datenlastige Prozess-App mit vielen Tabellen und Rollen</td></tr>
+<tr><td>Gestaltung</td><td>frei</td><td>aus Formularen und Ansichten erzeugt</td></tr>
+<tr><td>Datenquellen</td><td>viele über Connectors, gemischt</td><td>Dataverse</td></tr>
+<tr><td>Rechte auf Daten</td><td>kommen aus der jeweiligen Datenquelle</td><td>kommen aus den Sicherheitsrollen in Dataverse</td></tr>
+</tbody>
+</table></div>
+
+<p>Beide lassen sich verbinden: Eine Model-driven App kann einzelne Seiten enthalten, die wie eine Canvas App gestaltet sind.</p>
+
+<p>Ein Punkt verwechselt sich besonders leicht. <strong>Wer eine Canvas App teilt, gibt damit keinen Zugriff auf die Daten.</strong> Das Teilen erlaubt nur, die App zu öffnen. Ob die Person die SharePoint-Liste oder die Dataverse-Tabelle dahinter lesen kann, entscheidet die Datenquelle mit ihren eigenen Rechten. Eine App, die ein Kollege öffnet und die dann leer bleibt, ist deshalb meist kein Fehler der App, sondern eine fehlende Berechtigung in der Quelle.</p>
+
+<h2>Delegation: wo die Abfrage läuft</h2>
+
+<p>Eine Canvas App holt Daten über einen Connector. Ein Filter wie „alle offenen Aufträge dieses Kunden“ kann auf zwei Arten ausgeführt werden. Entweder übersetzt die App die Formel in eine Abfrage, die die Datenquelle selbst ausführt. Das heißt <strong>Delegation</strong>. Oder die App holt eine begrenzte Zahl von Zeilen und filtert sie lokal.</p>
+
+<figure id="kap17-delegation">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 362" role="img" aria-labelledby="d17-de-title d17-de-desc"><title id="d17-de-title">Delegation in einer Canvas App</title><desc id="d17-de-desc">Links filtert die Datenquelle mit 10.000 Zeilen selbst, und alle drei Treffer kommen in der App an. Rechts holt die App nur die ersten 500 Zeilen und filtert lokal; nur einer der drei Treffer kommt an, ohne Fehlermeldung.</desc><defs><marker id="d17-de-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="d17-de-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker><marker id="d17-de-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker></defs><rect x="10" y="10" width="320" height="290" rx="6" fill="none" stroke="#c8ccd6" stroke-width="1.5"/><text x="24" y="34" font-size="14" text-anchor="start" font-weight="600" style="fill:#2f5d8a">delegiert</text><rect x="30" y="50" width="280" height="56" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="170.0" y="76" font-size="12.5" text-anchor="middle" font-weight="600">Datenquelle</text><text x="170.0" y="90" font-size="11" text-anchor="middle" style="fill:#5b6072">10.000 Zeilen, Treffer bei 120, 4.300 und 9.800</text><path d="M170 106 L170 188" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d17-de-a)"/><text x="180" y="152" font-size="11" text-anchor="start" font-weight="600" style="fill:#2f5d8a">Filter läuft in der Quelle</text><rect x="30" y="190" width="280" height="56" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="170.0" y="216" font-size="12.5" text-anchor="middle" font-weight="600">App</text><text x="170.0" y="230" font-size="11" text-anchor="middle" style="fill:#5b6072">erhält 3 von 3 Treffern</text><text x="170" y="276" font-size="12" text-anchor="middle" font-weight="600" style="fill:#2f5d8a">vollständig</text><rect x="350" y="10" width="320" height="290" rx="6" fill="none" stroke="#c8ccd6" stroke-width="1.5"/><text x="364" y="34" font-size="14" text-anchor="start" font-weight="600" style="fill:#2f5d8a">nicht delegiert</text><rect x="370" y="50" width="280" height="56" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="510.0" y="76" font-size="12.5" text-anchor="middle" font-weight="600">Datenquelle</text><text x="510.0" y="90" font-size="11" text-anchor="middle" style="fill:#5b6072">10.000 Zeilen, Treffer bei 120, 4.300 und 9.800</text><path d="M510 106 L510 188" fill="none" stroke="#b8472a" stroke-width="1.5" marker-end="url(#d17-de-r)"/><text x="520" y="152" font-size="11" text-anchor="start" font-weight="600" style="fill:#b8472a">nur die ersten 500 Zeilen</text><rect x="370" y="190" width="280" height="56" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/><text x="510.0" y="216" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">App filtert lokal</text><text x="510.0" y="230" font-size="11" text-anchor="middle" style="fill:#5b6072">erhält 1 von 3 Treffern</text><text x="510" y="276" font-size="12" text-anchor="middle" font-weight="600" style="fill:#b8472a">unvollständig, ohne Fehlermeldung</text><rect x="10" y="312" width="660" height="40" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/><text x="340.0" y="336" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">Nicht delegiert heißt nicht langsam, sondern still falsch.</text></svg>
+<figcaption>Eine nicht delegierte Abfrage ist nicht langsam, sondern still falsch: Sie liefert ein unvollständiges Ergebnis ohne Fehlermeldung.</figcaption>
+</figure>
+
+<p>Ist eine Abfrage nicht delegierbar, holt die App nur die ersten Zeilen bis zu einem Limit, standardmäßig 500, und rechnet damit weiter. Das Ergebnis ist <strong>still falsch</strong>: Ein Filter findet Zeile 501 nicht, eine Summe gilt nur für einen Ausschnitt. Es kommt keine Fehlermeldung, nur im Studio ein Warnhinweis an der Formel.</p>
+
+<p>Drei Dinge helfen in der Praxis:</p>
+
+<ul>
+<li><strong>Warnungen ernst nehmen.</strong> Der Hinweis an der Formel ist kein Schönheitsfehler. Enthält eine Abfrage auch nur einen nicht delegierbaren Teil, wird die ganze Abfrage nicht delegiert.</li>
+<li><strong>Im Test das Limit auf 1 setzen.</strong> Dann fällt jede nicht delegierte Abfrage sofort auf, statt erst bei der 501. Zeile im Betrieb.</li>
+<li><strong>Die Quelle passend wählen.</strong> Dataverse delegiert deutlich mehr als SharePoint. Das Limit hochzusetzen verschiebt die Grenze nur und kostet Leistung.</li>
+</ul>
+
+<p>Welche Funktionen eine Quelle delegiert, steht in der Dokumentation des jeweiligen Connectors und ändert sich gelegentlich. Das Modell bleibt: Filtern, Sortieren und Suchen sollen dort passieren, wo die Daten liegen.</p>
+
+<h2>Cloud Flows: Auslöser, Aktionen, Verbindungen</h2>
+
+<p>Ein Cloud Flow besteht aus einem <strong>Auslöser</strong> und <strong>Aktionen</strong>. Es gibt drei Arten von Auslösern:</p>
+
+<ul>
+<li><strong>automatisiert:</strong> ein Ereignis, etwa „Element in einer Liste erstellt“ oder „Mail eingegangen“</li>
+<li><strong>sofort:</strong> ein Knopf, ein Aufruf aus einer App oder aus einem Agenten</li>
+<li><strong>geplant:</strong> eine Wiederholung, etwa jeden Morgen um sieben</li>
+</ul>
+
+<p>Jede Aktion, die einen Dienst anspricht, nutzt eine <strong>Verbindung</strong>: eine gespeicherte Anmeldung einer bestimmten Identität bei einem Connector (siehe <a href="12-plattformen-verwaltung.html">Kapitel 12, Plattformen und Verwaltungsorte</a>).</p>
+
+<h3>Wessen Rechte ein Flow benutzt</h3>
+
+<p>Der wichtigste Satz dieses Kapitels: <strong>Ein Flow hat keine eigene Identität. Er handelt mit den Verbindungen, die in ihm hinterlegt sind.</strong> Wem eine Verbindung gehört, mit dessen Rechten greift der Flow auf SharePoint, Outlook oder Dataverse zu.</p>
+
+<figure id="kap17-wessen-verbindung">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 345" role="img" aria-labelledby="d17-wv-title d17-wv-desc"><title id="d17-wv-title">Wessen Verbindung ein Flow benutzt</title><desc id="d17-wv-desc">Person A ohne Leserecht startet einen Flow. Mit der Verbindung von Besitzer B gelingt das Lesen, A sieht den Inhalt, und im Protokoll steht B. Mit der eigenen Verbindung von A scheitert das Lesen, und im Protokoll steht A.</desc><defs><marker id="d17-wv-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="d17-wv-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker><marker id="d17-wv-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker></defs><rect x="5" y="130" width="135" height="64" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="72.5" y="152" font-size="12.5" text-anchor="middle" font-weight="600">Person A</text><text x="72.5" y="168" font-size="11" text-anchor="middle" style="fill:#5b6072">darf Bibliothek</text><text x="72.5" y="182" font-size="11" text-anchor="middle" style="fill:#5b6072">nicht lesen</text><rect x="170" y="130" width="110" height="64" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="225.0" y="160" font-size="12.5" text-anchor="middle" font-weight="600">Flow</text><text x="225.0" y="174" font-size="11" text-anchor="middle" style="fill:#5b6072">wird gestartet</text><rect x="320" y="40" width="180" height="60" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="410.0" y="68" font-size="12.5" text-anchor="middle" font-weight="600">Verbindung von B</text><text x="410.0" y="82" font-size="11" text-anchor="middle" style="fill:#5b6072">Besitzer, darf lesen</text><rect x="320" y="224" width="180" height="60" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="410.0" y="252" font-size="12.5" text-anchor="middle" font-weight="600">Verbindung von A</text><text x="410.0" y="266" font-size="11" text-anchor="middle" style="fill:#5b6072">vom ausführenden Nutzer</text><rect x="530" y="40" width="145" height="60" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/><text x="602.5" y="60" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">Lesen gelingt</text><text x="602.5" y="76" font-size="11" text-anchor="middle" style="fill:#5b6072">A sieht den Inhalt</text><text x="602.5" y="90" font-size="11" text-anchor="middle" style="fill:#5b6072">Protokoll: B</text><rect x="530" y="224" width="145" height="60" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="602.5" y="252" font-size="12.5" text-anchor="middle" font-weight="600">Lesen scheitert</text><text x="602.5" y="266" font-size="11" text-anchor="middle" style="fill:#5b6072">Protokoll: A</text><path d="M140 162 L168 162" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d17-wv-a)"/><path d="M280 152 L318 72" fill="none" stroke="#b8472a" stroke-width="1.5" marker-end="url(#d17-wv-r)"/><path d="M280 172 L318 252" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d17-wv-a)"/><path d="M500 70 L528 70" fill="none" stroke="#b8472a" stroke-width="1.5" marker-end="url(#d17-wv-r)"/><path d="M500 254 L528 254" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d17-wv-a)"/><text x="410" y="28" font-size="11" text-anchor="middle" font-weight="600" style="fill:#b8472a">„Diese Verbindung verwenden“</text><text x="410" y="302" font-size="11" text-anchor="middle" font-weight="600" style="fill:#2f5d8a">„Vom ausführenden Nutzer bereitgestellt“</text><text x="340" y="330" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">Die Identität steckt in der Verbindung, nicht im Flow.</text></svg>
+<figcaption>Die Identität steckt in der Verbindung, nicht im Flow. Ein geteilter Flow mit der Verbindung des Besitzers kann Personen Daten zugänglich machen, die sie selbst nicht sehen dürften.</figcaption>
+</figure>
+
+<p>Im Normalfall sind die Verbindungen die des Erstellers. Wer einen sofort ausgelösten Flow für andere freigibt, kann für jede Verbindung festlegen:</p>
+
+<ul>
+<li><strong>Diese Verbindung verwenden:</strong> Der Flow handelt mit den Rechten des Besitzers, egal wer ihn startet.</li>
+<li><strong>Vom ausführenden Nutzer bereitgestellt:</strong> Der Startende bringt die eigene Verbindung mit, und der Flow handelt mit dessen Rechten.</li>
+</ul>
+
+<p>Die erste Variante ist bequem und manchmal gewollt, etwa wenn ein Flow im Namen eines Funktionspostfachs Mails versendet. Sie ist aber eine <strong>Rechteausweitung</strong>: Jemand ohne Zugriff auf eine Bibliothek kann über den Flow trotzdem daraus lesen. Das muss eine bewusste Entscheidung sein. Für das Protokoll gilt dasselbe. Im Audit-Log von SharePoint erscheint die Person, deren Verbindung benutzt wurde, nicht die Person, die den Flow ausgelöst hat.</p>
+
+<p>Auch die Lizenz hängt an der Identität: Geplante und automatisierte Flows laufen unter der Lizenz des Besitzers, sofort ausgelöste unter der Lizenz der ausführenden Person.</p>
+
+<h3>Besitzer, Mitbesitzer, Service-Konto, Service Principal</h3>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Wer besitzt den Flow</th><th>Vorteil</th><th>Nachteil</th></tr></thead>
+<tbody>
+<tr><td>eine Person</td><td>einfach</td><td>hängt am Arbeitsvertrag dieser Person</td></tr>
+<tr><td>mehrere Personen als Mitbesitzer</td><td>Bearbeitung bleibt möglich</td><td>die Verbindungen bleiben trotzdem persönlich</td></tr>
+<tr><td>ein Service-Konto (normales Konto für einen Zweck)</td><td>unabhängig von einer Person</td><td>braucht Lizenz, Passwort und MFA-Lösung; ist ein Konto, das niemand richtig besitzt</td></tr>
+<tr><td>ein Service Principal als Application User</td><td>keine Person, kein Passwort, nicht interaktiv</td><td>nur bei Flows in Solutions; eigene Lizenzierung für Premium-Flows; kann nicht Mitbesitzer sein</td></tr>
+</tbody>
+</table></div>
+
+<p>Wer nur einen Flow nutzen soll, bekommt das Recht zum Ausführen, nicht die Mitbesitzerschaft. Mitbesitzer dürfen den Flow ändern und damit auch, was er mit den hinterlegten Verbindungen tut.</p>
+
+<h3>Was passiert, wenn eine Person geht</h3>
+
+<p>Ein typischer Ablauf, wenn das Konto einer Person deaktiviert wird:</p>
+
+<ol>
+<li><strong>Gibt es Mitbesitzer,</strong> läuft der Flow formal weiter. Jede Aktion, die eine Verbindung der ausgeschiedenen Person nutzt, schlägt aber fehl. Neue Besitzer übernehmen keine Verbindungen automatisch.</li>
+<li><strong>Gibt es keine Mitbesitzer,</strong> ist der Flow verwaist. Admins finden solche Flows im Power Platform Admin Center und können neue Besitzer zuweisen.</li>
+<li><strong>Schlägt ein Flow längere Zeit durchgehend fehl,</strong> schaltet die Plattform ihn irgendwann ab.</li>
+</ol>
+
+<p>Vorbeugen ist einfacher als reparieren: Wichtige Flows liegen in Solutions, nutzen Verbindungsreferenzen (siehe <a href="18-solutions-alm.html">Kapitel 18, Solutions und ALM</a>) und gehören einem Service Principal oder einem Service-Konto. Mitbesitzer sind eine Gruppe, keine Einzelperson. Und das Offboarding fragt ausdrücklich: Welche Flows und Verbindungen hängen an dieser Person?</p>
+
+<h3>Flows in Solutions und Child Flows</h3>
+
+<p>Flows, die in einer Solution liegen, können Verbindungsreferenzen und Umgebungsvariablen nutzen, den Besitzer ohne Neuanlage wechseln und einem Service Principal gehören. Microsoft legt neue Flows in Umgebungen mit Dataverse zunehmend standardmäßig in Solutions an. Für alles, was länger leben soll, ist das der richtige Ort.</p>
+
+<p>Ein <strong>Child Flow</strong> ist ein Flow, den ein anderer Flow aufruft, ähnlich einer Funktion. So lassen sich wiederkehrende Schritte einmal bauen und mehrfach nutzen. Ein Child Flow nutzt seine eigenen, eingebetteten Verbindungen. Der aufrufende Flow kann seine Verbindungen nicht weiterreichen. Auch hier gilt also: Der Child Flow handelt mit den Rechten seines Besitzers.</p>
+
+<h2>Fehlerbehandlung</h2>
+
+<p>Ein Flow, der in einem von hundert Läufen scheitert, ist ohne Fehlerbehandlung ein Flow, der still Arbeit liegen lässt. Die Plattform bietet dafür einfache Bausteine:</p>
+
+<ul>
+<li><strong>Nach welchem Ergebnis eine Aktion läuft:</strong> Jede Aktion kann so eingestellt werden, dass sie nach Erfolg, Fehler, Zeitüberschreitung oder Überspringen der vorherigen läuft. Daraus entstehen Fehlerpfade.</li>
+<li><strong>Try und Catch mit Bereichen:</strong> Die eigentlichen Schritte stehen in einem Bereich (Scope) „Try“. Ein zweiter Bereich „Catch“ läuft nur, wenn „Try“ fehlgeschlagen ist, und meldet den Fehler, etwa per Mail oder Teams-Nachricht mit Link zum Lauf.</li>
+<li><strong>Wiederholungen:</strong> Bei vorübergehenden Fehlern wiederholt eine Aktion den Aufruf. Fachliche Fehler löst das nicht.</li>
+<li><strong>Beenden mit Status:</strong> Am Ende des Catch-Bereichs markiert eine Aktion den Lauf als fehlgeschlagen, damit er in Übersichten auch so erscheint.</li>
+<li><strong>Gesicherte Ein- und Ausgaben:</strong> Aktionen, die Geheimnisse oder personenbezogene Daten verarbeiten, sollten ihre Werte nicht im Laufverlauf zeigen.</li>
+</ul>
+
+<p>Dazu kommen Grenzen: Anzahl der Aktionen, Anfragen pro Tag, Laufdauer. Sie hängen von der Lizenz des Besitzers ab und ändern sich gelegentlich. Wer große Datenmengen in Schleifen verarbeitet, sollte sie früh prüfen.</p>
+
+<h2>Desktop Flows</h2>
+
+<p><strong>Desktop Flows</strong> bedienen Oberflächen auf einem Windows-Rechner (siehe <a href="15-power-platform-bausteine.html">Kapitel 15, Power Platform von innen</a>). Für die Identität gilt dasselbe Muster wie bei Cloud Flows, nur auf einer anderen Ebene: Ein beaufsichtigter Desktop Flow läuft in der Sitzung der angemeldeten Person, ein unbeaufsichtigter unter einem Konto auf einer registrierten Maschine. Dieses Konto braucht Rechte in den Anwendungen, die der Flow bedient, und ist damit genauso zu behandeln wie ein Service-Konto.</p>
+
+<h2>Typische Missverständnisse</h2>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Annahme</th><th>Was stimmt</th></tr></thead>
+<tbody>
+<tr><td>„Wenn ich die App teile, sehen die Leute die Daten.“</td><td>Teilen erlaubt nur das Öffnen; die Daten schützt die Quelle.</td></tr>
+<tr><td>„Die Delegationswarnung ist kosmetisch.“</td><td>Ohne Delegation sind Ergebnisse ab der Grenze still unvollständig.</td></tr>
+<tr><td>„Das Zeilenlimit auf das Maximum setzen löst das Problem.“</td><td>Es verschiebt nur die Grenze. Die Lösung ist eine delegierbare Abfrage oder eine andere Quelle.</td></tr>
+<tr><td>„Ein Flow läuft als die Person, die ihn startet.“</td><td>Nur, wenn die Verbindung vom ausführenden Nutzer kommt. Sonst handelt er mit den Rechten des Besitzers.</td></tr>
+<tr><td>„Mitbesitzer reichen, dann ist ein Weggang egal.“</td><td>Die Verbindungen der ausgeschiedenen Person brechen trotzdem.</td></tr>
+<tr><td>„Fehlerbehandlung heißt Wiederholen.“</td><td>Wiederholungen helfen bei vorübergehenden Fehlern; fachliche Fehler brauchen Try und Catch.</td></tr>
+</tbody>
+</table></div>
+<nav style="display:flex;justify-content:space-between;gap:1rem;margin-top:3rem;border-top:1px solid var(--rule);padding-top:1rem;font-family:'Helvetica Neue',Arial,sans-serif;font-size:.9rem"><span><a href="16-dataverse.html">← Zurück</a></span><a href="index.html">Übersicht</a><span><a href="18-solutions-alm.html">Weiter →</a></span></nav>
+</body>
+</html>

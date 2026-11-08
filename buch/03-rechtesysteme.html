@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3. Die drei Rechtesysteme: Warum „Admin“ nicht gleich „darf alles“ ist</title>
+<style>
+:root { --bg:#fafaf7; --text:#1f2230; --muted:#5b6072; --accent:#2f5d8a;
+  --accent-soft:#d9e4ef; --leader:#b8472a; --node-fill:#ffffff;
+  --node-stroke:#2f5d8a; --rule:#c8ccd6; --code-bg:#eef1f5; }
+html,body { background:var(--bg); color:var(--text);
+  font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+  line-height:1.65; font-size:18px; }
+body { max-width:760px; margin:3rem auto 6rem; padding:0 1.5rem; }
+h1 { font-size:2rem; line-height:1.2; margin:0 0 2rem;
+  border-bottom:1px solid var(--rule); padding-bottom:0.6rem; }
+h2 { font-size:1.35rem; margin-top:2.4rem; margin-bottom:0.8rem;
+  color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif;
+  font-weight:600; letter-spacing:0.01em; }
+p { margin:0 0 1.1rem; }
+figure { margin:2rem auto; text-align:center; }
+figure svg { max-width:100%; height:auto; display:block; margin:0 auto; }
+figcaption { font-family:"Helvetica Neue",Arial,sans-serif; font-size:0.85rem;
+  color:var(--muted); margin-top:0.6rem; text-align:center; }
+svg text { font-family:"Helvetica Neue",Arial,sans-serif; fill:var(--text); }
+.legend-text { font-size:11px; fill:var(--muted); }
+pre { background:var(--code-bg); padding:0.9rem 1.1rem; overflow-x:auto;
+  border-radius:6px; font-size:0.82em; }
+code { background:var(--code-bg); font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:0.85em; padding:0.1em 0.3em; border-radius:3px; }
+pre code { background:none; padding:0; }
+.table-wrap { overflow-x:auto; margin:1.5rem 0; }
+table { border-collapse:collapse; width:100%; min-width:34rem;
+  font-family:"Helvetica Neue",Arial,sans-serif; font-size:0.82rem; line-height:1.45; }
+th, td { text-align:left; vertical-align:top; padding:0.5rem 0.7rem;
+  border-bottom:1px solid var(--rule); }
+th { color:var(--accent); font-weight:600; background:var(--accent-soft);
+  border-bottom:2px solid var(--accent); }
+@media print {
+  body { max-width:none; margin:0; }
+  .table-wrap { overflow:visible; }
+  table { min-width:0; }
+  thead { display:table-header-group; }
+  tr, figure { break-inside:avoid; }
+  pre { overflow:visible; white-space:pre-wrap; overflow-wrap:anywhere; }
+}
+</style>
+</head>
+<body>
+<h1>3. Die drei Rechtesysteme: Warum „Admin“ nicht gleich „darf alles“ ist</h1>
+
+<p>Ein Konto ist Global Administrator und sieht in der Subscription-Liste des Azure-Portals trotzdem nichts. Ein anderes Konto ist Owner einer Subscription und kann keinen einzigen Nutzer anlegen. Beides ist kein Fehler. Das Wort „Admin“ beschreibt in der Microsoft-Welt keine allgemeine Macht, sondern immer ein Recht innerhalb eines bestimmten Systems.</p>
+
+<p>Drei zentral verwaltete Rechtesysteme stehen nebeneinander: Entra-Rollen regeln die Verwaltung des Tenants, Azure RBAC regelt den Zugriff auf Azure-Ressourcen, und App-Rechte regeln, was eine App über die Graph API tun darf. Darunter liegt eine vierte Schicht, die kein einheitliches System ist: die Rechte, die jeder Dienst auf seinen eigenen Daten führt, etwa die Mitgliedschaften einer SharePoint-Site. Daneben hat die Abrechnung ein eigenes Rollensystem dafür, wer kaufen, bezahlen und Verträge unterschreiben darf (siehe Kapitel 11, Lizenzen und Abrechnung).</p>
+
+<p>Die Systeme teilen sich dieselben Identitäten aus Entra ID, aber nicht ihre Zuweisungen. Ein Recht in einem System erzeugt kein Recht in einem anderen. Bei jedem Rechteproblem lautet die erste Frage deshalb: Welches System entscheidet hier überhaupt?</p>
+
+<figure id="kap03-rechtesysteme-karte">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 425" width="680" height="425" role="img" aria-labelledby="k1-title k1-desc"><title id="k1-title">Die drei Rechtesysteme und die Dienstrechte</title><desc id="k1-desc">Ein Principal aus Entra ID steht oben. Darunter stehen drei getrennte Säulen: Entra-Rollen mit dem Beispiel Global Administrator, Azure RBAC mit dem Beispiel Owner und App-Rechte mit dem Beispiel Files.Read.All. Unter ihnen liegt die uneinheitliche Schicht der Dienstrechte mit dem Beispiel Site-Mitgliedschaft. Gestrichelte Linien trennen alle Bereiche: Es gibt keine automatische Weitergabe.</desc><defs><marker id="k1-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="k1-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker><marker id="k1-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker></defs>
+<path d="M298 52 H26 V321" fill="none" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#k1-b)"/>
+<line x1="300.9" y1="67.3" x2="140" y2="129" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#k1-b)"/>
+<line x1="340" y1="94" x2="340" y2="129" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#k1-b)"/>
+<line x1="379.1" y1="67.3" x2="540" y2="129" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#k1-b)"/>
+<text x="165" y="43" text-anchor="middle" font-size="12" style="fill:#5b6072">Je System eine eigene Zuweisung</text>
+<circle cx="340" cy="52" r="42" fill="#ffffff" stroke="#b8472a" stroke-width="2.5"/>
+<text x="340" y="50" text-anchor="middle" font-size="13" font-weight="600">Principal</text>
+<text x="340" y="66" text-anchor="middle" font-size="11" style="fill:#5b6072">aus Entra ID</text>
+<rect x="50" y="130" width="180" height="132" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="140" y="156" text-anchor="middle" font-size="15" font-weight="600" style="fill:#2f5d8a">Entra-Rollen</text>
+<text x="140" y="176" text-anchor="middle" font-size="12">Ziel: Tenant-Verwaltung</text>
+<text x="140" y="204" text-anchor="middle" font-size="11" style="fill:#5b6072">Beispiel</text>
+<rect x="65" y="212" width="150" height="34" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="140" y="233" text-anchor="middle" font-size="12">Global Administrator</text>
+<rect x="250" y="130" width="180" height="132" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="340" y="156" text-anchor="middle" font-size="15" font-weight="600" style="fill:#2f5d8a">Azure RBAC</text>
+<text x="340" y="176" text-anchor="middle" font-size="12">Ziel: Azure-Ressourcen</text>
+<text x="340" y="204" text-anchor="middle" font-size="11" style="fill:#5b6072">Beispiel</text>
+<rect x="265" y="212" width="150" height="34" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="340" y="233" text-anchor="middle" font-size="12">Owner</text>
+<rect x="450" y="130" width="180" height="132" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="540" y="156" text-anchor="middle" font-size="15" font-weight="600" style="fill:#2f5d8a">App-Rechte</text>
+<text x="540" y="176" text-anchor="middle" font-size="12">Ziel: Graph API</text>
+<text x="540" y="204" text-anchor="middle" font-size="11" style="fill:#5b6072">Beispiel</text>
+<rect x="465" y="212" width="150" height="34" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="540" y="233" text-anchor="middle" font-size="12">Files.Read.All</text>
+<line x1="240" y1="120" x2="240" y2="294" stroke="#b8472a" stroke-width="1.6" stroke-dasharray="6 5"/>
+<line x1="440" y1="120" x2="440" y2="294" stroke="#b8472a" stroke-width="1.6" stroke-dasharray="6 5"/>
+<line x1="50" y1="294" x2="630" y2="294" stroke="#b8472a" stroke-width="1.6" stroke-dasharray="6 5"/>
+<rect x="240" y="284" width="200" height="20" fill="#fafaf7"/>
+<text x="340" y="298" text-anchor="middle" font-size="12" style="fill:#b8472a">keine automatische Weitergabe</text>
+<rect x="10" y="322" width="660" height="70" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="50" y="350" text-anchor="start" font-size="15" font-weight="600" style="fill:#2f5d8a">Dienstrechte</text>
+<text x="50" y="372" text-anchor="start" font-size="12">Uneinheitliche Schicht. Ziel: Sites, Postfächer, Teams</text>
+<text x="462" y="361" text-anchor="end" font-size="11" style="fill:#5b6072">Beispiel</text>
+<rect x="470" y="340" width="180" height="34" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="560" y="361" text-anchor="middle" font-size="12">Site-Mitgliedschaft</text>
+<line x1="100" y1="411" x2="130" y2="411" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#k1-b)"/>
+<text x="138" y="415" text-anchor="start" class="legend-text">Eigene Zuweisung an denselben Principal</text>
+<line x1="400" y1="411" x2="430" y2="411" stroke="#b8472a" stroke-width="1.6" stroke-dasharray="6 5"/>
+<text x="438" y="415" text-anchor="start" class="legend-text">Keine automatische Weitergabe</text>
+</svg>
+<figcaption>Dieselbe Identität kann in jedem System andere Rechte haben, und zwischen den Säulen und der Schicht gibt es keine automatische Weitergabe.</figcaption>
+</figure>
+
+<div class="table-wrap"><table>
+<thead><tr><th scope="col">System oder Schicht</th><th scope="col">Beantwortet die Frage</th><th scope="col">Typisches Beispiel</th><th scope="col">Wo zugewiesen</th></tr></thead>
+<tbody>
+<tr><td>Entra-Rollen</td><td>Wer verwaltet den Tenant?</td><td>User Administrator</td><td>Entra Admin Center, Bereich „Roles &amp; admins“</td></tr>
+<tr><td>Azure RBAC</td><td>Wer darf was an welcher Ressource?</td><td>Contributor auf einer Resource Group</td><td>Azure-Portal, Bereich „Access control (IAM)“</td></tr>
+<tr><td>App-Rechte</td><td>Was darf eine App über die Graph API?</td><td><code>Sites.Read.All</code></td><td>Angefordert in der App-Registrierung, per Consent wirksam an der Enterprise Application</td></tr>
+<tr><td>Dienstrechte</td><td>Wer kommt an diesen konkreten Inhalt?</td><td>Mitglied einer Site</td><td>Im jeweiligen Dienst, etwa in SharePoint</td></tr>
+</tbody>
+</table></div>
+
+<h2>Entra-Rollen: den Tenant verwalten</h2>
+
+<p>Eine Entra-Rolle ist eine administrative Rolle im Tenant. Sie erlaubt Verwaltungsaufgaben an Objekten von Entra ID und an den Einstellungen von Diensten. Der User Administrator verwaltet Nutzerkonten, der Groups Administrator Gruppen, der Global Administrator nahezu alles auf dieser Ebene.</p>
+
+<p>Der Geltungsbereich ist normalerweise der ganze Tenant. Eine Entra-Rolle kennt keine Subscription und keine Resource Group, weil sie Azure-Ressourcen gar nicht betrifft. Deshalb sieht ein frisch ernannter Global Administrator im Azure-Portal zunächst keine Subscription, solange ihm dort niemand etwas zugewiesen hat.</p>
+
+<p>Zugewiesen wird eine Entra-Rolle an Nutzer, an dafür zugelassene Gruppen oder an Service Principals. Welche Rolle konkret was darf und welche davon sich selbst weitere Rechte verschaffen kann, ist eine eigene Frage (siehe Kapitel 4, Admin-Rollen).</p>
+
+<h2>Azure RBAC: Ressourcen verwalten</h2>
+
+<p>Azure RBAC ist das Rechtesystem für Azure-Ressourcen. Es besteht aus genau drei Bausteinen, die eine Rollenzuweisung verknüpft:</p>
+
+<ul>
+<li><strong>Principal:</strong> wer das Recht erhält, also Nutzer, Gruppe, Service Principal oder Managed Identity.</li>
+<li><strong>Rolle:</strong> welche Aktionen erlaubt sind, festgelegt in einer Rollendefinition.</li>
+<li><strong>Scope (Azure):</strong> wo das Recht gilt.</li>
+</ul>
+
+<p>Der Scope (Azure) folgt einer festen Hierarchie: Management Group, Subscription, Resource Group, Ressource. Rechte werden nach unten vererbt: Wer Reader auf einer Subscription ist, ist auch Reader auf jeder Resource Group und jeder Ressource darin. Zuweisungen addieren sich. Ein niedrigerer Scope kann ein höher vergebenes Recht im Normalfall nicht wieder entziehen.</p>
+
+<figure id="kap03-scope-vererbung">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 375" width="680" height="375" role="img" aria-labelledby="k2-title k2-desc"><title id="k2-title">Vererbung über den Scope (Azure)</title><desc id="k2-desc">Management Group, Subscription, Resource Group und Ressource stehen untereinander. Eine Rollenzuweisung Reader setzt auf der Subscription an und wirkt nach unten auf Resource Group und Ressource. Die Management Group darüber ist nicht betroffen.</desc><defs><marker id="k2-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="k2-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker><marker id="k2-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker></defs>
+<line x1="200" y1="86" x2="200" y2="120" stroke="#5b6072" stroke-width="1.2"/>
+<rect x="60" y="30" width="280" height="56" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="200" y="63" text-anchor="middle" font-size="14" font-weight="600">Management Group</text>
+<text x="358" y="54" text-anchor="start" font-size="12" style="fill:#5b6072">Nicht betroffen: liegt über dem</text>
+<text x="358" y="71" text-anchor="start" font-size="12" style="fill:#5b6072">gewählten Scope (Azure)</text>
+<rect x="60" y="120" width="280" height="56" rx="8" fill="#ffffff" stroke="#b8472a" stroke-width="3"/>
+<text x="200" y="143" text-anchor="middle" font-size="14" font-weight="600">Subscription</text>
+<text x="200" y="162" text-anchor="middle" font-size="11" style="fill:#b8472a">gewählter Scope (Azure)</text>
+<rect x="60" y="210" width="280" height="56" rx="8" fill="#ffffff" stroke="#b8472a" stroke-width="2"/>
+<text x="200" y="243" text-anchor="middle" font-size="14" font-weight="600">Resource Group</text>
+<rect x="60" y="300" width="280" height="56" rx="8" fill="#ffffff" stroke="#b8472a" stroke-width="2"/>
+<text x="200" y="333" text-anchor="middle" font-size="14" font-weight="600">Ressource</text>
+<line x1="200" y1="176" x2="200" y2="209" stroke="#b8472a" stroke-width="2" marker-end="url(#k2-r)"/>
+<text x="212" y="197" text-anchor="start" font-size="12" style="fill:#b8472a">wird vererbt</text>
+<line x1="200" y1="266" x2="200" y2="299" stroke="#b8472a" stroke-width="2" marker-end="url(#k2-r)"/>
+<text x="212" y="287" text-anchor="start" font-size="12" style="fill:#b8472a">wird vererbt</text>
+<rect x="450" y="120" width="210" height="56" rx="8" fill="#ffffff" stroke="#b8472a" stroke-width="2.5"/>
+<text x="555" y="143" text-anchor="middle" font-size="14" font-weight="600">Rollenzuweisung</text>
+<text x="555" y="162" text-anchor="middle" font-size="12">Reader auf der Subscription</text>
+<line x1="450" y1="148" x2="342" y2="148" stroke="#b8472a" stroke-width="2" marker-end="url(#k2-r)"/>
+<text x="396" y="140" text-anchor="middle" font-size="12" style="fill:#b8472a">setzt hier an</text>
+<path d="M350 210 H362 V356 H350" fill="none" stroke="#b8472a" stroke-width="1.6"/>
+<text x="374" y="279" text-anchor="start" font-size="12" style="fill:#b8472a">Reader gilt auch hier,</text>
+<text x="374" y="296" text-anchor="start" font-size="12" style="fill:#b8472a">ohne eigene Zuweisung</text>
+</svg>
+<figcaption>Eine Zuweisung gilt für alles darunter, deshalb bestimmt der gewählte Scope (Azure) die Reichweite.</figcaption>
+</figure>
+
+<p>Least Privilege heißt hier vor allem: den kleinsten passenden Scope (Azure) wählen. Eine Zuweisung sieht auf der Kommandozeile so aus:</p>
+
+<pre><code class="language-bash">az role assignment create --assignee &lt;principal-id&gt; --role "Reader" --scope /subscriptions/&lt;subscription-id&gt;/resourceGroups/meine-rg</code></pre>
+
+<p>Die vorhandenen Zuweisungen zeigt im Portal der Bereich „Access control (IAM)“, den es auf jeder Scope-Ebene gibt. Auf der Kommandozeile hilft <code>az role assignment list --assignee &lt;principal-id&gt; --all --include-inherited</code>.</p>
+
+<p>Drei allgemeine Rollen tauchen fast überall auf:</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th scope="col">Rolle</th><th scope="col">Darf</th><th scope="col">Darf nicht</th></tr></thead>
+<tbody>
+<tr><td>Owner</td><td>Ressourcen vollständig verwalten und Rollen zuweisen</td><td>Allein durch die Rolle Inhalte über die Data Plane lesen</td></tr>
+<tr><td>Contributor</td><td>Ressourcen vollständig verwalten</td><td>Rollen zuweisen; allein durch die Rolle Inhalte über die Data Plane lesen</td></tr>
+<tr><td>Reader</td><td>Ressourcen und ihre Konfiguration ansehen</td><td>Etwas ändern</td></tr>
+</tbody>
+</table></div>
+
+<p>Auch Gruppen, App-Registrierungen und Sites kennen Besitzer. Diese haben mit der Azure-Rolle Owner nichts zu tun.</p>
+
+<h3>Control Plane gegen Data Plane</h3>
+
+<p>Die wichtigste Unterscheidung in Azure RBAC ist die zwischen Control Plane und Data Plane, also Verwalten gegen Inhalt. Rollendefinitionen bilden diese Trennung direkt ab. Das Feld <code>actions</code> listet Control-Plane-Aktionen, das Feld <code>dataActions</code> listet Data-Plane-Aktionen. Das folgende Beispiel nutzt den Storage Account, eine Azure-Ressource für die Datenablage, und den Blob, eine dort gespeicherte Datei. Der gekürzte Vergleich zweier eingebauter Rollen zeigt den Unterschied:</p>
+
+<pre><code class="language-json">{
+  "roleName": "Owner",
+  "actions": ["*"],
+  "dataActions": []
+}</code></pre>
+
+<pre><code class="language-json">{
+  "roleName": "Storage Blob Data Reader",
+  "actions": ["Microsoft.Storage/storageAccounts/blobServices/containers/read"],
+  "dataActions": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read"]
+}</code></pre>
+
+<p>Das Sternchen des Owners gilt nur für <code>actions</code>. Wer Owner eines Storage Accounts ist, darf ihn löschen, aber mit dieser Rolle allein keinen Blob per Entra-Anmeldung lesen. Umgekehrt darf der Storage Blob Data Reader Blobs lesen, aber den Storage Account nicht umkonfigurieren.</p>
+
+<p>Ein gutes Beispiel für die Trennung sind KI-Modelle in Azure. Mit der Rolle Contributor lässt sich eine Azure-OpenAI-Ressource anlegen und ein Modell bereitstellen. Für den eigentlichen Modellaufruf mit einem Entra-Token braucht der Principal aber eine Data-Plane-Rolle wie „Cognitive Services OpenAI User“. Diese Rolle erlaubt den Aufruf, aber nicht das Verwalten der Ressource. Nach demselben Muster funktionieren etwa „Key Vault Secrets User“ für Geheimnisse im Key Vault und die „Storage Blob Data“-Rollen für Blobs.</p>
+
+<figure id="kap03-control-data-plane">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 395" width="680" height="395" role="img" aria-labelledby="k3-title k3-desc"><title id="k3-title">Control Plane und Data Plane einer Azure-OpenAI-Ressource</title><desc id="k3-desc">Eine Azure-OpenAI-Ressource ist in Control Plane mit Ressource anlegen und Modell bereitstellen und Data Plane mit Modellaufruf geteilt. Contributor zeigt nur auf die Control Plane, Cognitive Services OpenAI User auf die Data Plane. Ein gestrichelter Pfeil listKeys führt von der Control Plane zum API-Key und weiter zur Data Plane.</desc><defs><marker id="k3-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="k3-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker><marker id="k3-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker></defs>
+<rect x="270" y="14" width="396" height="346" rx="10" fill="#ffffff" stroke="#5b6072" stroke-width="1.2"/>
+<text x="468" y="36" text-anchor="middle" font-size="14" font-weight="600">Azure-OpenAI-Ressource</text>
+<rect x="290" y="50" width="356" height="100" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="468" y="74" text-anchor="middle" font-size="14" font-weight="600" style="fill:#2f5d8a">Control Plane</text>
+<rect x="305" y="88" width="158" height="44" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="384" y="114" text-anchor="middle" font-size="12">Ressource anlegen</text>
+<rect x="473" y="88" width="158" height="44" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="552" y="114" text-anchor="middle" font-size="12">Modell bereitstellen</text>
+<rect x="290" y="250" width="356" height="94" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="468" y="274" text-anchor="middle" font-size="14" font-weight="600" style="fill:#2f5d8a">Data Plane</text>
+<rect x="389" y="288" width="158" height="42" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="468" y="313" text-anchor="middle" font-size="12">Modellaufruf</text>
+<rect x="413" y="185" width="110" height="30" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="2"/>
+<text x="468" y="205" text-anchor="middle" font-size="12" font-weight="600">API-Key</text>
+<line x1="468" y1="150" x2="468" y2="184" stroke="#b8472a" stroke-width="1.8" stroke-dasharray="6 4" marker-end="url(#k3-r)"/>
+<line x1="468" y1="215" x2="468" y2="249" stroke="#b8472a" stroke-width="1.8" stroke-dasharray="6 4" marker-end="url(#k3-r)"/>
+<text x="478" y="172" text-anchor="start" font-size="12" style="fill:#b8472a">listKeys</text>
+<text x="478" y="237" text-anchor="start" font-size="12" style="fill:#b8472a">ohne Data-Plane-Rolle</text>
+<text x="403" y="196" text-anchor="end" font-size="12" style="fill:#b8472a">Brücke zwischen</text>
+<text x="403" y="212" text-anchor="end" font-size="12" style="fill:#b8472a">den Ebenen</text>
+<rect x="16" y="76" width="194" height="54" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="113" y="108" text-anchor="middle" font-size="13" font-weight="600">Contributor</text>
+<line x1="210" y1="103" x2="289" y2="103" stroke="#2f5d8a" stroke-width="1.8" marker-end="url(#k3-b)"/>
+<text x="113" y="149" text-anchor="middle" font-size="11" style="fill:#5b6072">erreicht nur die Control Plane</text>
+<rect x="16" y="270" width="194" height="54" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="113" y="293" text-anchor="middle" font-size="13" font-weight="600">Cognitive Services</text>
+<text x="113" y="311" text-anchor="middle" font-size="13" font-weight="600">OpenAI User</text>
+<line x1="210" y1="297" x2="289" y2="297" stroke="#2f5d8a" stroke-width="1.8" marker-end="url(#k3-b)"/>
+<text x="113" y="343" text-anchor="middle" font-size="11" style="fill:#5b6072">erreicht die Data Plane</text>
+<line x1="150" y1="381" x2="180" y2="381" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#k3-b)"/>
+<text x="188" y="385" text-anchor="start" class="legend-text">Rollenzuweisung</text>
+<line x1="320" y1="381" x2="350" y2="381" stroke="#b8472a" stroke-width="1.8" stroke-dasharray="6 4" marker-end="url(#k3-r)"/>
+<text x="358" y="385" text-anchor="start" class="legend-text">Weg über einen gespeicherten Schlüssel</text>
+</svg>
+<figcaption>Verwaltungsrechte und Inhaltsrechte sind getrennt zugewiesen, und gespeicherte Schlüssel bilden eine Brücke von der einen Ebene zur anderen.</figcaption>
+</figure>
+
+<p>Die Trennung hat eine Lücke, die in der Praxis oft übersehen wird. Viele Dienste bieten neben der Entra-Anmeldung API-Keys an. Das Abrufen eines solchen Schlüssels ist eine Control-Plane-Aktion (<code>listKeys</code>), die in Owner und Contributor enthalten ist. Wer den Schlüssel hat, erreicht die Data Plane ohne Data-Plane-Rolle. Deshalb lässt sich die Anmeldung per Schlüssel bei vielen Diensten abschalten, damit nur noch die Rollenzuweisung zählt. Ein Owner erreicht die Data Plane außerdem, indem er sich selbst eine Data-Plane-Rolle zuweist.</p>
+
+<h2>App-Rechte: was eine App über die Graph API darf</h2>
+
+<p>Bei der Graph API erhält eine App keine Rolle auf einem Scope (Azure), sondern benannte Rechte wie <code>User.Read</code> oder <code>Files.Read.All</code>. Davon gibt es zwei Arten, und der Unterschied entscheidet darüber, wie weit eine App reicht.</p>
+
+<p><strong>Delegierte Berechtigung:</strong> Die App handelt im Namen eines angemeldeten Nutzers. Das Token enthält das Recht im Claim <code>scp</code>, und zwar als einen durch Leerzeichen getrennten Text.</p>
+
+<pre><code class="language-json">{
+  "aud": "https://graph.microsoft.com",
+  "tid": "&lt;tenant-id&gt;",
+  "oid": "&lt;object-id-des-nutzers&gt;",
+  "scp": "Files.Read.All User.Read"
+}</code></pre>
+
+<p><strong>Anwendungsberechtigung:</strong> Die App handelt als sie selbst, ohne Nutzer. Das Token enthält das Recht im Claim <code>roles</code> als Liste, und ein <code>scp</code> fehlt.</p>
+
+<pre><code class="language-json">{
+  "aud": "https://graph.microsoft.com",
+  "tid": "&lt;tenant-id&gt;",
+  "oid": "&lt;object-id-des-service-principal&gt;",
+  "roles": ["Files.Read.All"]
+}</code></pre>
+
+<p>Beide Tokens tragen hier denselben Rechtenamen, und doch bedeutet er etwas völlig anderes. Das liegt an der Schnittmengenregel:</p>
+
+<ul>
+<li>Bei einer Delegierten Berechtigung ist das wirksame Recht die Schnittmenge aus dem Recht der App und dem Recht des Nutzers. <code>Files.Read.All</code> erlaubt hier nur, was der Nutzer selbst lesen dürfte. Das „All“ meint alle für ihn zugänglichen Dateien, nicht alle Dateien des Tenants.</li>
+<li>Bei einer Anwendungsberechtigung gibt es keinen Nutzer und damit keine Schnittmenge. <code>Files.Read.All</code> erlaubt das Lesen aller Dateien im ganzen Tenant. Die Mitgliedschaften einzelner Sites spielen dafür keine Rolle.</li>
+</ul>
+
+<figure id="kap03-delegiert-anwendung">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 350" width="680" height="350" role="img" aria-labelledby="k4-title k4-desc"><title id="k4-title">Delegierte Berechtigung und Anwendungsberechtigung im Vergleich</title><desc id="k4-desc">Links überlappen sich die Mengen Files.Read.All als App-Recht und Dateien des Nutzers, nur die Schnittmenge ist wirksam, der Claim heißt scp. Rechts wirkt Files.Read.All ohne Nutzerrecht auf alle Sites des Tenants, der Claim heißt roles.</desc><defs><marker id="k4-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="k4-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker><marker id="k4-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker></defs><defs><clipPath id="k4-clip"><circle cx="125" cy="175" r="80"/></clipPath></defs>
+<rect x="10" y="10" width="320" height="330" rx="10" fill="#ffffff" stroke="#c8ccd6" stroke-width="1"/>
+<rect x="350" y="10" width="320" height="330" rx="10" fill="#ffffff" stroke="#c8ccd6" stroke-width="1"/>
+<text x="170" y="36" text-anchor="middle" font-size="15" font-weight="600" style="fill:#2f5d8a">Delegierte Berechtigung</text>
+<text x="170" y="54" text-anchor="middle" font-size="12" style="fill:#5b6072">im Namen eines Nutzers</text>
+<circle cx="125" cy="175" r="80" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<circle cx="215" cy="175" r="80" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<circle cx="215" cy="175" r="80" fill="#b8472a" fill-opacity="0.18" clip-path="url(#k4-clip)"/>
+<circle cx="125" cy="175" r="80" fill="none" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="90" y="172" text-anchor="middle" font-size="11" font-weight="600">Files.Read.All</text>
+<text x="90" y="188" text-anchor="middle" font-size="11" style="fill:#5b6072">App-Recht</text>
+<text x="170" y="179" text-anchor="middle" font-size="12" font-weight="600" style="fill:#b8472a">wirksam</text>
+<text x="250" y="172" text-anchor="middle" font-size="11" font-weight="600">Dateien</text>
+<text x="250" y="188" text-anchor="middle" font-size="11" font-weight="600">des Nutzers</text>
+<text x="170" y="278" text-anchor="middle" font-size="12" style="fill:#b8472a">Wirksam: nur die Schnittmenge</text>
+<rect x="115" y="294" width="110" height="30" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="170" y="314" text-anchor="middle" font-size="12">Claim: scp</text>
+<text x="510" y="36" text-anchor="middle" font-size="15" font-weight="600" style="fill:#2f5d8a">Anwendungsberechtigung</text>
+<text x="510" y="54" text-anchor="middle" font-size="12" style="fill:#5b6072">als App selbst, ohne Nutzer</text>
+<rect x="430" y="68" width="160" height="38" rx="8" fill="#ffffff" stroke="#b8472a" stroke-width="2.5"/>
+<text x="510" y="92" text-anchor="middle" font-size="13" font-weight="600">Files.Read.All</text>
+<line x1="510" y1="106" x2="510" y2="149" stroke="#b8472a" stroke-width="2" marker-end="url(#k4-r)"/>
+<text x="520" y="124" text-anchor="start" font-size="11" style="fill:#b8472a">kein Nutzerrecht</text>
+<text x="520" y="138" text-anchor="start" font-size="11" style="fill:#b8472a">als Grenze</text>
+<rect x="370" y="150" width="280" height="112" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="510" y="170" text-anchor="middle" font-size="12" font-weight="600">Alle Sites des Tenants</text>
+<rect x="390" y="180" width="70" height="32" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/>
+<rect x="390" y="180" width="70" height="32" rx="4" fill="#b8472a" fill-opacity="0.18"/>
+<text x="425" y="200" text-anchor="middle" font-size="11">Site</text>
+<rect x="475" y="180" width="70" height="32" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/>
+<rect x="475" y="180" width="70" height="32" rx="4" fill="#b8472a" fill-opacity="0.18"/>
+<text x="510" y="200" text-anchor="middle" font-size="11">Site</text>
+<rect x="560" y="180" width="70" height="32" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/>
+<rect x="560" y="180" width="70" height="32" rx="4" fill="#b8472a" fill-opacity="0.18"/>
+<text x="595" y="200" text-anchor="middle" font-size="11">Site</text>
+<rect x="390" y="220" width="70" height="32" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/>
+<rect x="390" y="220" width="70" height="32" rx="4" fill="#b8472a" fill-opacity="0.18"/>
+<text x="425" y="240" text-anchor="middle" font-size="11">Site</text>
+<rect x="475" y="220" width="70" height="32" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/>
+<rect x="475" y="220" width="70" height="32" rx="4" fill="#b8472a" fill-opacity="0.18"/>
+<text x="510" y="240" text-anchor="middle" font-size="11">Site</text>
+<rect x="560" y="220" width="70" height="32" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/>
+<rect x="560" y="220" width="70" height="32" rx="4" fill="#b8472a" fill-opacity="0.18"/>
+<text x="595" y="240" text-anchor="middle" font-size="11">Site</text>
+<text x="510" y="278" text-anchor="middle" font-size="12" style="fill:#b8472a">Wirksam: alle Dateien im ganzen Tenant</text>
+<rect x="455" y="294" width="110" height="30" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="510" y="314" text-anchor="middle" font-size="12">Claim: roles</text>
+</svg>
+<figcaption>Derselbe Rechtename reicht bei einer Anwendungsberechtigung viel weiter, weil kein Nutzerrecht ihn begrenzt.</figcaption>
+</figure>
+
+<p>Die Reichweite der Anwendungsberechtigung ist der Grund für das Recht Sites.Selected. Es erlaubt zunächst nichts, und jede Site wird einzeln freigegeben. So bekommt ein Skript Zugriff auf genau eine Site statt auf alle (siehe Kapitel 5, Daten und Freigaben).</p>
+
+<p>Der Claim <code>roles</code> ist übrigens nicht Graph-spezifisch. Auch eigene APIs können App-Rollen definieren, die dann im selben Claim erscheinen. Entscheidend ist immer die Audience: Rechte in einem Token gelten nur für den Dienst aus <code>aud</code>. Ein Graph-Token öffnet keine Azure-Ressource. Für Azure-Verwaltungsaufrufe braucht es ein eigenes Token mit der Audience <code>https://management.azure.com</code>, und dieses Token enthält keine Rollenzuweisungen. Azure prüft sie erst beim Aufruf.</p>
+
+<h3>Consent und Admin Consent</h3>
+
+<p>Dass eine App ein Recht anfordert, gibt ihr dieses Recht noch nicht. Erst der Consent, also die Zustimmung eines Nutzers oder Admins, macht es wirksam. Admin Consent ist die Zustimmung eines Admins für den ganzen Tenant.</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th scope="col">Art des Rechts</th><th scope="col">Wer kann zustimmen</th></tr></thead>
+<tbody>
+<tr><td>Delegierte Berechtigung mit geringer Reichweite, etwa <code>User.Read</code></td><td>Der Nutzer selbst, sofern die Tenant-Einstellungen das zulassen</td></tr>
+<tr><td>Delegierte Berechtigung mit hoher Reichweite, etwa <code>User.ReadWrite.All</code></td><td>Nur ein Admin</td></tr>
+<tr><td>Anwendungsberechtigung</td><td>Immer nur ein Admin</td></tr>
+</tbody>
+</table></div>
+
+<p>Dazu passt die Trennung aus App-Registrierung und Service Principal (siehe Kapitel 2, Identitäten und Tokens). Im Portal heißt der Service Principal Enterprise Application. Daraus ergeben sich zwei Orte, die oft verwechselt werden:</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th scope="col">Ort im Entra Admin Center</th><th scope="col">Zeigt</th><th scope="col">Merksatz</th></tr></thead>
+<tbody>
+<tr><td>App registrations → App → „API permissions“</td><td>Die Rechte, die die App anfordert, mit Status und Schaltfläche für Admin Consent</td><td>Was die App haben möchte</td></tr>
+<tr><td>Enterprise applications → App → „Permissions“</td><td>Die Rechte, denen in diesem Tenant zugestimmt wurde</td><td>Was die App hier wirklich hat</td></tr>
+</tbody>
+</table></div>
+
+<p>Weichen beide Listen voneinander ab, fehlt meist ein Consent. Oder ein Recht wurde nachträglich ergänzt, ohne erneut zuzustimmen. Außerdem gilt: Ein bereits ausgestelltes Access Token ändert sich nicht. Nach einem neuen Consent braucht die App ein neues Token, sonst fehlt das Recht weiter in <code>scp</code> oder <code>roles</code>.</p>
+
+<h2>Rechte auf den Daten: was die Dienste selbst führen</h2>
+
+<p>Unter den drei Systemen liegen die Rechte der Dienste auf ihren eigenen Inhalten. Sie werden nicht in Entra ID als Rolle geführt, sondern im Dienst selbst.</p>
+
+<ul>
+<li><strong>SharePoint:</strong> Eine Site hat Rollen wie Owner, Member und Visitor. Bei Sites, die zu einem Team gehören, ergibt sich das meist aus der Mitgliedschaft in der Microsoft-365-Gruppe.</li>
+<li><strong>Exchange Online:</strong> Postfachrechte wie „Full Access“ oder „Send As“ werden pro Postfach vergeben.</li>
+<li><strong>Teams:</strong> Jedes Team unterscheidet Besitzer, Mitglieder und Gäste.</li>
+</ul>
+
+<p>Auch diese Schicht begrenzt, was ein „Admin“ tatsächlich erreicht. Eine Delegierte Berechtigung scheitert an fehlenden Dienstrechten des Nutzers, selbst wenn das Token korrekt ist. Und eine hohe Entra-Rolle ist keine Mitgliedschaft: Der Global Administrator ist nicht automatisch Mitglied jeder Site. Er kann sich allenfalls Zugang verschaffen, was etwas anderes ist und nachvollziehbar bleibt (siehe Kapitel 4, Admin-Rollen). Wie sich Rechte innerhalb einer Site verteilen und durch Freigaben ausweiten, gehört zur Datenebene (siehe Kapitel 5, Daten und Freigaben).</p>
+
+<h2>Fehler zuordnen: Welches System ist zuständig?</h2>
+
+<p>Die HTTP-Statuscodes geben die erste Richtung vor. 401 bedeutet in der Regel: Das Token fehlt, ist abgelaufen oder passt nicht zum Dienst. 403 bedeutet in der Regel: Das Token ist in Ordnung, aber das Recht fehlt. Ganz einheitlich halten sich die Dienste nicht daran. Der Fehlercode im Antworttext ist deshalb verlässlicher als der Status allein.</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th scope="col">Symptom</th><th scope="col">Typischer Fehlercode</th><th scope="col">Zuständig</th><th scope="col">Prüfen</th></tr></thead>
+<tbody>
+<tr><td>Token-Abruf scheitert, Consent fehlt</td><td><code>AADSTS65001</code></td><td>Consent</td><td>Enterprise Application → „Permissions“; Admin Consent erteilen</td></tr>
+<tr><td>Token-Abruf scheitert, Anmeldedaten falsch</td><td><code>AADSTS7000215</code></td><td>Kein Rechtesystem, sondern die Anmeldung</td><td>Client Secret und seine Gültigkeit</td></tr>
+<tr><td>401 bei der Graph API</td><td><code>InvalidAuthenticationToken</code></td><td>Token</td><td>Ablauf und <code>aud</code></td></tr>
+<tr><td>401 bei der Azure-Verwaltung</td><td><code>InvalidAuthenticationTokenAudience</code></td><td>Token</td><td><code>aud</code> muss zur Azure-Verwaltung passen</td></tr>
+<tr><td>403 bei einer Verwaltungsaktion in Azure</td><td><code>AuthorizationFailed</code></td><td>Azure RBAC, Control Plane</td><td>Die Meldung nennt Aktion und Scope (Azure); Rollenzuweisung prüfen</td></tr>
+<tr><td>403 beim Lesen eines Blobs oder Geheimnisses</td><td><code>AuthorizationPermissionMismatch</code>, <code>ForbiddenByRbac</code></td><td>Azure RBAC, Data Plane</td><td>Data-Plane-Rolle zuweisen; Owner reicht hier nicht</td></tr>
+<tr><td>403 bei Graph-Aufrufen zu Nutzern oder Gruppen</td><td><code>Authorization_RequestDenied</code></td><td>App-Rechte, bei delegiertem Zugriff auch Entra-Rolle</td><td><code>scp</code> oder <code>roles</code>; Entra-Rolle des Nutzers</td></tr>
+<tr><td>403 beim Lesen einer Datei über die Graph API, Recht steht im Token</td><td><code>accessDenied</code></td><td>Dienstrechte</td><td>Site-Mitgliedschaft des Nutzers oder Freigabe bei Sites.Selected</td></tr>
+<tr><td>404, obwohl das Element existiert</td><td><code>itemNotFound</code></td><td>Möglicherweise Dienstrechte</td><td>Manche Dienste verbergen Elemente ohne Zugriff ganz</td></tr>
+<tr><td>Option im Entra-Bereich des Portals gesperrt</td><td>Meist Hinweis im Portal</td><td>Entra-Rolle</td><td>„Roles &amp; admins“ → eigene Zuweisungen</td></tr>
+</tbody>
+</table></div>
+
+<p>Die Reihenfolge der Diagnose ergibt sich aus dieser Tabelle. Zuerst das Token ansehen: Passt <code>aud</code> zum Zieldienst? Stehen die erwarteten Rechte in <code>scp</code> oder <code>roles</code>? Ein Token lässt sich zum Testen mit einem JWT-Decoder lesen, etwa mit dem Microsoft-Tool <code>jwt.ms</code>. Stimmt das Token, liegt das Problem beim Zieldienst und seinen eigenen Zuweisungen. Nach einer neuen Azure-Rollenzuweisung kann es zudem einige Minuten dauern, bis sie greift.</p>
+
+<h2>Drei Skripte, drei Antworten</h2>
+
+<p>Drei alltägliche Aufgaben zeigen, wie die Systeme auseinanderfallen. Der Principal des Skripts ist jeweils frei wählbar. Entscheidend ist, welches System die Aufgabe prüft.</p>
+
+<p><strong>Eine Datei in SharePoint lesen.</strong> Der Aufruf geht an die Graph API, also zählen App-Rechte und Dienstrechte. Läuft das Skript im Namen eines Nutzers, reicht eine Delegierte Berechtigung wie <code>Files.Read.All</code>, und der Nutzer braucht selbst Zugriff auf die Datei. Läuft es ohne Nutzer, ist Sites.Selected als Anwendungsberechtigung mit Freigabe für genau diese Site die enge Variante. <code>Files.Read.All</code> als Anwendungsberechtigung funktioniert auch, öffnet aber alle Dateien des Tenants. Azure-Rollen helfen hier nicht. Läge die Datei stattdessen in einem Azure Storage Account, wäre die Antwort eine ganz andere: Data-Plane-Rolle „Storage Blob Data Reader“.</p>
+
+<p><strong>Eine Web-App neu starten.</strong> Das ist eine Control-Plane-Aktion in Azure, also zählt allein Azure RBAC. Der Principal braucht eine Rolle mit der Aktion <code>Microsoft.Web/sites/restart/action</code>, etwa „Website Contributor“ auf genau dieser Ressource. Graph-Rechte und Consent spielen keine Rolle. Der Aufruf selbst ist kurz: <code>az webapp restart --name meine-app --resource-group meine-rg</code>.</p>
+
+<p><strong>Einen Nutzer anlegen.</strong> Das ist ein Graph-Aufruf (<code>POST /users</code>) auf ein Objekt von Entra ID. Ohne Nutzer braucht die App die Anwendungsberechtigung <code>User.ReadWrite.All</code> mit Admin Consent. Im Namen eines Nutzers braucht sie die gleichnamige Delegierte Berechtigung, und zusätzlich muss der Nutzer eine passende Entra-Rolle wie User Administrator haben. Hier wird die Schnittmengenregel sichtbar: Ein Nutzer ohne diese Rolle scheitert, auch wenn die App das Recht hat. Azure Owner hilft hier ebenfalls nicht.</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th scope="col">Aufgabe</th><th scope="col">Entscheidendes System</th><th scope="col">Mindestrecht ohne Nutzer</th><th scope="col">Mindestrecht im Namen eines Nutzers</th></tr></thead>
+<tbody>
+<tr><td>Datei in SharePoint lesen</td><td>App-Rechte und Dienstrechte</td><td>Sites.Selected plus Freigabe der Site</td><td><code>Files.Read.All</code> plus Zugriff des Nutzers auf die Datei</td></tr>
+<tr><td>Web-App neu starten</td><td>Azure RBAC, Control Plane</td><td>Rolle mit Neustart-Aktion auf der Ressource</td><td>Dieselbe Rolle für den Nutzer</td></tr>
+<tr><td>Nutzer anlegen</td><td>App-Rechte und Entra-Rolle</td><td><code>User.ReadWrite.All</code> mit Admin Consent</td><td><code>User.ReadWrite.All</code> plus User Administrator</td></tr>
+</tbody>
+</table></div>
+<nav style="display:flex;justify-content:space-between;gap:1rem;margin-top:3rem;border-top:1px solid var(--rule);padding-top:1rem;font-family:'Helvetica Neue',Arial,sans-serif;font-size:.9rem"><span><a href="02-identitaeten-tokens.html">← Zurück</a></span><a href="index.html">Übersicht</a><span><a href="04-admin-rollen.html">Weiter →</a></span></nav>
+</body>
+</html>

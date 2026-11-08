@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 505" width="680" role="img" aria-labelledby="kap05-delegiert-vs-anwendung-t kap05-delegiert-vs-anwendung-d" style="background:#ffffff"><style>text{font-family:"Helvetica Neue",Arial,sans-serif;fill:#1f2230}.legend-text{font-size:11px;fill:#5b6072}</style><title id="kap05-delegiert-vs-anwendung-t">Delegierte Berechtigung und Anwendungsberechtigung im Vergleich</title><desc id="kap05-delegiert-vs-anwendung-d">Stellt nebeneinander dar, welche Dateien eine App beim gleichen Graph-Aufruf erreicht, einmal delegiert im Namen eines Nutzers, einmal mit Anwendungsberechtigung.</desc><defs><marker id="kap05-delegiert-vs-anwendung-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="kap05-delegiert-vs-anwendung-h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker><marker id="kap05-delegiert-vs-anwendung-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker></defs>
+<rect x="15" y="14" width="315" height="454" rx="10" fill="none" stroke="#c8ccd6" stroke-width="1"/>
+<text x="172" y="38" text-anchor="middle" font-size="14" font-weight="600" style="fill:#2f5d8a">Delegierte Berechtigung</text>
+<rect x="350" y="14" width="315" height="454" rx="10" fill="none" stroke="#c8ccd6" stroke-width="1"/>
+<text x="508" y="38" text-anchor="middle" font-size="14" font-weight="600" style="fill:#b8472a">Anwendungsberechtigung</text>
+<circle cx="90" cy="85" r="30" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="90" y="89" text-anchor="middle" font-size="12" font-weight="600">Nutzer</text>
+<circle cx="255" cy="85" r="30" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="255" y="89" text-anchor="middle" font-size="12" font-weight="600">App</text>
+<line x1="120" y1="85" x2="225" y2="85" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#kap05-delegiert-vs-anwendung-a)"/>
+<text x="172" y="77" text-anchor="middle" font-size="11" style="fill:#2f5d8a">im Namen von</text>
+<circle cx="425" cy="85" r="30" fill="#ffffff" stroke="#5b6072" stroke-width="1.2" stroke-dasharray="4 3"/>
+<text x="425" y="82" text-anchor="middle" font-size="11" style="fill:#5b6072">kein</text>
+<text x="425" y="96" text-anchor="middle" font-size="11" style="fill:#5b6072">Nutzer</text>
+<circle cx="590" cy="85" r="30" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="590" y="89" text-anchor="middle" font-size="12" font-weight="600">App</text>
+<text x="508" y="81" text-anchor="middle" font-size="11" style="fill:#b8472a">handelt als</text>
+<text x="508" y="95" text-anchor="middle" font-size="11" style="fill:#b8472a">sie selbst</text>
+<line x1="255" y1="115" x2="255" y2="140" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#kap05-delegiert-vs-anwendung-a)"/>
+<line x1="590" y1="115" x2="590" y2="140" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#kap05-delegiert-vs-anwendung-a)"/>
+<rect x="30" y="140" width="285" height="52" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="172" y="161" text-anchor="middle" font-size="12.5" font-weight="600">Access Token</text>
+<text x="172" y="179" text-anchor="middle" font-size="11.5" style="fill:#2f5d8a;font-family:ui-monospace,Menlo,Consolas,monospace">scp: Files.Read.All</text>
+<line x1="172" y1="192" x2="172" y2="222" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#kap05-delegiert-vs-anwendung-a)"/>
+<text x="180" y="212" text-anchor="start" font-size="11" style="fill:#5b6072">Graph-Aufruf</text>
+<rect x="365" y="140" width="285" height="52" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="508" y="161" text-anchor="middle" font-size="12.5" font-weight="600">Access Token</text>
+<text x="508" y="179" text-anchor="middle" font-size="11.5" style="fill:#b8472a;font-family:ui-monospace,Menlo,Consolas,monospace">roles: Sites.Read.All</text>
+<line x1="508" y1="192" x2="508" y2="222" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#kap05-delegiert-vs-anwendung-a)"/>
+<text x="516" y="212" text-anchor="start" font-size="11" style="fill:#5b6072">Graph-Aufruf</text>
+<rect x="30" y="222" width="285" height="70" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="172" y="244" text-anchor="middle" font-size="12.5" font-weight="600">Security Trimming</text>
+<text x="172" y="262" text-anchor="middle" font-size="11.5" style="fill:#2f5d8a">anfragende Identität: der Nutzer</text>
+<text x="172" y="279" text-anchor="middle" font-size="10.5" style="fill:#5b6072">wirksam: Schnittmenge aus App- und Nutzerrecht</text>
+<rect x="365" y="222" width="285" height="70" rx="8" fill="#ffffff" stroke="#b8472a" stroke-width="2"/>
+<text x="508" y="244" text-anchor="middle" font-size="12.5" font-weight="600">Security Trimming</text>
+<text x="508" y="262" text-anchor="middle" font-size="11.5" style="fill:#b8472a">anfragende Identität: die App</text>
+<text x="508" y="279" text-anchor="middle" font-size="10.5" style="fill:#5b6072">keine Prüfung gegen Nutzerrechte</text>
+<line x1="172" y1="292" x2="172" y2="322" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#kap05-delegiert-vs-anwendung-a)"/>
+<line x1="508" y1="292" x2="508" y2="322" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#kap05-delegiert-vs-anwendung-a)"/>
+<rect x="30" y="322" width="285" height="130" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="172" y="344" text-anchor="middle" font-size="12" font-weight="600">Sites und OneDrives des Tenants</text>
+<rect x="48" y="356" width="24" height="18" rx="2" fill="#2f5d8a" stroke="#2f5d8a" stroke-width="1"/>
+<rect x="80" y="356" width="24" height="18" rx="2" fill="#2f5d8a" stroke="#2f5d8a" stroke-width="1"/>
+<rect x="112" y="356" width="24" height="18" rx="2" fill="#2f5d8a" stroke="#2f5d8a" stroke-width="1"/>
+<rect x="144" y="356" width="24" height="18" rx="2" fill="#ffffff" stroke="#c8ccd6" stroke-width="1"/>
+<rect x="176" y="356" width="24" height="18" rx="2" fill="#ffffff" stroke="#c8ccd6" stroke-width="1"/>
+<rect x="208" y="356" width="24" height="18" rx="2" fill="#ffffff" stroke="#c8ccd6" stroke-width="1"/>
+<rect x="240" y="356" width="24" height="18" rx="2" fill="#ffffff" stroke="#c8ccd6" stroke-width="1"/>
+<rect x="272" y="356" width="24" height="18" rx="2" fill="#ffffff" stroke="#c8ccd6" stroke-width="1"/>
+<rect x="48" y="382" width="24" height="18" rx="2" fill="#ffffff" stroke="#c8ccd6" stroke-width="1"/>
+<rect x="80" y="382" width="24" height="18" rx="2" fill="#ffffff" stroke="#c8ccd6" stroke-width="1"/>
+<rect x="112" y="382" width="24" height="18" rx="2" fill="#ffffff" stroke="#c8ccd6" stroke-width="1"/>
+<rect x="144" y="382" width="24" height="18" rx="2" fill="#ffffff" stroke="#c8ccd6" stroke-width="1"/>
+<rect x="176" y="382" width="24" height="18" rx="2" fill="#ffffff" stroke="#c8ccd6" stroke-width="1"/>
+<rect x="208" y="382" width="24" height="18" rx="2" fill="#ffffff" stroke="#c8ccd6" stroke-width="1"/>
+<rect x="240" y="382" width="24" height="18" rx="2" fill="#ffffff" stroke="#c8ccd6" stroke-width="1"/>
+<rect x="272" y="382" width="24" height="18" rx="2" fill="#ffffff" stroke="#c8ccd6" stroke-width="1"/>
+<text x="172" y="428" text-anchor="middle" font-size="11" font-weight="600" style="fill:#2f5d8a">erreichbar: nur, was dieser Nutzer lesen darf</text>
+<rect x="365" y="322" width="285" height="130" rx="8" fill="#ffffff" stroke="#b8472a" stroke-width="2"/>
+<text x="508" y="344" text-anchor="middle" font-size="12" font-weight="600">Sites und OneDrives des Tenants</text>
+<rect x="384" y="356" width="24" height="18" rx="2" fill="#b8472a" stroke="#b8472a" stroke-width="1"/>
+<rect x="416" y="356" width="24" height="18" rx="2" fill="#b8472a" stroke="#b8472a" stroke-width="1"/>
+<rect x="448" y="356" width="24" height="18" rx="2" fill="#b8472a" stroke="#b8472a" stroke-width="1"/>
+<rect x="480" y="356" width="24" height="18" rx="2" fill="#b8472a" stroke="#b8472a" stroke-width="1"/>
+<rect x="512" y="356" width="24" height="18" rx="2" fill="#b8472a" stroke="#b8472a" stroke-width="1"/>
+<rect x="544" y="356" width="24" height="18" rx="2" fill="#b8472a" stroke="#b8472a" stroke-width="1"/>
+<rect x="576" y="356" width="24" height="18" rx="2" fill="#b8472a" stroke="#b8472a" stroke-width="1"/>
+<rect x="608" y="356" width="24" height="18" rx="2" fill="#b8472a" stroke="#b8472a" stroke-width="1"/>
+<rect x="384" y="382" width="24" height="18" rx="2" fill="#b8472a" stroke="#b8472a" stroke-width="1"/>
+<rect x="416" y="382" width="24" height="18" rx="2" fill="#b8472a" stroke="#b8472a" stroke-width="1"/>
+<rect x="448" y="382" width="24" height="18" rx="2" fill="#b8472a" stroke="#b8472a" stroke-width="1"/>
+<rect x="480" y="382" width="24" height="18" rx="2" fill="#b8472a" stroke="#b8472a" stroke-width="1"/>
+<rect x="512" y="382" width="24" height="18" rx="2" fill="#b8472a" stroke="#b8472a" stroke-width="1"/>
+<rect x="544" y="382" width="24" height="18" rx="2" fill="#b8472a" stroke="#b8472a" stroke-width="1"/>
+<rect x="576" y="382" width="24" height="18" rx="2" fill="#b8472a" stroke="#b8472a" stroke-width="1"/>
+<rect x="608" y="382" width="24" height="18" rx="2" fill="#b8472a" stroke="#b8472a" stroke-width="1"/>
+<text x="508" y="428" text-anchor="middle" font-size="11" font-weight="600" style="fill:#b8472a">erreichbar: alle Sites und OneDrives des Tenants</text>
+<rect x="24" y="484" width="16" height="12" rx="2" fill="#2f5d8a" stroke="#2f5d8a" stroke-width="1"/>
+<rect x="44" y="484" width="16" height="12" rx="2" fill="#b8472a" stroke="#b8472a" stroke-width="1"/>
+<text x="68" y="494" text-anchor="start" class="legend-text">für die App erreichbar</text>
+<rect x="230" y="484" width="16" height="12" rx="2" fill="#ffffff" stroke="#c8ccd6" stroke-width="1"/>
+<text x="254" y="494" text-anchor="start" class="legend-text">nicht erreichbar</text>
+</svg>

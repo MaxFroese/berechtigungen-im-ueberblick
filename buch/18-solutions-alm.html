@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>18. Solutions und ALM: von Dev nach Prod</title>
+<style>
+:root { --bg:#fafaf7; --text:#1f2230; --muted:#5b6072; --accent:#2f5d8a;
+  --accent-soft:#d9e4ef; --leader:#b8472a; --node-fill:#ffffff;
+  --node-stroke:#2f5d8a; --rule:#c8ccd6; --code-bg:#eef1f5; }
+html,body { background:var(--bg); color:var(--text);
+  font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+  line-height:1.65; font-size:18px; }
+body { max-width:760px; margin:3rem auto 6rem; padding:0 1.5rem; }
+h1 { font-size:2rem; line-height:1.2; margin:0 0 2rem;
+  border-bottom:1px solid var(--rule); padding-bottom:0.6rem; }
+h2 { font-size:1.35rem; margin-top:2.4rem; margin-bottom:0.8rem;
+  color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif;
+  font-weight:600; letter-spacing:0.01em; }
+p { margin:0 0 1.1rem; }
+figure { margin:2rem auto; text-align:center; }
+figure svg { max-width:100%; height:auto; display:block; margin:0 auto; }
+figcaption { font-family:"Helvetica Neue",Arial,sans-serif; font-size:0.85rem;
+  color:var(--muted); margin-top:0.6rem; text-align:center; }
+svg text { font-family:"Helvetica Neue",Arial,sans-serif; fill:var(--text); }
+.legend-text { font-size:11px; fill:var(--muted); }
+pre { background:var(--code-bg); padding:0.9rem 1.1rem; overflow-x:auto;
+  border-radius:6px; font-size:0.82em; }
+code { background:var(--code-bg); font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:0.85em; padding:0.1em 0.3em; border-radius:3px; }
+pre code { background:none; padding:0; }
+.table-wrap { overflow-x:auto; margin:1.5rem 0; }
+table { border-collapse:collapse; width:100%; font-size:0.85em; line-height:1.45; }
+th { text-align:left; color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif;
+  font-weight:600; border-bottom:2px solid var(--accent); padding:0.45rem 0.6rem;
+  vertical-align:bottom; }
+td { border-bottom:1px solid var(--rule); padding:0.45rem 0.6rem; vertical-align:top; }
+tr { break-inside:avoid; }
+</style>
+</head>
+<body>
+<h1>18. Solutions und ALM: von Dev nach Prod</h1>
+
+<p>In einem Softwareprojekt ist es selbstverständlich, dass Code in Git liegt, gebaut und über eine Pipeline ausgeliefert wird. In der Power Platform entsteht dagegen vieles direkt im Browser, in einer Umgebung, mit einem Klick auf „Speichern“. Damit daraus trotzdem eine kontrollierte Auslieferung wird, gibt es <strong>Solutions</strong> und <strong>ALM</strong> (Application Lifecycle Management): den geordneten Weg einer Lösung von der Entwicklung über den Test in den Betrieb. Für jemanden mit Entwicklerhintergrund ist das der vertrauteste Teil der Plattform, auch wenn die Begriffe anders heißen.</p>
+
+<h2>Was eine Solution ist</h2>
+
+<p>Eine <strong>Solution</strong> ist ein Paket aus Komponenten: Tabellen und Spalten, Apps, Flows, Agenten, Sicherheitsrollen, Umgebungsvariablen, Verbindungsreferenzen und mehr. Sie enthält Metadaten und Definitionen, <strong>keine Daten</strong>. Die Zeilen einer Tabelle wandern nicht mit.</p>
+
+<h3>Unmanaged und managed</h3>
+
+<div class="table-wrap"><table>
+<thead><tr><th></th><th>Unmanaged</th><th>Managed</th></tr></thead>
+<tbody>
+<tr><td>Rolle</td><td>Quelle</td><td>Build-Artefakt</td></tr>
+<tr><td>Wo</td><td>in der Entwicklungsumgebung und in Git</td><td>in Test und Produktion</td></tr>
+<tr><td>Bearbeitbar</td><td>ja</td><td>nein, nicht direkt in der Zielumgebung</td></tr>
+<tr><td>Beim Löschen</td><td>nur der Container verschwindet, die Komponenten bleiben</td><td>Komponenten verschwinden samt Daten in ihren eigenen Tabellen</td></tr>
+</tbody>
+</table></div>
+
+<p>Die Analogie zur Softwareentwicklung trägt gut: Die unmanaged Solution ist der Quellcode, die managed Solution das gebaute Paket. Nach Produktion geht immer managed.</p>
+
+<h3>Publisher und Präfix</h3>
+
+<p>Jede Solution hat einen <strong>Publisher</strong>. Er bestimmt das <strong>Präfix</strong>, das vor den technischen Namen aller neuen Komponenten steht, etwa <code>contoso_projekt</code>. Das Präfix lässt sich danach nicht mehr ändern, und eine Komponente kann ihren Publisher nicht wechseln. Deshalb gehört ein eigener Publisher mit einem sinnvollen Präfix an den Anfang jedes Vorhabens, nicht der vorgegebene Standard-Publisher.</p>
+
+<h2>Schichten: warum Änderungen in Produktion schaden</h2>
+
+<p>Dataverse speichert für jede Komponente einen Stapel von <strong>Schichten</strong> (Layers). Ganz unten liegt der Systemstand, darüber jede installierte managed Solution in der Reihenfolge ihres Imports, ganz oben eine gemeinsame unmanaged Schicht. Zur Laufzeit gilt die oberste Schicht.</p>
+
+<figure id="kap18-schichten">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 330" role="img" aria-labelledby="d18-sc-title d18-sc-desc"><title id="d18-sc-title">Schichten einer Komponente</title><desc id="d18-sc-desc">Ein Stapel für ein Formular in Produktion: unten System, darüber managed v1.0 und v1.1, ganz oben eine unmanaged Änderung, die direkt in Produktion gemacht wurde. Die Laufzeit liest die oberste Schicht; ein neues Deployment v1.2 landet darunter und bleibt unsichtbar.</desc><defs><marker id="d18-sc-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="d18-sc-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker><marker id="d18-sc-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker></defs><text x="210" y="30" font-size="13" text-anchor="middle" font-weight="600" style="fill:#2f5d8a">Schichten eines Formulars in Produktion</text><rect x="60" y="50" width="300" height="50" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/><text x="210.0" y="72" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">unmanaged Änderung</text><text x="210.0" y="88" font-size="11" text-anchor="middle" style="fill:#5b6072">direkt in Produktion gemacht</text><rect x="60" y="110" width="300" height="50" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="210.0" y="132" font-size="12.5" text-anchor="middle" font-weight="600">managed v1.1</text><text x="210.0" y="148" font-size="11" text-anchor="middle" style="fill:#5b6072">aus der Pipeline</text><rect x="60" y="170" width="300" height="50" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="210.0" y="200" font-size="12.5" text-anchor="middle" font-weight="600">managed v1.0</text><rect x="60" y="230" width="300" height="50" rx="4" fill="#ffffff" stroke="#c8ccd6" stroke-width="1.5"/><text x="210.0" y="260" font-size="12.5" text-anchor="middle" font-weight="600">System</text><path d="M500 75 L362 75" fill="none" stroke="#b8472a" stroke-width="1.5" marker-end="url(#d18-sc-r)"/><text x="510" y="70" font-size="11" text-anchor="start" font-weight="600" style="fill:#b8472a">Laufzeit liest</text><text x="510" y="84" font-size="11" text-anchor="start" font-weight="600" style="fill:#b8472a">die oberste Schicht</text><rect x="430" y="150" width="230" height="50" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5" stroke-dasharray="5 4"/><text x="545.0" y="172" font-size="12.5" text-anchor="middle" font-weight="600">Neues Deployment v1.2</text><text x="545.0" y="188" font-size="11" text-anchor="middle" style="fill:#5b6072">aus der Entwicklung</text><path d="M430 175 L362 107" fill="none" stroke="#2f5d8a" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#d18-sc-a)"/><text x="545" y="225" font-size="11" text-anchor="middle" font-weight="600" style="fill:#2f5d8a">landet unter der Änderung</text><text x="545" y="239" font-size="11" text-anchor="middle" font-weight="600" style="fill:#2f5d8a">und bleibt unsichtbar</text><text x="340" y="315" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">Lösung: die unmanaged Schicht entfernen, nicht darüberbauen.</text></svg>
+<figcaption>Eine kleine Änderung direkt in Produktion liegt über allen ausgelieferten Versionen und verdeckt jedes künftige Deployment, bis sie entfernt wird.</figcaption>
+</figure>
+
+<p>Daraus folgt die wichtigste Regel des ganzen ALM: <strong>In Produktion wird nicht direkt angepasst.</strong> Wer dort „nur schnell“ ein Formular ändert, erzeugt eine unmanaged Schicht über der managed Solution. Das nächste Deployment aus der Entwicklung kommt an, liegt aber darunter und bleibt unsichtbar. Die Frage „Warum kommt mein Update in Produktion nicht an?“ hat fast immer diese Antwort. Die Ansicht der Schichten einer Komponente zeigt den Stapel; die Lösung ist, die unmanaged Schicht zu entfernen. Umgebungen lassen sich zudem so einstellen, dass unmanaged Anpassungen dort gar nicht erst möglich sind.</p>
+
+<h3>Abhängigkeiten und Versionen</h3>
+
+<p>Komponenten hängen voneinander ab: eine Spalte von ihrer Tabelle, ein Flow von einer Verbindungsreferenz, eine Solution von einer Basis-Solution. Fehlt eine Abhängigkeit in der Zielumgebung, scheitert der Import. Custom Connectors gehören deshalb oft in eine eigene Solution, die vor den Flows ausgeliefert wird.</p>
+
+<p>Solutions haben Versionen im Format <code>Major.Minor.Build.Revision</code>. Ein <strong>Update</strong> ersetzt Komponenten, ein <strong>Upgrade</strong> entfernt zusätzlich, was in der neuen Version nicht mehr enthalten ist. Patches gibt es auch, Microsoft rät aber zu normalen Versionssprüngen.</p>
+
+<h2>Was wandert und was bleibt</h2>
+
+<p>Eine Solution soll in jeder Umgebung funktionieren, ohne sie anzupassen. Dafür trennt die Plattform, was mit dem Paket wandert, von dem, was jede Umgebung selbst mitbringt.</p>
+
+<figure id="kap18-was-wandert">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 350" role="img" aria-labelledby="d18-ww-title d18-ww-desc"><title id="d18-ww-title">Was wandert und was bleibt</title><desc id="d18-ww-desc">Links ein Solution-Paket mit Apps, Flows, Tabellendefinitionen, Agenten, Definitionen der Umgebungsvariablen und Verbindungsreferenzen. In der Mitte die Zuordnung über eine Einstellungsdatei oder den Import-Dialog. Rechts Test und Produktion mit eigenen Verbindungen, Werten, Key Vaults und Daten.</desc><defs><marker id="d18-ww-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="d18-ww-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker><marker id="d18-ww-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker></defs><rect x="10" y="40" width="220" height="262" rx="6" fill="none" stroke="#2f5d8a" stroke-width="1.5"/><text x="120" y="30" font-size="12" text-anchor="middle" font-weight="600" style="fill:#2f5d8a">wandert</text><text x="120" y="62" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#2f5d8a">Solution-Paket</text><rect x="22" y="76" width="196" height="34" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="120.0" y="98" font-size="12.5" text-anchor="middle" font-weight="600">Apps und Flows</text><rect x="22" y="120" width="196" height="34" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="120.0" y="142" font-size="12.5" text-anchor="middle" font-weight="600">Tabellendefinitionen</text><rect x="22" y="164" width="196" height="34" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="120.0" y="186" font-size="12.5" text-anchor="middle" font-weight="600">Agenten</text><rect x="22" y="208" width="196" height="34" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="120.0" y="230" font-size="12.5" text-anchor="middle" font-weight="600">Variablen (Definition)</text><rect x="22" y="252" width="196" height="34" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="120.0" y="274" font-size="12.5" text-anchor="middle" font-weight="600">Verbindungsreferenzen</text><rect x="255" y="136" width="150" height="76" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="330.0" y="164" font-size="12.5" text-anchor="middle" font-weight="600">Zuordnung</text><text x="330.0" y="180" font-size="11" text-anchor="middle" style="fill:#5b6072">Einstellungsdatei</text><text x="330.0" y="194" font-size="11" text-anchor="middle" style="fill:#5b6072">oder Import-Dialog</text><path d="M230 174 L253 174" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d18-ww-a)"/><path d="M405 160 L428 100" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d18-ww-a)"/><path d="M405 190 L428 240" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d18-ww-a)"/><text x="550" y="30" font-size="12" text-anchor="middle" font-weight="600" style="fill:#2f5d8a">bleibt in der Umgebung</text><rect x="430" y="40" width="240" height="122" rx="6" fill="none" stroke="#2f5d8a" stroke-width="1.5"/><text x="550" y="62" font-size="12.5" text-anchor="middle" font-weight="600">Test</text><text x="550" y="84" font-size="11" text-anchor="middle" style="fill:#5b6072">Verbindungen von Test</text><text x="550" y="102" font-size="11" text-anchor="middle" style="fill:#5b6072">Werte der Variablen</text><text x="550" y="120" font-size="11" text-anchor="middle" style="fill:#5b6072">Key Vault von Test</text><text x="550" y="138" font-size="11" text-anchor="middle" style="fill:#5b6072">Testdaten</text><rect x="430" y="180" width="240" height="122" rx="6" fill="none" stroke="#2f5d8a" stroke-width="1.5"/><text x="550" y="202" font-size="12.5" text-anchor="middle" font-weight="600">Produktion</text><text x="550" y="224" font-size="11" text-anchor="middle" style="fill:#5b6072">Verbindungen eines Service-Kontos</text><text x="550" y="242" font-size="11" text-anchor="middle" style="fill:#5b6072">eigene Werte</text><text x="550" y="260" font-size="11" text-anchor="middle" style="fill:#5b6072">eigener Key Vault</text><text x="550" y="278" font-size="11" text-anchor="middle" style="fill:#5b6072">echte Daten</text><text x="340" y="335" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">Das Paket ist umgebungsneutral; zugeordnet wird erst beim Import.</text></svg>
+<figcaption>Das Paket ist umgebungsneutral. Verbindungen, Werte und Daten gehören zur Umgebung und werden erst beim Import zugeordnet.</figcaption>
+</figure>
+
+<ul>
+<li><strong>Umgebungsvariablen</strong> halten Werte, die sich je Umgebung unterscheiden: die URL einer SharePoint-Site, eine Listen-ID, einen Schwellenwert. Die Solution enthält die Definition, jede Umgebung ihren eigenen Wert. Ein Sonderfall ist der Typ <strong>Geheimnis</strong>: Die Variable verweist auf einen Wert in einem Azure Key Vault, der Wert selbst liegt nie in der Solution. Das setzt Rollen in Azure RBAC am Key Vault voraus, für die Person, die die Variable anlegt, und für den Dienst von Dataverse (siehe <a href="12-plattformen-verwaltung.html">Kapitel 12, Plattformen und Verwaltungsorte</a>).</li>
+<li><strong>Verbindungsreferenzen</strong> sind Platzhalter für Verbindungen. Ein Flow in einer Solution zeigt auf eine Verbindungsreferenz, nicht auf eine konkrete Verbindung. Beim Import wird jeder Referenz eine Verbindung der Zielumgebung zugeordnet. So handelt der Flow in Test mit einer Testverbindung und in Produktion mit der Verbindung eines Service-Kontos, ohne dass jemand den Flow ändert.</li>
+</ul>
+
+<p>Wer einen Flow einschaltet, muss die benutzten Verbindungen besitzen oder sie geteilt bekommen haben. Das ist dieselbe Identitätsfrage wie beim Bauen (siehe <a href="17-apps-flows.html">Kapitel 17, Apps und Flows bauen</a>), nur zum Zeitpunkt der Auslieferung.</p>
+
+<h2>Drei Wege der Auslieferung</h2>
+
+<h3>Manuell</h3>
+
+<p>Solution in der Entwicklung als managed exportieren, in der Zielumgebung importieren. Das geht im Maker-Portal und reicht für erste Versuche. Es hinterlässt aber keine Spur außer dem Import selbst, und es braucht eine Person mit Importrechten in Produktion.</p>
+
+<h3>Pipelines in der Power Platform</h3>
+
+<p><strong>Pipelines</strong> sind die eingebaute Auslieferung. Ein Maker klickt in der Entwicklungsumgebung auf „Bereitstellen“. Die Plattform exportiert die Solution einmal, prüft Abhängigkeiten, Verbindungen und Umgebungsvariablen und importiert sie als managed nacheinander in die Stufen, etwa Test und Produktion. Das Artefakt bleibt dabei unverändert, und keine Stufe lässt sich überspringen.</p>
+
+<p>Die Konfiguration und der Verlauf liegen in einer <strong>Host-Umgebung</strong>. Die Zielumgebungen müssen Managed Environments sein (siehe <a href="15-power-platform-bausteine.html">Kapitel 15, Power Platform von innen</a>).</p>
+
+<p>Entscheidend für die Sicherheit ist, <strong>wer</strong> in die Zielumgebung schreibt. Im einfachen Fall ist es der Maker selbst, der dann Importrechte in Produktion braucht. Beim <strong>delegierten Deployment</strong> schreibt stattdessen ein Service Principal, der in der Zielumgebung als Application User mit hoher Rolle angelegt ist. Der Maker beantragt nur. Ein Genehmigungsschritt, etwa ein Flow mit einer Freigabe, entscheidet, ob das Deployment läuft.</p>
+
+<figure id="kap18-wer-schreibt">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 290" role="img" aria-labelledby="d18-ws-title d18-ws-desc"><title id="d18-ws-title">Wer in Produktion schreibt</title><desc id="d18-ws-desc">Ein Maker beantragt in der Entwicklung ein Deployment, die Pipeline im Host prüft, eine zweite Person genehmigt, ein Service Principal mit hoher Rolle nur in Produktion importiert die managed Solution. Antrag, Genehmigung und Deployment stehen im Protokoll des Hosts.</desc><defs><marker id="d18-ws-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="d18-ws-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker><marker id="d18-ws-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker></defs><rect x="5" y="60" width="120" height="80" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="65.0" y="90" font-size="12.5" text-anchor="middle" font-weight="600">Maker</text><text x="65.0" y="106" font-size="11" text-anchor="middle" style="fill:#5b6072">baut in Dev,</text><text x="65.0" y="120" font-size="11" text-anchor="middle" style="fill:#5b6072">keine Rechte in Prod</text><text x="65.0" y="48" font-size="11" text-anchor="middle" font-weight="600" style="fill:#5b6072">beantragt</text><rect x="140" y="60" width="125" height="80" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="202.5" y="90" font-size="12.5" text-anchor="middle" font-weight="600">Pipeline im Host</text><text x="202.5" y="106" font-size="11" text-anchor="middle" style="fill:#5b6072">prüft Abhängigkeiten</text><text x="202.5" y="120" font-size="11" text-anchor="middle" style="fill:#5b6072">und Verbindungen</text><text x="202.5" y="48" font-size="11" text-anchor="middle" font-weight="600" style="fill:#5b6072">prüft</text><rect x="280" y="60" width="120" height="80" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/><text x="340.0" y="98" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">Genehmigung</text><text x="340.0" y="112" font-size="11" text-anchor="middle" style="fill:#5b6072">zweite Person</text><text x="340.0" y="48" font-size="11" text-anchor="middle" font-weight="600" style="fill:#5b6072">gibt frei</text><rect x="415" y="60" width="125" height="80" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="477.5" y="90" font-size="12.5" text-anchor="middle" font-weight="600">Service Principal</text><text x="477.5" y="106" font-size="11" text-anchor="middle" style="fill:#5b6072">Application User,</text><text x="477.5" y="120" font-size="11" text-anchor="middle" style="fill:#5b6072">hohe Rolle nur in Prod</text><text x="477.5" y="48" font-size="11" text-anchor="middle" font-weight="600" style="fill:#5b6072">importiert</text><rect x="555" y="60" width="120" height="80" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="615.0" y="98" font-size="12.5" text-anchor="middle" font-weight="600">Produktion</text><text x="615.0" y="112" font-size="11" text-anchor="middle" style="fill:#5b6072">managed Solution</text><text x="615.0" y="48" font-size="11" text-anchor="middle" font-weight="600" style="fill:#5b6072">erhält</text><path d="M125 100 L138 100" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d18-ws-a)"/><path d="M265 100 L278 100" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d18-ws-a)"/><path d="M400 100 L413 100" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d18-ws-a)"/><path d="M540 100 L553 100" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d18-ws-a)"/><rect x="140" y="180" width="400" height="46" rx="4" fill="#ffffff" stroke="#c8ccd6" stroke-width="1.5"/><text x="340.0" y="200" font-size="12.5" text-anchor="middle" font-weight="600">Protokoll im Host</text><text x="340.0" y="216" font-size="11" text-anchor="middle" style="fill:#5b6072">Antrag, Genehmigung, Deployment</text><path d="M202 140 L202 178" fill="none" stroke="#c8ccd6" stroke-width="1.5"/><path d="M477 140 L477 178" fill="none" stroke="#c8ccd6" stroke-width="1.5"/><text x="340" y="270" font-size="13" text-anchor="middle" font-weight="600" style="fill:#b8472a">Wer baut, liefert nicht selbst aus.</text></svg>
+<figcaption>Ins Ziel schreibt nicht die Person, die gebaut hat, sondern eine kontrollierte nichtmenschliche Identität nach einer Genehmigung.</figcaption>
+</figure>
+
+<p>Das ist dieselbe Trennung wie zwischen Deployment-Identität und Laufzeit-Identität bei Code (siehe <a href="07-server-github.html">Kapitel 7, Server und GitHub</a>) und dasselbe Vier-Augen-Prinzip wie mit einem IT-Dienstleister (siehe <a href="14-it-dienstleister.html">Kapitel 14, Mit externem IT-Dienstleister</a>): Wer baut, liefert nicht selbst aus.</p>
+
+<h3><code>pac</code> CLI mit GitHub Actions oder Azure DevOps</h3>
+
+<p>Wer ohnehin mit Git und CI/CD arbeitet, kann denselben Ablauf mit der <code>pac</code> CLI automatisieren. Die Werkzeuge für GitHub Actions und Azure DevOps sind Hüllen um diese CLI. Ein typischer Ablauf von Hand:</p>
+
+<pre><code class="language-bash"># Als Mensch an der Entwicklungsumgebung anmelden
+pac auth create --name dev --environment https://&lt;dev-org&gt;.crm4.dynamics.com
+
+# Unmanaged für Git und managed als Artefakt exportieren
+pac solution export --name &lt;solution&gt; --path ./out/&lt;solution&gt;.zip
+pac solution export --name &lt;solution&gt; --path ./out/&lt;solution&gt;_managed.zip --managed
+
+# Unmanaged in lesbare Dateien entpacken und in Git einchecken
+pac solution unpack --zipfile ./out/&lt;solution&gt;.zip --folder ./src/&lt;solution&gt;
+
+# Einstellungsdatei für Verbindungen und Umgebungsvariablen der Zielumgebung erzeugen
+pac solution create-settings --solution-zip ./out/&lt;solution&gt;_managed.zip \
+  --settings-file ./deploy/settings.test.json
+
+# Als Service Principal an Test anmelden und importieren
+pac auth create --name test --applicationId &lt;app-id&gt; --clientSecret "$SECRET" \
+  --tenant &lt;tenant-id&gt; --environment https://&lt;test-org&gt;.crm4.dynamics.com
+pac solution import --path ./out/&lt;solution&gt;_managed.zip \
+  --settings-file ./deploy/settings.test.json</code></pre>
+
+<p>In einer Pipeline übernimmt ein Workflow die letzten Schritte. Die Identität ist ein Service Principal, der in jeder Zielumgebung als Application User mit passender Rolle angelegt ist (siehe <a href="16-dataverse.html">Kapitel 16, Dataverse</a>). Statt eines Client Secrets ist auch hier Workload Identity Federation mit OIDC der bessere Weg (siehe <a href="07-server-github.html">Kapitel 7, Server und GitHub</a>); die Werkzeuge unterstützen das, die genauen Parameter stehen in ihrer jeweiligen Dokumentation.</p>
+
+<h3>Git-Anbindung direkt in Dataverse</h3>
+
+<p>Neuer ist die Möglichkeit, eine Entwicklungsumgebung direkt an ein Git-Repository zu binden. Änderungen werden dann aus der Oberfläche heraus als Commit gespeichert, Merges und Pull Requests laufen beim Git-Anbieter. Das Modell ist dasselbe: Nur die Entwicklungsumgebung mit unmanaged Solutions hängt an Git, Test und Produktion bekommen managed Builds über Pipelines oder CI/CD. Git ist die Quelle der Wahrheit, nicht die Entwicklungsumgebung. Welche Git-Anbieter in welchem Reifegrad unterstützt werden, ändert sich noch.</p>
+
+<h2>Wer welche Rolle bei welchem Schritt braucht</h2>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Schritt</th><th>Identität</th><th>Braucht</th></tr></thead>
+<tbody>
+<tr><td>Bauen</td><td>Maker</td><td>Rolle zum Bauen in der Entwicklungsumgebung, etwa Environment Maker und System Customizer</td></tr>
+<tr><td>Geheimnis als Umgebungsvariable</td><td>Maker und der Dienst von Dataverse</td><td>Leserolle für Geheimnisse am Key Vault in Azure RBAC</td></tr>
+<tr><td>Pipeline einrichten</td><td>Admin</td><td>Admin-Rolle in der Host-Umgebung</td></tr>
+<tr><td>Pipeline auslösen</td><td>Maker</td><td>Nutzerrolle für Pipelines im Host</td></tr>
+<tr><td>Delegiert ausliefern</td><td>Service Principal</td><td>Application User mit hoher Rolle in der Zielumgebung, Pipeline-Rolle im Host</td></tr>
+<tr><td>Genehmigen</td><td>zweite Person</td><td>Recht, den Genehmigungsschritt auszuführen</td></tr>
+<tr><td>CI/CD mit <code>pac</code></td><td>Service Principal</td><td>Application User mit Rolle in jeder Zielumgebung; Secret oder besser Federation</td></tr>
+<tr><td>Produktion schützen</td><td>Admin</td><td>Managed Environment, unmanaged Anpassungen sperren</td></tr>
+</tbody>
+</table></div>
+
+<h2>Typische Missverständnisse</h2>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Annahme</th><th>Was stimmt</th></tr></thead>
+<tbody>
+<tr><td>„Managed oder unmanaged ist eine Exportoption.“</td><td>Unmanaged ist die Quelle, managed das Artefakt für alle anderen Umgebungen.</td></tr>
+<tr><td>„Ein kleiner Hotfix direkt in Produktion ist in Ordnung.“</td><td>Er liegt als oberste Schicht über jedem künftigen Deployment.</td></tr>
+<tr><td>„Das Präfix ändere ich später.“</td><td>Technische Namen und Publisher-Zuordnung bleiben.</td></tr>
+<tr><td>„Eine Solution nimmt die Daten mit.“</td><td>Sie enthält nur Definitionen. Daten werden getrennt übertragen.</td></tr>
+<tr><td>„Ein API-Schlüssel gehört in eine Umgebungsvariable vom Typ Text.“</td><td>Dafür gibt es den Typ Geheimnis mit Key Vault.</td></tr>
+<tr><td>„Git-Anbindung ersetzt Pipelines.“</td><td>Git versioniert die Entwicklung; ausgeliefert wird weiterhin managed über Pipelines oder CI/CD.</td></tr>
+</tbody>
+</table></div>
+<nav style="display:flex;justify-content:space-between;gap:1rem;margin-top:3rem;border-top:1px solid var(--rule);padding-top:1rem;font-family:'Helvetica Neue',Arial,sans-serif;font-size:.9rem"><span><a href="17-apps-flows.html">← Zurück</a></span><a href="index.html">Übersicht</a><span><a href="19-copilot-studio.html">Weiter →</a></span></nav>
+</body>
+</html>

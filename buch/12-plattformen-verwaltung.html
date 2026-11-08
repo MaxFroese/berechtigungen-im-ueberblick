@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>12. Plattformen und Verwaltungsorte: Azure, Foundry, Power Platform</title>
+<style>
+:root { --bg:#fafaf7; --text:#1f2230; --muted:#5b6072; --accent:#2f5d8a;
+  --accent-soft:#d9e4ef; --leader:#b8472a; --node-fill:#ffffff;
+  --node-stroke:#2f5d8a; --rule:#c8ccd6; --code-bg:#eef1f5; }
+html,body { background:var(--bg); color:var(--text);
+  font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+  line-height:1.65; font-size:18px; }
+body { max-width:760px; margin:3rem auto 6rem; padding:0 1.5rem; }
+h1 { font-size:2rem; line-height:1.2; margin:0 0 2rem;
+  border-bottom:1px solid var(--rule); padding-bottom:0.6rem; }
+h2 { font-size:1.35rem; margin-top:2.4rem; margin-bottom:0.8rem;
+  color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif;
+  font-weight:600; letter-spacing:0.01em; }
+p { margin:0 0 1.1rem; }
+figure { margin:2rem auto; text-align:center; }
+figure svg { max-width:100%; height:auto; display:block; margin:0 auto; }
+figcaption { font-family:"Helvetica Neue",Arial,sans-serif; font-size:0.85rem;
+  color:var(--muted); margin-top:0.6rem; text-align:center; }
+svg text { font-family:"Helvetica Neue",Arial,sans-serif; fill:var(--text); }
+.legend-text { font-size:11px; fill:var(--muted); }
+pre { background:var(--code-bg); padding:0.9rem 1.1rem; overflow-x:auto;
+  border-radius:6px; font-size:0.82em; }
+code { background:var(--code-bg); font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:0.85em; padding:0.1em 0.3em; border-radius:3px; }
+pre code { background:none; padding:0; }
+.table-wrap { overflow-x:auto; margin:1.5rem 0; }
+table { border-collapse:collapse; width:100%; font-size:0.85em; line-height:1.45; }
+th { text-align:left; color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif;
+  font-weight:600; border-bottom:2px solid var(--accent); padding:0.45rem 0.6rem;
+  vertical-align:bottom; }
+td { border-bottom:1px solid var(--rule); padding:0.45rem 0.6rem; vertical-align:top; }
+tr { break-inside:avoid; }
+</style>
+</head>
+<body>
+<h1>12. Plattformen und Verwaltungsorte: Azure, Foundry, Power Platform</h1>
+
+<p>Azure, Foundry und die Power Platform liegen im selben Tenant, folgen aber jeweils einer eigenen Hierarchie. Jede Hierarchie hat eigene Verwaltungsorte, eigene Rollen und eine eigene Art, Kosten zu erzeugen. Wer in einem fremden Tenant etwas sucht, muss zuerst wissen, in welcher Welt das Gesuchte liegt. Danach ergeben sich Portal, Rechtesystem und Abrechnung fast von selbst.</p>
+
+<h2>Drei Hierarchien nebeneinander</h2>
+
+<p>Alle drei Welten hängen am <strong>Tenant</strong>, denn dort liegen die Identitäten. Darunter gehen sie getrennte Wege.</p>
+
+<ul>
+<li><strong>Azure</strong> gliedert nach Abrechnung und Rechten: Tenant, Subscription, Resource Group, Ressource.</li>
+<li><strong>Foundry</strong> ist kein eigener Tenant-Bereich, sondern ein Dienst innerhalb von Azure: eine Foundry-Ressource, darunter Projekte, daneben Deployments.</li>
+<li><strong>Power Platform</strong> gliedert nach Umgebungen: Tenant, Umgebung, bei Bedarf eine Dataverse-Datenbank, darin Sicherheitsrollen.</li>
+</ul>
+
+<figure id="kap12-drei-hierarchien">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 580" role="img" aria-labelledby="d12-dh-title d12-dh-desc"><title id="d12-dh-title">Drei Hierarchien unter einem Tenant</title><desc id="d12-dh-desc">Der Tenant ist die gemeinsame Wurzel. Links die Azure-Hierarchie aus Subscription, Resource Group und Ressource, darunter als Unterbaum die Foundry-Ressource mit Projekt und Deployment; auf allen diesen Ebenen gilt Azure RBAC mit Vererbung nach unten. Rechts die Power Platform mit Umgebung, Dataverse und Sicherheitsrolle; auf Tenant-Ebene gilt eine Power-Platform-Admin-Rolle, in der Umgebung gelten Sicherheitsrollen.</desc><defs><marker id="d12-dh-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker></defs><rect x="190" y="14" width="300" height="52" rx="4" fill="#d9e4ef" stroke="#2f5d8a" stroke-width="2.5"/><text x="340" y="37" font-size="14" text-anchor="middle" font-weight="600">Tenant</text><text x="340" y="55" font-size="11" text-anchor="middle" style="fill:#5b6072">gemeinsame Wurzel, hier liegen die Identitäten</text><path d="M340 66 L340 82 L225 82 L225 95" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d12-dh-a)"/><path d="M340 82 L562 82 L562 95" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d12-dh-a)"/><rect x="10" y="96" width="430" height="400" rx="6" fill="none" stroke="#c8ccd6" stroke-width="1.5"/><text x="24" y="118" font-size="14" font-weight="600" style="fill:#2f5d8a">Azure</text><rect x="30" y="130" width="220" height="34" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="140" y="152" font-size="12.5" text-anchor="middle" font-weight="600">Subscription</text><line x1="140" y1="164" x2="140" y2="186" stroke="#2f5d8a" stroke-width="1.5"/><rect x="30" y="186" width="220" height="34" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="140" y="208" font-size="12.5" text-anchor="middle" font-weight="600">Resource Group</text><line x1="140" y1="220" x2="140" y2="242" stroke="#2f5d8a" stroke-width="1.5"/><rect x="30" y="242" width="220" height="34" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="140" y="264" font-size="12.5" text-anchor="middle" font-weight="600">Ressource</text><line x1="140" y1="276" x2="140" y2="324" stroke="#2f5d8a" stroke-width="1.5"/><rect x="22" y="296" width="236" height="190" rx="6" fill="none" stroke="#5b6072" stroke-width="1.5" stroke-dasharray="5 4"/><text x="34" y="479" font-size="11" style="fill:#5b6072">Foundry: Dienst innerhalb von Azure</text><rect x="34" y="324" width="210" height="44" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="139" y="344" font-size="12.5" text-anchor="middle" font-weight="600">Foundry-Ressource</text><text x="139" y="360" font-size="11" text-anchor="middle" style="fill:#5b6072">ist selbst eine Azure-Ressource</text><line x1="139" y1="368" x2="86" y2="394" stroke="#2f5d8a" stroke-width="1.5"/><line x1="139" y1="368" x2="196" y2="394" stroke="#2f5d8a" stroke-width="1.5"/><rect x="34" y="394" width="105" height="70" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="86" y="414" font-size="12.5" text-anchor="middle" font-weight="600">Projekt</text><text x="86" y="433" font-size="11" text-anchor="middle" style="fill:#5b6072">eigene Managed</text><text x="86" y="447" font-size="11" text-anchor="middle" style="fill:#5b6072">Identity</text><rect x="149" y="394" width="95" height="70" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="196" y="414" font-size="12" text-anchor="middle" font-weight="600">Deployment</text><text x="196" y="433" font-size="11" text-anchor="middle" style="fill:#5b6072">bereitgestelltes</text><text x="196" y="447" font-size="11" text-anchor="middle" style="fill:#5b6072">Modell</text><path d="M266 132 L266 472" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d12-dh-a)"/><rect x="276" y="130" width="160" height="84" rx="4" fill="#d9e4ef" stroke="#2f5d8a" stroke-width="1"/><text x="356" y="151" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#2f5d8a">Azure RBAC</text><text x="356" y="170" font-size="11" text-anchor="middle">Rolle auf einem Scope</text><text x="356" y="185" font-size="11" text-anchor="middle">gilt auch für alles</text><text x="356" y="200" font-size="11" text-anchor="middle">darunter (Vererbung)</text><rect x="276" y="330" width="160" height="66" rx="4" fill="#d9e4ef" stroke="#2f5d8a" stroke-width="1"/><text x="356" y="351" font-size="11.5" text-anchor="middle" font-weight="600" style="fill:#2f5d8a">Auch hier Azure RBAC:</text><text x="356" y="370" font-size="11" text-anchor="middle">Foundry-Ressource,</text><text x="356" y="385" font-size="11" text-anchor="middle">Projekt, Deployment</text><rect x="455" y="96" width="215" height="400" rx="6" fill="none" stroke="#c8ccd6" stroke-width="1.5"/><text x="469" y="118" font-size="14" font-weight="600" style="fill:#2f5d8a">Power Platform</text><rect x="468" y="130" width="189" height="50" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="562" y="151" font-size="12.5" text-anchor="middle" font-weight="600">Umgebung</text><text x="562" y="168" font-size="11" text-anchor="middle" style="fill:#5b6072">eigene Region und Typ</text><line x1="562" y1="180" x2="562" y2="210" stroke="#2f5d8a" stroke-width="1.5"/><rect x="468" y="210" width="189" height="50" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="562" y="231" font-size="12.5" text-anchor="middle" font-weight="600">Dataverse</text><text x="562" y="248" font-size="11" text-anchor="middle" style="fill:#5b6072">Datenbank, bei Bedarf</text><line x1="562" y1="260" x2="562" y2="290" stroke="#2f5d8a" stroke-width="1.5"/><rect x="468" y="290" width="189" height="50" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="562" y="311" font-size="12.5" text-anchor="middle" font-weight="600">Sicherheitsrolle</text><text x="562" y="328" font-size="11" text-anchor="middle" style="fill:#5b6072">gilt in der Umgebung</text><rect x="468" y="362" width="189" height="48" rx="4" fill="#d9e4ef" stroke="#2f5d8a" stroke-width="1"/><text x="562" y="381" font-size="11.5" text-anchor="middle" font-weight="600" style="fill:#2f5d8a">Tenant-Ebene</text><text x="562" y="399" font-size="11" text-anchor="middle">Power-Platform-Admin-Rolle</text><rect x="468" y="424" width="189" height="56" rx="4" fill="#d9e4ef" stroke="#2f5d8a" stroke-width="1"/><text x="562" y="443" font-size="11.5" text-anchor="middle" font-weight="600" style="fill:#2f5d8a">In der Umgebung</text><text x="562" y="461" font-size="11" text-anchor="middle">Sicherheitsrollen</text><rect x="20" y="512" width="640" height="52" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/><text x="340" y="533" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">Gemeinsam ist nur der Tenant als Wurzel.</text><text x="340" y="551" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">Foundry liegt ganz in der Azure-Hierarchie, Power Platform nicht.</text></svg>
+<figcaption>Die drei Welten teilen sich nur den Tenant als Wurzel; Foundry sitzt vollständig innerhalb der Azure-Hierarchie, die Power Platform hat ihre eigene.</figcaption>
+</figure>
+
+<h2>Azure: Subscription, Resource Group, Ressource</h2>
+
+<p>Eine <strong>Subscription</strong> gliedert sich in <strong>Resource Groups</strong> und diese in <strong>Ressourcen</strong> wie eine Web-App, einen Key Vault oder eine Foundry-Ressource, und Rollen nach <strong>Azure RBAC</strong> vererben sich von jedem Scope nach unten (siehe Kapitel 3, Die drei Rechtesysteme).</p>
+
+<p>Die Resource Group ist das wichtigste Werkzeug, um Rechte praktisch zu schneiden. Eine Gruppe soll Dinge enthalten, die gemeinsam entstehen, gemeinsam gelöscht werden und von denselben Personen verwaltet werden. Der Schnitt nach Zweck ist robuster als der nach Ressourcentyp. Ein Beispiel aus dem Test-Tenant, abstrahiert:</p>
+
+<ul>
+<li><code>rg-&lt;foundry&gt;</code> enthält nur die Foundry-Ressource.</li>
+<li><code>rg-&lt;web&gt;</code> enthält die Web-Apps samt App Service Plan (der Rechenkapazität, auf der die Web-Apps laufen), Managed Identity, Bot Service (dem Azure-Dienst, der Chat-Bots an Kanäle wie Teams anbindet) und Document Intelligence (dem Dienst, der Text und Felder aus Dokumenten ausliest).</li>
+<li><code>rg-&lt;powerplatform&gt;</code> enthält die Azure-Vertretungen der Power-Platform-Konten.</li>
+<li><code>NetworkWatcherRG</code> wird von Azure selbst angelegt und bleibt unberührt.</li>
+</ul>
+
+<p>Wer eine einzelne Anwendung sperren oder löschen will, trifft damit genau eine Gruppe. Wer einer Person nur die Foundry-Ressource geben will, vergibt die Rolle auf <code>rg-&lt;foundry&gt;</code> und nicht auf der Subscription.</p>
+
+<p>Eine verbreitete Verwechslung betrifft Region und Tenant. Die <strong>Region</strong> einer Ressource legt fest, in welchem Rechenzentrum sie läuft. Der Tenant legt fest, wem die Identitäten gehören. Beides ist unabhängig. Im Test-Tenant liegt die Power-Platform-Umgebung in der Schweiz und die Foundry-Ressource in Sweden Central, ohne dass das eine das andere festlegt. Die Region einer Ressource lässt sich in der Regel nicht ändern, praktisch hilft nur eine Neuanlage. Eine Subscription lässt sich in ein anderes Verzeichnis, also einen anderen Tenant, übertragen. Dabei gehen die Rollenzuweisungen verloren.</p>
+
+<p>Ein wichtiger Befund aus der Praxis: Global Administrator in Entra ID gibt keine Rechte auf Azure-Ressourcen. Er kann sich aber selbst Zugriff verschaffen, indem er „Access management for Azure resources“ einschaltet und damit die Rolle User Access Administrator auf dem Root-Scope erhält. Im Test-Tenant stand <code>Owner</code> auf der Subscription als eigene Rollenzuweisung neben der Entra-Rolle (siehe Kapitel 3, Die drei Rechtesysteme, und Kapitel 4, Admin-Rollen).</p>
+
+<h2>Foundry als Azure-Dienst</h2>
+
+<p>Foundry (früher Azure AI Foundry) ist die Azure-Plattform, auf der Modelle bereitgestellt und KI-Anwendungen gebaut werden. Technisch ist die <strong>Foundry-Ressource</strong> eine gewöhnliche Azure-Ressource vom Typ <code>Microsoft.CognitiveServices/accounts</code> mit <code>kind: AIServices</code>. Sie liegt in einer Resource Group in einer Subscription und hat eine eigene Subdomain als Endpunkt. Darunter und daneben gibt es zwei weitere Begriffe:</p>
+
+<ul>
+<li>Ein <strong>Projekt</strong> ist ein Arbeitsbereich für Agenten und zugehörige Inhalte. Es liegt als Unterressource unter der Foundry-Ressource und hat eine eigene Managed Identity.</li>
+<li>Ein <strong>Deployment</strong> ist ein bereitgestelltes Modell mit eigenem Namen, das an der Foundry-Ressource hängt. Mehrere Deployments sind üblich, je eines pro Modell und Verwendungszweck. Beim Deployment-Typ <code>GlobalStandard</code> wird weltweit verarbeitet und nach Token abgerechnet. Die Region der Ressource garantiert dabei nicht den Ort der Verarbeitung.</li>
+</ul>
+
+<h3>Control Plane und Data Plane</h3>
+
+<p>Auch bei der Foundry-Ressource trennt sich die <strong>Control Plane</strong> (Ressource und Deployments anlegen, Netzwerk und Schlüssel konfigurieren) von der <strong>Data Plane</strong> (Modell aufrufen, Agenten ausführen) (siehe Kapitel 3, Die drei Rechtesysteme). Wer Deployments anlegen darf, darf damit nicht automatisch Modelle aufrufen, und umgekehrt. Diese Trennung gilt allerdings nur, wenn lokale Schlüssel abgeschaltet sind, denn generische Control-Plane-Rollen wie <code>Owner</code> oder <code>Contributor</code> dürfen die Schlüssel auslesen und haben damit vollen Data-Plane-Zugriff (im Test-Tenant: <code>Owner</code> auf der Subscription, Schlüssel nicht abgeschaltet).</p>
+
+<p>Das spiegelt sich in den Rollen. Alle sind Azure-RBAC-Rollen und werden auf Ressource, Resource Group oder Subscription zugewiesen. Die Namen ändern sich gelegentlich, das Muster bleibt:</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Rolle</th><th>Zweck</th></tr></thead>
+<tbody>
+<tr><td><code>Owner</code> (generisch)</td><td>Gesamte Control Plane einschließlich Rollenvergabe, darf Schlüssel auslesen</td></tr>
+<tr><td><code>Contributor</code> (generisch)</td><td>Control Plane ohne Rollenvergabe, darf Schlüssel auslesen</td></tr>
+<tr><td><code>Reader</code> (generisch)</td><td>Control Plane nur lesen</td></tr>
+<tr><td><code>Foundry User</code> (früher Azure AI User)</td><td>Nutzen und Agenten bauen, keine Verwaltung</td></tr>
+<tr><td><code>Foundry Project Manager</code></td><td>Projekte und deren Zugriffe verwalten</td></tr>
+<tr><td><code>Foundry Account Owner</code></td><td>Foundry-Ressource verwalten</td></tr>
+<tr><td><code>Cognitive Services OpenAI User</code></td><td>OpenAI-Modelle aufrufen (Namen je Modellfamilie prüfen)</td></tr>
+<tr><td><code>Cognitive Services OpenAI Contributor</code></td><td>Modelle aufrufen und Deployments verwalten</td></tr>
+</tbody>
+</table></div>
+
+<p>Eine Web-App, die nur ein Modell aufrufen soll, bekommt <code>Cognitive Services OpenAI User</code> an ihrer Managed Identity, und zwar auf der Foundry-Ressource selbst und nicht auf der Resource Group. Das ist der kleinstmögliche Scope.</p>
+
+<h3>Schlüssel gegen Entra-Token</h3>
+
+<p>Am Endpunkt gibt es zwei Anmeldewege. Mit einem Entra-Token (Audience <code>https://cognitiveservices.azure.com</code>) prüft Azure die Rollenzuweisung des Principals. Mit einem Schlüssel entfällt diese Prüfung. Wer den Schlüssel besitzt, darf alles auf der Data Plane dieser Ressource. Der Schlüsselweg lässt sich abschalten, indem die Eigenschaft <code>disableLocalAuth</code> auf <code>true</code> gesetzt wird. Im Test-Tenant war er noch eingeschaltet, genutzt wurde trotzdem die Entra-Anmeldung. Für alles außer schnellen Experimenten ist der Token-Weg vorzuziehen, weil er an eine Identität gebunden und im Log zuordenbar bleibt.</p>
+
+<figure id="kap12-schluessel-gegen-token">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 510" role="img" aria-labelledby="d12-sk-title d12-sk-desc"><title id="d12-sk-title">Schlüssel gegen Entra-Token</title><desc id="d12-sk-desc">Links der Weg mit Entra-Token: Der Principal holt ein Token mit der Audience https://cognitiveservices.azure.com, der Endpunkt der Foundry-Ressource prüft die Rollenzuweisung nach Azure RBAC, Zugriff gibt es nur bei passender Rolle. Rechts der Weg mit Schlüssel: Der Endpunkt prüft keine Rolle, der Aufrufer erhält vollen Data-Plane-Zugriff. Der Schalter disableLocalAuth auf true schließt diesen zweiten Weg.</desc><defs><marker id="d12-sk-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="d12-sk-l" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker></defs><line x1="340" y1="14" x2="340" y2="420" stroke="#5b6072" stroke-width="1.5" stroke-dasharray="6 4"/><text x="170" y="30" font-size="14" text-anchor="middle" font-weight="600" style="fill:#2f5d8a">Weg 1: Entra-Token</text><text x="510" y="30" font-size="14" text-anchor="middle" font-weight="600" style="fill:#b8472a">Weg 2: Schlüssel</text><circle cx="170" cy="96" r="36" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="170" y="100" font-size="12.5" text-anchor="middle" font-weight="600">Principal</text><circle cx="510" cy="96" r="36" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="510" y="100" font-size="12.5" text-anchor="middle" font-weight="600">Aufrufer</text><path d="M170 132 L170 164" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d12-sk-a)"/><path d="M510 132 L510 164" fill="none" stroke="#b8472a" stroke-width="2.5" marker-end="url(#d12-sk-l)"/><rect x="40" y="166" width="260" height="50" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="170" y="187" font-size="12.5" text-anchor="middle" font-weight="600">Entra-Token holen</text><text x="170" y="204" font-size="10.5" text-anchor="middle" style="fill:#5b6072">Audience https://cognitiveservices.azure.com</text><rect x="380" y="166" width="260" height="50" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/><text x="510" y="187" font-size="12.5" text-anchor="middle" font-weight="600">Schlüssel mitsenden</text><text x="510" y="204" font-size="11" text-anchor="middle" style="fill:#5b6072">statisches Zugangsgeheimnis</text><path d="M170 216 L170 262" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d12-sk-a)"/><path d="M510 216 L510 262" fill="none" stroke="#b8472a" stroke-width="2.5" marker-end="url(#d12-sk-l)"/><line x1="488" y1="239" x2="532" y2="239" stroke="#b8472a" stroke-width="5" stroke-linecap="round"/><text x="542" y="229" font-size="11" text-anchor="start" style="fill:#b8472a">geschlossen bei</text><text x="542" y="243" font-size="11" text-anchor="start" font-weight="600" style="fill:#b8472a">disableLocalAuth:</text><text x="542" y="257" font-size="11" text-anchor="start" font-weight="600" style="fill:#b8472a">true</text><rect x="40" y="264" width="260" height="50" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="170" y="285" font-size="12" text-anchor="middle" font-weight="600">Endpunkt der Foundry-Ressource</text><text x="170" y="302" font-size="11" text-anchor="middle" style="fill:#5b6072">prüft die Rollenzuweisung (Azure RBAC)</text><rect x="380" y="264" width="260" height="50" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="510" y="285" font-size="12" text-anchor="middle" font-weight="600">Endpunkt der Foundry-Ressource</text><text x="510" y="302" font-size="11" text-anchor="middle" font-weight="600" style="fill:#b8472a">prüft keine Rolle</text><path d="M170 314 L170 358" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d12-sk-a)"/><path d="M510 314 L510 358" fill="none" stroke="#b8472a" stroke-width="2.5" marker-end="url(#d12-sk-l)"/><rect x="40" y="360" width="260" height="50" rx="4" fill="#d9e4ef" stroke="#2f5d8a" stroke-width="2.5"/><text x="170" y="390" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#2f5d8a">Zugriff nur bei passender Rolle</text><rect x="380" y="360" width="260" height="50" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="2.5"/><text x="510" y="382" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">Voller Data-Plane-Zugriff</text><text x="510" y="399" font-size="11" text-anchor="middle" style="fill:#5b6072">auf diese Ressource</text><rect x="20" y="440" width="640" height="52" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/><text x="340" y="461" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">Der Schlüssel umgeht Azure RBAC.</text><text x="340" y="479" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">Nur disableLocalAuth: true schließt diesen Weg.</text></svg>
+<figcaption>Der Schlüssel umgeht Azure RBAC; nur <code>disableLocalAuth: true</code> schließt diesen Weg.</figcaption>
+</figure>
+
+<h3>Portale</h3>
+
+<p>Das <strong>Foundry-Portal</strong> (<code>ai.azure.com</code>) dient zum Arbeiten mit Projekten, Deployments und dem Playground, einer Testoberfläche, in der sich ein Deployment direkt ausprobieren lässt. Die Ressource selbst, ihre Rollenzuweisungen und ihre Kosten stehen im Azure-Portal. Beide Portale zeigen dieselbe Ressource aus verschiedenen Blickwinkeln, die Rechte kommen in beiden aus Azure RBAC.</p>
+
+<h2>Power Platform: Umgebung, Dataverse, Sicherheitsrollen</h2>
+
+<p>Die Power Platform umfasst unter anderem Power Apps, Power Automate und Copilot Studio. Ihr Ordnungsprinzip ist die <strong>Umgebung</strong> (Environment): ein abgegrenzter Bereich im Tenant, in dem Apps, Flows, Agenten und Verbindungen leben. Eine Umgebung hat eine Region und einen Typ.</p>
+
+<ul>
+<li><strong>Default</strong>: Die Standardumgebung, die jeder Tenant automatisch hat und in der alle Nutzer arbeiten dürfen. Sie ist bequem und entsprechend schwer zu kontrollieren.</li>
+<li><strong>Developer</strong>: Eine persönliche Entwicklerumgebung für eine Person.</li>
+<li><strong>Production</strong> (Produktion) und <strong>Sandbox</strong>: Von Admins angelegte Umgebungen für Betrieb und Tests.</li>
+</ul>
+
+<p>Eine Umgebung kann eine <strong>Dataverse</strong>-Datenbank besitzen. Sie ist die Datenbank der Umgebung und ist über eine Adresse der Form <code>https://&lt;org&gt;.crm&lt;n&gt;.dynamics.com</code> erreichbar, wobei die Ziffer <code>&lt;n&gt;</code> für die Region steht. Ob eine Umgebung Dataverse hat, entscheidet über das Rechtemodell:</p>
+
+<ul>
+<li><strong>Ohne Dataverse</strong> gelten die Umgebungsrollen <code>Environment Admin</code> und <code>Environment Maker</code>.</li>
+<li><strong>Mit Dataverse</strong> gelten <strong>Sicherheitsrollen</strong> wie <code>System Administrator</code>, <code>System Customizer</code>, <code>Environment Maker</code> und <code>Basic User</code>. Das ist ein eigenes Rechtesystem neben Entra-Rollen, Azure RBAC, Graph-Rechten und SharePoint-Rechten. Es wird nicht in Entra oder Azure gepflegt, sondern in der Umgebung selbst. Mit Dataverse werden die Umgebungsrollen zu Dataverse-Sicherheitsrollen, und <code>System Administrator</code> übernimmt die Funktion von <code>Environment Admin</code>.</li>
+</ul>
+
+<p>Zusätzlich lässt sich der Zugang zu einer Umgebung mit Dataverse auf eine Sicherheitsgruppe in Entra beschränken. Auf Tenant-Ebene verwaltet die Entra-Rolle <code>Power Platform Administrator</code> (oder Global Administrator) alle Umgebungen.</p>
+
+<h3>Maker-Portale arbeiten immer in einer Umgebung</h3>
+
+<p><code>make.powerapps.com</code>, <code>make.powerautomate.com</code> und <code>copilotstudio.microsoft.com</code> sind die Orte, an denen gebaut wird. Sie zeigen immer nur den Inhalt der aktuell gewählten Umgebung. Wer einen Flow „nicht findet“, sucht meist in der falschen Umgebung. <strong>Verbindungen</strong> (Connections), also angemeldete Instanzen eines Connectors mit den Zugangsdaten einer Person, gehören dieser Person und liegen in der Umgebung, in der sie angelegt wurden (siehe Kapitel 8, Ein Beispielprojekt eingeordnet).</p>
+
+<h2>DLP-Richtlinien</h2>
+
+<p><strong>DLP-Richtlinien</strong> (Data Loss Prevention) legen fest, welche Connectors in einer Umgebung zusammen in einem Flow oder einer App verwendet werden dürfen. Sie werden im Power Platform Admin Center gesetzt, entweder pro Umgebung oder tenantweit. Jeder Connector fällt in eine von drei Gruppen: geschäftlich, nicht geschäftlich oder blockiert. Connectors aus der geschäftlichen und der nicht geschäftlichen Gruppe dürfen in einem Flow nicht gemischt werden, blockierte Connectors sind ganz verboten. Sie regeln also die Kombination von Diensten und nicht die Rechte einzelner Personen. Mit DLP in Purview, das Inhalte wie Mails und Dateien schützt, haben diese Richtlinien nichts zu tun. Die Standardumgebung ist der typische Ort, an dem eine strenge Richtlinie zuerst sinnvoll ist.</p>
+
+<h2>Wie die Welten verknüpft sind</h2>
+
+<p>Rechte sind in den drei Welten getrennt, die Abrechnung kann sie verbinden. Mehrere Wege verbinden sie:</p>
+
+<ul>
+<li><strong>Rechnungskonten</strong>: Dieselben MCA-Rechnungskonten sind im Microsoft 365 Admin Center und im Azure-Portal (Cost Management + Billing) sichtbar. Lizenzen aus Microsoft-365-Abonnements, Azure-Verbrauch und Pay-as-you-go der Power Platform können dennoch auf unterschiedlichen Rechnungskonten oder Subscriptions landen. Im Test-Tenant hing die Azure-Subscription an einem Rechnungskonto vom Typ Individual, getrennt vom Business-Rechnungskonto der Microsoft-365-Produkte (siehe Kapitel 11, Lizenzen und Abrechnung).</li>
+<li><strong>Power Platform über eine Azure-Subscription abrechnen</strong>: Verbrauchsbasierte Abrechnung, etwa für Copilot Credits (die Verbrauchseinheit, in der Copilot Studio die Nutzung von Agenten abrechnet), lässt sich an eine Azure-Subscription hängen. Auf Power-Platform-Seite heißt diese Verknüpfung <strong>Abrechnungsrichtlinie</strong> (billing policy). Die Verknüpfung erscheint in Azure als Ressource vom Typ <code>Microsoft.PowerPlatform/accounts</code>, im Detail kann das abweichen. Im Test-Tenant lagen zwei solche Ressourcen in einer eigenen Resource Group, entstanden beim Einrichten von Pay-as-you-go für Copilot Studio, und erzeugten Kosten von wenigen Cent in der Azure-Rechnung. Das Beispiel zeigt: Eine Einstellung auf Power-Platform-Seite kann Ressourcen und Kosten in Azure erzeugen.</li>
+<li><strong>Foundry über die Subscription abrechnen</strong>: Die Tokens der Foundry-Ressource erscheinen je Modell und Richtung (Eingabe, Ausgabe, Cache) als eigene Zähler in Cost Management der Subscription (siehe Kapitel 11, Lizenzen und Abrechnung).</li>
+<li><strong>Rechte folgen der Abrechnung nicht</strong>: Wer in der Power Platform eine Umgebung verwaltet, bekommt dadurch keine Rolle in der Azure-Subscription, an der die Abrechnung hängt. Umgekehrt gilt dasselbe. Allerdings ist die Verknüpfung selbst eine Azure-Ressource unter Azure RBAC: Wer <code>Owner</code> auf der Subscription ist, kann sie löschen und damit die Abrechnung der Umgebung kappen.</li>
+</ul>
+
+<figure id="kap12-abrechnung-verknuepfung">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 490" role="img" aria-labelledby="d12-ab-title d12-ab-desc"><title id="d12-ab-title">Abrechnungsverknüpfungen zwischen den Welten</title><desc id="d12-ab-desc">Beispiel Test-Tenant. Links das Rechnungskonto Business mit den Microsoft-365-Abonnements und die Power-Platform-Umgebung mit Pay-as-you-go-Verknüpfung. Rechts das Rechnungskonto Individual mit der Azure-Subscription, darin zwei Resource Groups: eine mit der Foundry-Ressource, deren Tokenkosten anfallen, eine mit Microsoft.PowerPlatform/accounts. Die Umgebung ist über die Abrechnungsrichtlinie mit dieser Azure-Ressource verbunden. Die Rechte der beteiligten Welten sind getrennt und nicht verknüpft.</desc><defs><marker id="d12-ab-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker></defs><line x1="315" y1="10" x2="315" y2="366" stroke="#5b6072" stroke-width="1.5" stroke-dasharray="6 4"/><rect x="20" y="16" width="280" height="56" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="160" y="38" font-size="12.5" text-anchor="middle" font-weight="600">Rechnungskonto Business</text><text x="160" y="56" font-size="11" text-anchor="middle" style="fill:#5b6072">Microsoft-365-Abonnements</text><rect x="380" y="16" width="280" height="56" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="520" y="38" font-size="12.5" text-anchor="middle" font-weight="600">Rechnungskonto Individual</text><text x="520" y="56" font-size="11" text-anchor="middle" style="fill:#5b6072">trägt die Azure-Subscription</text><path d="M520 104 L520 74" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d12-ab-a)"/><text x="530" y="93" font-size="11" text-anchor="start" style="fill:#5b6072">abgerechnet über</text><rect x="330" y="104" width="340" height="262" rx="6" fill="none" stroke="#c8ccd6" stroke-width="1.5"/><text x="344" y="122" font-size="13" font-weight="600" style="fill:#2f5d8a">Azure-Subscription</text><rect x="345" y="136" width="310" height="94" rx="6" fill="none" stroke="#5b6072" stroke-width="1.5" stroke-dasharray="5 4"/><text x="358" y="153" font-size="11" style="fill:#5b6072">Resource Group</text><rect x="360" y="160" width="280" height="60" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="500" y="181" font-size="12.5" text-anchor="middle" font-weight="600">Foundry-Ressource</text><text x="500" y="199" font-size="11" text-anchor="middle" style="fill:#5b6072">Tokenkosten je Modell und Richtung</text><rect x="345" y="244" width="310" height="94" rx="6" fill="none" stroke="#5b6072" stroke-width="1.5" stroke-dasharray="5 4"/><text x="358" y="261" font-size="11" style="fill:#5b6072">Resource Group</text><rect x="360" y="268" width="280" height="60" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="500" y="289" font-size="12" text-anchor="middle" font-weight="600">Microsoft.PowerPlatform/accounts</text><text x="500" y="307" font-size="11" text-anchor="middle" style="fill:#5b6072">Azure-Seite der Verknüpfung</text><rect x="20" y="268" width="210" height="60" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="125" y="289" font-size="12.5" text-anchor="middle" font-weight="600">Power-Platform-Umgebung</text><text x="125" y="307" font-size="11" text-anchor="middle" style="fill:#5b6072">Pay-as-you-go-Verknüpfung</text><path d="M230 298 L358 298" fill="none" stroke="#2f5d8a" stroke-width="2.5" marker-end="url(#d12-ab-a)"/><text x="272" y="283" font-size="11" text-anchor="middle" style="fill:#2f5d8a;paint-order:stroke;stroke:#fafaf7;stroke-width:5px;stroke-linejoin:round">Abrechnungs-</text><text x="272" y="295" font-size="11" text-anchor="middle" style="fill:#2f5d8a;paint-order:stroke;stroke:#fafaf7;stroke-width:5px;stroke-linejoin:round">richtlinie</text><rect x="20" y="110" width="280" height="96" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/><text x="160" y="131" font-size="12" text-anchor="middle" font-weight="600" style="fill:#b8472a">Rechte sind nicht verknüpft</text><text x="160" y="151" font-size="11" text-anchor="middle">Abrechnungsrollen am Rechnungskonto</text><text x="160" y="168" font-size="11" text-anchor="middle">Umgebungsrollen in der Power Platform</text><text x="160" y="185" font-size="11" text-anchor="middle">Azure RBAC an der Subscription</text><rect x="20" y="392" width="640" height="52" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/><text x="340" y="413" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">Kosten laufen über Verknüpfungen zur Azure-Subscription.</text><text x="340" y="431" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">Die Rechte in den beteiligten Welten sind nicht verknüpft.</text><line x1="20" y1="470" x2="58" y2="470" stroke="#5b6072" stroke-width="1.5" stroke-dasharray="6 4"/><text x="66" y="474" font-size="11" text-anchor="start" style="fill:#5b6072">getrennte Welten</text><line x1="190" y1="470" x2="228" y2="470" stroke="#2f5d8a" stroke-width="2.5"/><text x="236" y="474" font-size="11" text-anchor="start" style="fill:#5b6072">Abrechnungsverknüpfung</text><text x="660" y="474" font-size="11" text-anchor="end" style="fill:#5b6072">Beispiel: Test-Tenant</text></svg>
+<figcaption>Kosten laufen über Verknüpfungen von Power Platform und Foundry zur Azure-Subscription und zu einem Rechnungskonto, die Rechte in den beteiligten Welten bleiben getrennt.</figcaption>
+</figure>
+
+<h2>Die große Übersicht der Verwaltungsorte</h2>
+
+<p>Jeder Verwaltungsort hat eine Adresse, einen Verwaltungsgegenstand und ein Rechtesystem, das dort gilt. Das Rechtesystem ist die entscheidende Spalte, denn es bestimmt, wo eine Rolle vergeben werden muss. Adressen und Portalnamen ändern sich gelegentlich.</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Ort</th><th>Adresse</th><th>Verwaltet</th><th>Rechtesystem</th><th>Typische Rolle</th></tr></thead>
+<tbody>
+<tr><td>Entra Admin Center</td><td><code>entra.microsoft.com</code></td><td>Nutzer, Gruppen, Apps, Rollen, Conditional Access</td><td>Entra-Rollen</td><td>Global Administrator</td></tr>
+<tr><td>Microsoft 365 Admin Center</td><td><code>admin.cloud.microsoft</code> (früher <code>admin.microsoft.com</code>)</td><td>Lizenzen, Käufe, Abrechnung der Microsoft-365-Produkte, Einstieg in die Dienst-Admin-Center</td><td>Entra-Rollen, Abrechnung zusätzlich Abrechnungsrollen</td><td>Global Administrator, für die Abrechnung Billing account owner</td></tr>
+<tr><td>SharePoint Admin Center</td><td><code>&lt;tenant&gt;-admin.sharepoint.com</code></td><td>Sites, Freigabe-Einstellungen</td><td>Entra-Rolle SharePoint Administrator</td><td>SharePoint Administrator</td></tr>
+<tr><td>Teams Admin Center</td><td><code>admin.teams.microsoft.com</code></td><td>Teams-Richtlinien, Apps in Teams</td><td>Entra-Rolle Teams Administrator</td><td>Teams Administrator</td></tr>
+<tr><td>Exchange Admin Center</td><td><code>admin.exchange.microsoft.com</code></td><td>Postfächer, Mailfluss</td><td>Entra-Rolle Exchange Administrator</td><td>Exchange Administrator</td></tr>
+<tr><td>Intune</td><td><code>intune.microsoft.com</code></td><td>Geräte, Compliance</td><td>Entra- und Intune-Rollen</td><td>–</td></tr>
+<tr><td>Purview, Defender</td><td><code>purview.microsoft.com</code>, <code>security.microsoft.com</code></td><td>Compliance, Sicherheit</td><td>Eigene Rollengruppen plus Entra-Rollen</td><td>–</td></tr>
+<tr><td>Azure-Portal</td><td><code>portal.azure.com</code></td><td>Subscriptions, Resource Groups, Ressourcen; Cost Management + Billing</td><td>Azure RBAC, Abrechnung über Abrechnungsrollen</td><td><code>Owner</code>, <code>Contributor</code>, <code>Reader</code></td></tr>
+<tr><td>Foundry-Portal</td><td><code>ai.azure.com</code></td><td>Projekte, Deployments, Agenten, Playground</td><td>Azure RBAC</td><td><code>Foundry User</code></td></tr>
+<tr><td>Power Platform Admin Center</td><td><code>admin.powerplatform.microsoft.com</code></td><td>Umgebungen, Kapazität, DLP, Abrechnungsrichtlinien</td><td>Entra-Rolle Power Platform Administrator, in der Umgebung Dataverse-Sicherheitsrollen</td><td><code>Power Platform Administrator</code></td></tr>
+<tr><td>Maker-Portale</td><td><code>make.powerapps.com</code>, <code>make.powerautomate.com</code>, <code>copilotstudio.microsoft.com</code></td><td>Apps, Flows, Agenten in einer Umgebung</td><td>Umgebungs- bzw. Dataverse-Rollen</td><td><code>Environment Maker</code></td></tr>
+<tr><td>GitHub</td><td><code>github.com</code></td><td>Repositories, Actions</td><td>GitHub-Rollen, außerhalb von Entra</td><td>–</td></tr>
+</tbody>
+</table></div>
+
+<p>Nach dem Rechtesystem sortiert ergibt sich ein klareres Bild als nach dem Produkt. Die meisten Admin Center hängen an Entra-Rollen, Azure-Portal und Foundry-Portal an Azure RBAC, die Maker-Portale an Umgebungs- bzw. Dataverse-Rollen, GitHub an einem eigenen System, und die Abrechnung zieht quer durch alles eine eigene Rollenwelt.</p>
+
+<figure id="kap12-karte-verwaltungsorte">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 570" role="img" aria-labelledby="d12-km-title d12-km-desc"><title id="d12-km-title">Verwaltungsorte nach Rechtesystem</title><desc id="d12-km-desc">Die Admin Center und Portale stehen gruppiert nach dem Rechtesystem, das dort gilt. Die Gruppe Entra-Rollen umfasst Entra, Microsoft 365 Admin Center, SharePoint, Teams, Exchange, Intune, Purview und Defender sowie das Power Platform Admin Center auf Tenant-Ebene. Azure RBAC gilt im Azure-Portal und im Foundry-Portal. Dataverse-Sicherheitsrollen gelten in den Maker-Portalen und in Umgebungen mit Dataverse. GitHub hat eigene GitHub-Rollen. Quer dazu liegen die Abrechnungsrollen, die im Microsoft 365 Admin Center und in Azure Cost Management und Billing gelten.</desc><rect x="10" y="10" width="660" height="196" rx="6" fill="none" stroke="#2f5d8a" stroke-width="1.5"/><text x="24" y="32" font-size="14" font-weight="600" style="fill:#2f5d8a">Entra-Rollen</text><text x="130" y="32" font-size="11" style="fill:#5b6072">Admin Center, deren Rechte an Entra-Rollen hängen</text><rect x="24" y="46" width="312" height="32" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="180" y="66" font-size="12" text-anchor="middle">Entra Admin Center</text><rect x="344" y="46" width="312" height="32" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="500" y="66" font-size="12" text-anchor="middle">Microsoft 365 Admin Center</text><rect x="24" y="86" width="312" height="32" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="180" y="106" font-size="12" text-anchor="middle">SharePoint Admin Center</text><rect x="344" y="86" width="312" height="32" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="500" y="106" font-size="12" text-anchor="middle">Teams Admin Center</text><rect x="24" y="126" width="312" height="32" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="180" y="146" font-size="12" text-anchor="middle">Exchange Admin Center</text><rect x="344" y="126" width="312" height="32" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="500" y="146" font-size="12" text-anchor="middle">Intune</text><rect x="24" y="166" width="312" height="32" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="180" y="186" font-size="12" text-anchor="middle">Purview, Defender</text><rect x="344" y="166" width="312" height="32" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="500" y="186" font-size="12" text-anchor="middle">Power Platform Admin Center (Tenant-Ebene)</text><rect x="10" y="222" width="212" height="116" rx="6" fill="none" stroke="#2f5d8a" stroke-width="1.5"/><text x="24" y="244" font-size="14" font-weight="600" style="fill:#2f5d8a">Azure RBAC</text><rect x="24" y="258" width="184" height="32" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="116" y="278" font-size="12" text-anchor="middle">Azure-Portal</text><rect x="24" y="298" width="184" height="32" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="116" y="318" font-size="12" text-anchor="middle">Foundry-Portal</text><rect x="234" y="222" width="212" height="116" rx="6" fill="none" stroke="#2f5d8a" stroke-width="1.5"/><text x="246" y="244" font-size="13" font-weight="600" style="fill:#2f5d8a">Dataverse-Sicherheitsrollen</text><rect x="248" y="258" width="184" height="32" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="340" y="278" font-size="12" text-anchor="middle">Maker-Portale</text><rect x="248" y="298" width="184" height="32" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="340" y="318" font-size="12" text-anchor="middle">Umgebungen mit Dataverse</text><rect x="458" y="222" width="212" height="116" rx="6" fill="none" stroke="#2f5d8a" stroke-width="1.5"/><text x="472" y="244" font-size="14" font-weight="600" style="fill:#2f5d8a">GitHub-Rollen</text><text x="472" y="262" font-size="11" style="fill:#5b6072">außerhalb von Entra</text><rect x="472" y="278" width="184" height="32" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="564" y="298" font-size="12" text-anchor="middle">GitHub</text><rect x="10" y="356" width="660" height="100" rx="6" fill="none" stroke="#b8472a" stroke-width="2.5"/><text x="24" y="378" font-size="14" font-weight="600" style="fill:#b8472a">Abrechnungsrollen</text><text x="170" y="378" font-size="11" style="fill:#5b6072">quer: eigene Rollenwelt neben allen anderen</text><rect x="24" y="394" width="312" height="48" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/><text x="180" y="414" font-size="12" text-anchor="middle">Microsoft 365 Admin Center</text><text x="180" y="431" font-size="11" text-anchor="middle" style="fill:#5b6072">Abrechnung der Microsoft-365-Produkte</text><rect x="344" y="394" width="312" height="48" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/><text x="500" y="414" font-size="12" text-anchor="middle">Azure-Portal</text><text x="500" y="431" font-size="11" text-anchor="middle" style="fill:#5b6072">Cost Management + Billing</text><rect x="20" y="476" width="640" height="52" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/><text x="340" y="497" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">Das Portal sagt nicht, wo die Rolle vergeben wird.</text><text x="340" y="515" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">Maßgeblich ist das Rechtesystem hinter dem Portal.</text><rect x="20" y="548" width="26" height="14" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="54" y="559" font-size="11" text-anchor="start" style="fill:#5b6072">Portal in einer Rechtegruppe</text><rect x="260" y="548" width="26" height="14" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/><text x="294" y="559" font-size="11" text-anchor="start" style="fill:#5b6072">Portal, in dem zusätzlich Abrechnungsrollen gelten</text></svg>
+<figcaption>Welches Portal man öffnet, sagt nicht, wo die benötigte Rolle vergeben wird; maßgeblich ist das Rechtesystem hinter dem Portal.</figcaption>
+</figure>
+
+<h2>Nachprüfen per Kommandozeile</h2>
+
+<p>Die folgenden Abfragen lesen nur und verändern nichts. Voraussetzung ist ein Login per <code>az login --tenant &lt;tenant-id&gt;</code> im richtigen Tenant.</p>
+
+<p>Aktuellen Kontext und alle sichtbaren Subscriptions anzeigen:</p>
+
+<pre><code class="language-bash">az account show --query "{tenant:tenantId, sub:name}" -o table
+az account list --query "[].{name:name, id:id, state:state}" -o table</code></pre>
+
+<p>Resource Groups und Ressourcen einer Subscription auflisten, um die Schnitte nach Zweck zu sehen:</p>
+
+<pre><code class="language-bash">az group list --query "[].{name:name, region:location}" -o table
+az resource list --resource-group rg-&lt;zweck&gt; \
+  --query "[].{name:name, type:type, kind:kind}" -o table</code></pre>
+
+<p>Rollenzuweisungen auflisten, zuerst alle Zuweisungen innerhalb der Subscription, dann die auf einer einzelnen Ressource einschließlich der geerbten:</p>
+
+<pre><code class="language-bash">az role assignment list --all --include-inherited \
+  --query "[].{principal:principalName, type:principalType, role:roleDefinitionName, scope:scope}" -o table
+az role assignment list --include-inherited --scope \
+  "/subscriptions/&lt;subscription-id&gt;/resourceGroups/rg-&lt;foundry&gt;/providers/Microsoft.CognitiveServices/accounts/&lt;ressource&gt;" \
+  -o table</code></pre>
+
+<p>Die Foundry-Ressource, ihre Deployments und die Schlüsselfreigabe prüfen:</p>
+
+<pre><code class="language-bash">az cognitiveservices account show -g rg-&lt;foundry&gt; -n &lt;ressource&gt; \
+  --query "{kind:kind, sku:sku.name, region:location, localAuthOff:properties.disableLocalAuth}"
+az cognitiveservices account deployment list -g rg-&lt;foundry&gt; -n &lt;ressource&gt; \
+  --query "[].{name:name, model:properties.model.name, sku:sku.name}" -o table</code></pre>
+
+<p>Ist <code>localAuthOff</code> leer oder <code>null</code>, ist die Eigenschaft nicht gesetzt, und die Schlüssel sind aktiv.</p>
+
+<p>Projekte sind Unterressourcen. Wo die CLI keinen eigenen Befehl dafür bietet, hilft der allgemeine Zugriff auf die Verwaltungs-API:</p>
+
+<pre><code class="language-bash">az rest --method get --url \
+  "https://management.azure.com/subscriptions/&lt;subscription-id&gt;/resourceGroups/rg-&lt;foundry&gt;/providers/Microsoft.CognitiveServices/accounts/&lt;ressource&gt;/projects?api-version=2025-06-01"</code></pre>
+
+<p>Die Version <code>2025-06-01</code> ist ein Beispiel, das im Test-Tenant funktioniert hat. Neuere Versionen können existieren. Welche verfügbar sind, zeigt der Ressourcenanbieter:</p>
+
+<pre><code class="language-bash">az provider show -n Microsoft.CognitiveServices \
+  --query "resourceTypes[?resourceType=='accounts/projects'].apiVersions"</code></pre>
+
+<p>Power-Platform-Umgebungen liegen nicht in Azure, sondern in der BAP-API. Dafür wird ein Token für die Ressource <code>https://service.powerapps.com/</code> verwendet. Der Endpunkt <code>scopes/admin</code> verlangt eine Admin-Rolle, also Power Platform Administrator oder Global Administrator:</p>
+
+<pre><code class="language-bash">az rest --method get \
+  --resource "https://service.powerapps.com/" \
+  --url "https://api.bap.microsoft.com/providers/Microsoft.BusinessAppPlatform/scopes/admin/environments?api-version=2021-04-01" \
+  --query "value[].{name:properties.displayName, type:properties.environmentSku, region:location, dataverse:properties.linkedEnvironmentMetadata.instanceUrl}"</code></pre>
+
+<p>Bei Umgebungen mit Dataverse liefert <code>dataverse</code> die Adresse der Datenbank, sonst bleibt das Feld leer. Auch <code>2021-04-01</code> ist eine Beispielversion aus dem Test-Tenant, neuere Versionen können existieren.</p>
+
+<p>Die Azure-Vertretungen der Power-Platform-Konten erscheinen dagegen als normale Ressourcen:</p>
+
+<pre><code class="language-bash">az resource list --resource-type Microsoft.PowerPlatform/accounts -o table</code></pre>
+
+<h2>Checkliste: Orientierung in einem fremden Tenant</h2>
+
+<ol>
+<li><strong>Tenant und Identität klären</strong>: In welchem Tenant ist man angemeldet, und mit welcher Rolle? <code>az account show</code> und das Entra Admin Center beantworten das.</li>
+<li><strong>Azure-Seite erfassen</strong>: Subscriptions, Resource Groups und deren Zweck auflisten. Auffällige Gruppen wie <code>NetworkWatcherRG</code> oder solche mit <code>Microsoft.PowerPlatform/accounts</code> einordnen.</li>
+<li><strong>Rollenzuweisungen lesen</strong>: Wer ist <code>Owner</code>, wer hat Rollen auf Ressourcenebene? Entra-Rollen allein sagen nichts über Azure.</li>
+<li><strong>Foundry prüfen</strong>: Welche Foundry-Ressourcen, Projekte und Deployments gibt es, ist <code>disableLocalAuth</code> gesetzt, und welche Identitäten haben welche Foundry-Rolle?</li>
+<li><strong>Power-Platform-Umgebungen auflisten</strong>: Welche Typen, welche Regionen, welche haben Dataverse? Danach die Sicherheitsrollen in den Umgebungen mit Dataverse ansehen.</li>
+<li><strong>DLP-Richtlinien nachsehen</strong>: Gilt eine tenantweite Richtlinie, und wie ist die Standardumgebung abgesichert?</li>
+<li><strong>Abrechnung nachziehen</strong>: Zu welchem Rechnungskonto gehört jede Subscription, und welche Verknüpfungen zwischen Power Platform und Azure bestehen?</li>
+<li><strong>Für jedes Portal das Rechtesystem notieren</strong>: Erst wenn feststeht, wo die jeweilige Rolle vergeben wird, lässt sich ein Rechteproblem sauber lösen.</li>
+</ol>
+<nav style="display:flex;justify-content:space-between;gap:1rem;margin-top:3rem;border-top:1px solid var(--rule);padding-top:1rem;font-family:'Helvetica Neue',Arial,sans-serif;font-size:.9rem"><span><a href="11-lizenzen-abrechnung.html">← Zurück</a></span><a href="index.html">Übersicht</a><span><a href="13-recht-datenweg.html">Weiter →</a></span></nav>
+</body>
+</html>

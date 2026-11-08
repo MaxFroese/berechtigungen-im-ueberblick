@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 385" width="680" role="img" aria-labelledby="kap05-zugriffsquellen-t kap05-zugriffsquellen-d" style="background:#ffffff"><style>text{font-family:"Helvetica Neue",Arial,sans-serif;fill:#1f2230}.legend-text{font-size:11px;fill:#5b6072}</style><title id="kap05-zugriffsquellen-t">Quellen des Zugriffs auf eine Datei</title><desc id="kap05-zugriffsquellen-d">Zeigt eine Datei in der Mitte und darum die Quellen, aus denen sich der Zugriff auf sie ergibt.</desc><defs><marker id="kap05-zugriffsquellen-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="kap05-zugriffsquellen-h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker><marker id="kap05-zugriffsquellen-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker></defs>
+<rect x="15" y="16" width="225" height="318" rx="10" fill="none" stroke="#2f5d8a" stroke-width="1"/>
+<rect x="440" y="16" width="225" height="318" rx="10" fill="none" stroke="#b8472a" stroke-width="1" stroke-dasharray="6 4"/>
+<text x="127" y="40" text-anchor="middle" font-size="13" font-weight="600" style="fill:#2f5d8a">Zeigt der Dialog</text>
+<text x="127" y="57" text-anchor="middle" font-size="12" style="fill:#2f5d8a">„Zugriff verwalten“</text>
+<text x="552" y="40" text-anchor="middle" font-size="13" font-weight="600" style="fill:#b8472a">Zeigt der Dialog nicht</text>
+<text x="552" y="57" text-anchor="middle" font-size="12" style="fill:#b8472a">„Zugriff verwalten“</text>
+<rect x="30" y="74" width="195" height="72" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="127" y="105" text-anchor="middle" font-size="13" font-weight="600">Einträge am Element</text>
+<text x="127" y="124" text-anchor="middle" font-size="11" style="fill:#5b6072">direkt berechtigte Personen</text>
+<rect x="30" y="160" width="195" height="72" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="127" y="191" text-anchor="middle" font-size="13" font-weight="600">Gruppen</text>
+<text x="127" y="210" text-anchor="middle" font-size="11" style="fill:#5b6072">ohne aufgelöste Mitglieder</text>
+<rect x="30" y="246" width="195" height="72" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="127" y="277" text-anchor="middle" font-size="13" font-weight="600">Links</text>
+<text x="127" y="296" text-anchor="middle" font-size="11" style="fill:#5b6072">ohne Empfänger</text>
+<rect x="455" y="88" width="195" height="76" rx="8" fill="#ffffff" stroke="#b8472a" stroke-width="2"/>
+<text x="552" y="120" text-anchor="middle" font-size="13" font-weight="600">Site-Administratoren</text>
+<text x="552" y="139" text-anchor="middle" font-size="11" style="fill:#5b6072">Vollzugriff auf die gesamte Site</text>
+<rect x="455" y="204" width="195" height="92" rx="8" fill="#ffffff" stroke="#b8472a" stroke-width="2"/>
+<text x="552" y="235" text-anchor="middle" font-size="13" font-weight="600">Apps</text>
+<text x="552" y="254" text-anchor="middle" font-size="11" style="fill:#5b6072">mit tenantweiten</text>
+<text x="552" y="270" text-anchor="middle" font-size="11" style="fill:#5b6072">Anwendungsberechtigungen</text>
+<text x="340" y="138" text-anchor="middle" font-size="11" style="fill:#5b6072">Quellen des Zugriffs</text>
+<rect x="290" y="150" width="100" height="92" rx="6" fill="#d9e4ef" stroke="#2f5d8a" stroke-width="2.5"/>
+<text x="340" y="201" text-anchor="middle" font-size="15" font-weight="600">Datei</text>
+<line x1="225" y1="110" x2="290" y2="170" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#kap05-zugriffsquellen-a)"/>
+<line x1="225" y1="196" x2="290" y2="196" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#kap05-zugriffsquellen-a)"/>
+<line x1="225" y1="282" x2="290" y2="222" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#kap05-zugriffsquellen-a)"/>
+<line x1="455" y1="126" x2="390" y2="176" stroke="#b8472a" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#kap05-zugriffsquellen-h)"/>
+<line x1="455" y1="250" x2="390" y2="216" stroke="#b8472a" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#kap05-zugriffsquellen-h)"/>
+<line x1="24" y1="362" x2="56" y2="362" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#kap05-zugriffsquellen-a)"/>
+<text x="64" y="366" text-anchor="start" class="legend-text">Zugriff, im Dialog sichtbar</text>
+<line x1="270" y1="362" x2="302" y2="362" stroke="#b8472a" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#kap05-zugriffsquellen-h)"/>
+<text x="310" y="366" text-anchor="start" class="legend-text">Zugriff besteht, erscheint im Dialog nicht</text>
+</svg>

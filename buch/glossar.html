@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Glossar</title>
+<style>
+:root { --bg:#fafaf7; --text:#1f2230; --muted:#5b6072; --accent:#2f5d8a;
+  --accent-soft:#d9e4ef; --leader:#b8472a; --node-fill:#ffffff;
+  --node-stroke:#2f5d8a; --rule:#c8ccd6; --code-bg:#eef1f5; }
+html,body { background:var(--bg); color:var(--text);
+  font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+  line-height:1.65; font-size:18px; }
+body { max-width:760px; margin:3rem auto 6rem; padding:0 1.5rem; }
+h1 { font-size:2rem; line-height:1.2; margin:0 0 2rem;
+  border-bottom:1px solid var(--rule); padding-bottom:0.6rem; }
+h2 { font-size:1.35rem; margin-top:2.4rem; margin-bottom:0.8rem;
+  color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif;
+  font-weight:600; letter-spacing:0.01em; }
+p { margin:0 0 1.1rem; }
+figure { margin:2rem auto; text-align:center; }
+figure svg { max-width:100%; height:auto; display:block; margin:0 auto; }
+figcaption { font-family:"Helvetica Neue",Arial,sans-serif; font-size:0.85rem;
+  color:var(--muted); margin-top:0.6rem; text-align:center; }
+svg text { font-family:"Helvetica Neue",Arial,sans-serif; fill:var(--text); }
+.legend-text { font-size:11px; fill:var(--muted); }
+pre { background:var(--code-bg); padding:0.9rem 1.1rem; overflow-x:auto;
+  border-radius:6px; font-size:0.82em; }
+code { background:var(--code-bg); font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:0.85em; padding:0.1em 0.3em; border-radius:3px; }
+pre code { background:none; padding:0; }
+.table-wrap { overflow-x:auto; margin:1.5rem 0; }
+table { border-collapse:collapse; width:100%; font-size:0.85em; line-height:1.45; }
+th { text-align:left; color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif;
+  font-weight:600; border-bottom:2px solid var(--accent); padding:0.45rem 0.6rem;
+  vertical-align:bottom; }
+td { border-bottom:1px solid var(--rule); padding:0.45rem 0.6rem; vertical-align:top; }
+tr { break-inside:avoid; }
+dt { color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif;
+  font-weight:600; margin-top:1.1rem; break-after:avoid; }
+dd { margin:0.15rem 0 0; padding-bottom:0.9rem;
+  border-bottom:1px solid var(--rule); break-inside:avoid; }
+</style>
+</head>
+<body>
+<h1>Glossar</h1>
+
+<dl>
+<dt>Abonnement</dt>
+<dd>Vertrag über eine Anzahl Lizenzen eines Produkts in Microsoft 365, kurz Abo, nicht zu verwechseln mit einer Subscription in Azure.</dd>
+<dt>Abrechnungsrichtlinie</dt>
+<dd>Verknüpfung einer Power-Platform-Umgebung mit einer Azure-Subscription für nutzungsbasierte Abrechnung (billing policy).</dd>
+<dt>Abrechnungsrolle</dt>
+<dd>Rolle wie Billing account owner auf einer Ebene der Abrechnungshierarchie, die über Kaufen, Bezahlen und Unterschreiben entscheidet und von Entra-Rollen getrennt ist.</dd>
+<dt>Abuse Monitoring</dt>
+<dd>Automatische Missbrauchsprüfung von Prompts und Ausgaben in Foundry, bei der markierte Inhalte gespeichert und von Menschen geprüft werden können.</dd>
+<dt>Access Token</dt>
+<dd>Token für genau einen Zieldienst, das Rechte in <code>scp</code> oder <code>roles</code> trägt.</dd>
+<dt>Admin Consent</dt>
+<dd>Zustimmung eines Admins für den ganzen Tenant.</dd>
+<dt>Admin-Consent-Workflow</dt>
+<dd>Einstellung in Entra ID, mit der Nutzer für eine App eine Freigabe beantragen, die benannte Prüfer erteilen oder ablehnen.</dd>
+<dt>Agent Builder</dt>
+<dd>Werkzeug in Microsoft 365 Copilot für einfache Declarative Agents ohne eigene Aktionen.</dd>
+<dt>Anwendungsberechtigung</dt>
+<dd>App-Recht ohne Nutzer, im Token als <code>roles</code>.</dd>
+<dt>App Service</dt>
+<dd>Azure-Dienst, der Web-Apps auf verwalteten Servern betreibt.</dd>
+<dt>App-Registrierung</dt>
+<dd>Globaler Steckbrief einer App mit Name, Redirect-URIs, angeforderten Rechten und Anmeldedaten.</dd>
+<dt>Application User</dt>
+<dd>Nutzerdatensatz in Dataverse, der an eine App-Registrierung oder Managed Identity gebunden ist und Sicherheitsrollen ohne Lizenz erhält.</dd>
+<dt>Audience</dt>
+<dd>Claim <code>aud</code>: der Dienst, für den ein Token ausgestellt ist.</dd>
+<dt>Audit-Log</dt>
+<dd>Protokoll administrativer Änderungen und relevanter Aktivitäten.</dd>
+<dt>Auftragsverarbeitung</dt>
+<dd>Verarbeitung personenbezogener Daten durch einen Dienstleister nach Weisung des Verantwortlichen, geregelt in einem AVV.</dd>
+<dt>Ausgabenlimit</dt>
+<dd>Einstellung einer Azure-Subscription mit Guthaben, die bei <code>On</code> die Ressourcen stoppt, sobald das Guthaben aufgebraucht ist.</dd>
+<dt>AVV</dt>
+<dd>Vertrag zur Auftragsverarbeitung nach Art. 28 DSGVO.</dd>
+<dt>Azure</dt>
+<dd>Cloud-Plattform für eigene Ressourcen wie Web-Apps, Datenbanken und Modelle.</dd>
+<dt>Azure RBAC</dt>
+<dd>Rechtesystem für Azure-Ressourcen aus Principal, Rolle und Scope.</dd>
+<dt>Berechtigungsobjekt</dt>
+<dd>Art eines SAP-Rechts mit Feldern wie Buchungskreis und Aktivität; eine Berechtigung ist eine konkrete Belegung dieser Felder.</dd>
+<dt>Bibliothek</dt>
+<dd>Dokumentablage innerhalb einer Site.</dd>
+<dt>Branch-Schutz</dt>
+<dd>Regeln, die direkte Änderungen an einem Branch einschränken.</dd>
+<dt>Break-Glass-Konto</dt>
+<dd>Notfallkonto mit hohen Rechten, das von üblichen Zugriffsregeln gezielt ausgenommen ist.</dd>
+<dt>Buchungskreis</dt>
+<dd>Rechtlich selbständige Einheit der Buchhaltung in SAP und häufiger Organisationswert in Berechtigungen.</dd>
+<dt>Budget</dt>
+<dd>Schwellenwert in Azure Cost Management, der Warnungen auslöst, aber nichts stoppt.</dd>
+<dt>Business Unit</dt>
+<dd>Sicherheitsgrenze in Dataverse als Baum unter einer Root; jede Person und jede Zeile gehört genau einer an.</dd>
+<dt>Business-Tarif</dt>
+<dd>Firmentarif eines KI-Anbieters unter gewerblichen Bedingungen, einschließlich API-Zugang.</dd>
+<dt>Canvas App</dt>
+<dd>App der Power Platform, deren Oberfläche frei gestaltet wird und die Daten über Connectors aus beliebigen Quellen holt.</dd>
+<dt>Client Secret</dt>
+<dd>Passwort einer App, das sich dauerhaft speichern lässt und deshalb abfließen kann.</dd>
+<dt>CLOUD Act</dt>
+<dd>US-Gesetz, nach dem US-Anbieter auch im Ausland gespeicherte Daten herausgeben müssen können.</dd>
+<dt>Cloud Connector</dt>
+<dd>SAP-Komponente im lokalen Netz, die die BTP mit internen SAP-Systemen verbindet und bei Principal Propagation kurzlebige Zertifikate erzeugt.</dd>
+<dt>Cloud Flow</dt>
+<dd>Flow, der in Microsofts Cloud läuft und automatisiert, sofort oder geplant ausgelöst wird.</dd>
+<dt>Compliance</dt>
+<dd>Von Intune gemeldeter Status, ob ein Gerät die Firmenregeln erfüllt.</dd>
+<dt>Conditional Access</dt>
+<dd>Regeln in Entra ID, die anhand von Nutzer, App, Gerät und Risiko über Anmeldungen entscheiden.</dd>
+<dt>Connector</dt>
+<dd>Baustein, über den ein Flow einen Dienst wie SharePoint oder Dataverse anspricht.</dd>
+<dt>Consent</dt>
+<dd>Zustimmung eines Nutzers oder Admins, dass eine App bestimmte Rechte erhält.</dd>
+<dt>Consumer-Tarif</dt>
+<dd>Privattarif eines KI-Anbieters unter Verbraucherbedingungen.</dd>
+<dt>Control Plane</dt>
+<dd>Verwaltungsebene einer Ressource: anlegen, konfigurieren, löschen.</dd>
+<dt>Copilot Credits</dt>
+<dd>Verbrauchseinheit, nach der Copilot Studio und Agenten nutzungsbasiert abgerechnet werden.</dd>
+<dt>CSP</dt>
+<dd>Cloud Solution Provider: Programm, in dem ein Partner Lizenzen und Azure-Verbrauch im eigenen Namen weiterverkauft und selbst abrechnet.</dd>
+<dt>Custom Connector</dt>
+<dd>Eigener Connector für eine API auf Basis einer OpenAPI-Beschreibung, nutzbar in Flows, Apps und Agenten.</dd>
+<dt>Custom Engine Agent</dt>
+<dd>Agent mit eigener Orchestrierung und eigenem Modell, für dessen Compliance der Betreiber verantwortlich ist.</dd>
+<dt>Data Plane</dt>
+<dd>Ebene der eigentlichen Inhalte einer Ressource oder eines Dienstes: Dateien, Geheimnisse, Modellaufrufe.</dd>
+<dt>Dataverse</dt>
+<dd>Datenbank der Power Platform, in der auch Flows als Datensätze liegen.</dd>
+<dt>Declarative Agent</dt>
+<dd>Agent, der die Orchestrierung und Modelle von Microsoft 365 Copilot nutzt und nur Anweisungen, Wissen und Aktionen ergänzt.</dd>
+<dt>Delegation</dt>
+<dd>Ausführung einer Abfrage einer Canvas App durch die Datenquelle selbst statt lokal auf einer begrenzten Zahl von Zeilen.</dd>
+<dt>Delegierte Berechtigung</dt>
+<dd>App-Recht im Namen eines Nutzers, wirksam als Schnittmenge aus App- und Nutzerrecht, im Token als <code>scp</code>.</dd>
+<dt>Deployment</dt>
+<dd>Bereitgestelltes Modell mit eigenem Namen an einer Foundry-Ressource.</dd>
+<dt>Deployment-Identität</dt>
+<dd>Identität, die eine neue Version ausrollt.</dd>
+<dt>Deployment-Typ</dt>
+<dd>Einstellung eines Deployments in Foundry, die festlegt, wo die Inferenz läuft: Global, Data Zone oder Standard.</dd>
+<dt>Desktop Flow</dt>
+<dd>Automatisierung von Bedienschritten auf einem Windows-Rechner (RPA), beaufsichtigt oder unbeaufsichtigt.</dd>
+<dt>DLP-Richtlinie</dt>
+<dd>Regel der Power Platform, die Connectors in geschäftlich, nicht geschäftlich und blockiert einteilt; nicht zu verwechseln mit DLP in Purview.</dd>
+<dt>DPA</dt>
+<dd>Microsoft Products and Services Data Protection Addendum: Datenschutzvertrag, der über die Product Terms für Microsofts Online-Dienste gilt.</dd>
+<dt>DSFA</dt>
+<dd>Datenschutz-Folgenabschätzung nach Art. 35 DSGVO: dokumentierte Risikoprüfung vor einer Verarbeitung mit hohem Risiko.</dd>
+<dt>Enterprise Application</dt>
+<dd>Portalname für den Service Principal einer App im Tenant.</dd>
+<dt>Entra ID</dt>
+<dd>Identitätsdienst des Tenants, der Nutzer, Gruppen und Apps kennt und Tokens ausstellt.</dd>
+<dt>Entra Join</dt>
+<dd>Gerät ist als Firmengerät direkt mit Entra ID verbunden.</dd>
+<dt>Entra-Gruppen-Team</dt>
+<dd>Team in Dataverse, dessen Mitglieder aus einer Gruppe in Entra ID abgeleitet werden und dem Sicherheitsrollen zugewiesen sind.</dd>
+<dt>Entra-Registrierung</dt>
+<dd>Gerät ist Entra ID bekannt, bleibt aber im Wesentlichen privat verwaltet.</dd>
+<dt>Entra-Rolle</dt>
+<dd>Administrative Rolle im Tenant, zum Beispiel Global Administrator.</dd>
+<dt>EU Data Boundary</dt>
+<dd>Microsofts Zusage, Kundendaten in EU und EFTA zu speichern und zu verarbeiten, mit dokumentierten Ausnahmen.</dd>
+<dt>Federated Credential</dt>
+<dd>Konkrete Vertrauensregel an einer Identität, die Issuer, Subject und Audience festlegt.</dd>
+<dt>Fiori</dt>
+<dd>Web-Oberfläche von SAP, deren Apps im Hintergrund OData-Services aufrufen.</dd>
+<dt>Firefighter</dt>
+<dd>Notfallzugang in SAP mit weitreichenden Rechten, befristet, begründet, protokolliert und nachträglich geprüft.</dd>
+<dt>Flex Routing</dt>
+<dd>Copilot-Einstellung, die bei Lastspitzen Inferenz außerhalb der EU Data Boundary erlaubt.</dd>
+<dt>Flow</dt>
+<dd>Automatisierter Ablauf in Power Automate aus einem Auslöser und Aktionen.</dd>
+<dt>Foundry</dt>
+<dd>Microsofts Azure-Dienst für Modelle und Agenten, früher Azure AI Foundry; Portal <code>ai.azure.com</code>.</dd>
+<dt>Foundry-Ressource</dt>
+<dd>Azure-Ressource vom Typ <code>Microsoft.CognitiveServices/accounts</code> mit eigenem Endpunkt, an der Deployments und Projekte hängen.</dd>
+<dt>Freigabelink</dt>
+<dd>Link, der Zugriff auf ein Element gewährt und je nach Art bestimmte Personen, die Organisation oder jeden umfasst.</dd>
+<dt>Funktionstrennung</dt>
+<dd>Regel, dass bestimmte Kombinationen von Rechten nicht bei derselben Person liegen dürfen (Segregation of Duties), etwa Lieferant anlegen und Zahlung freigeben.</dd>
+<dt>Gast</dt>
+<dd>Externes Konto, das per Einladung als eigenes Objekt im Tenant vertreten ist.</dd>
+<dt>GDAP</dt>
+<dd>Granular Delegated Admin Privileges: vom Kunden bestätigte, befristete Beziehung, über die ein Partner ausgewählte Entra-Rollen im Kunden-Tenant hält.</dd>
+<dt>Geschäftsgeheimnis</dt>
+<dd>Geheime Information mit wirtschaftlichem Wert, die durch angemessene Maßnahmen geschützt wird.</dd>
+<dt>GitHub Actions</dt>
+<dd>In GitHub eingebaute Automatisierung über Workflow-Dateien.</dd>
+<dt>GitHub Organization</dt>
+<dd>Gemeinsamer Firmenbereich auf GitHub mit eigenen Mitgliedern und Rechten.</dd>
+<dt>GitHub Secret</dt>
+<dd>Verschlüsselt bei GitHub gespeicherter Wert, den Workflows nutzen können.</dd>
+<dt>Graph API</dt>
+<dd>Gemeinsame REST-API <code>graph.microsoft.com</code> für Daten aus Microsoft 365 und Entra ID.</dd>
+<dt>IAS</dt>
+<dd>Identity Authentication Service der SAP Cloud Identity Services: Identitätsanbieter oder Vermittler vor Entra ID für SAP-Anwendungen.</dd>
+<dt>ID-Token</dt>
+<dd>Token, das der App sagt, wer sich angemeldet hat.</dd>
+<dt>Identity Provisioning</dt>
+<dd>Dienst der SAP Cloud Identity Services, der Benutzer und Gruppen in SAP-Systeme verteilt.</dd>
+<dt>Intune</dt>
+<dd>Dienst zur Geräteverwaltung und Compliance-Prüfung.</dd>
+<dt>IT-Dienstleister</dt>
+<dd>Externe Firma, oft Managed Service Provider (MSP) genannt, die Tenant, Geräte, Lizenzen und Support einer Firma betreibt, ohne über Inhalte und Zugriffe fachlich zu entscheiden.</dd>
+<dt>Key Vault</dt>
+<dd>Azure-Dienst für Geheimnisse, Schlüssel und Zertifikate.</dd>
+<dt>KI-Agent</dt>
+<dd>Programm wie Claude Code oder Codex, das mit einem Modell plant und selbst Dateien ändert und Befehle ausführt.</dd>
+<dt>Laufzeit-Identität</dt>
+<dd>Identität, mit der die laufende App auf andere Dienste zugreift.</dd>
+<dt>Lizenz</dt>
+<dd>Einzelner Platz aus einem Abonnement, der einem Konto zugewiesen wird und dort Dienste freischaltet, aber keine Rechte auf Daten gibt.</dd>
+<dt>Maker-Portal</dt>
+<dd>Bauwerkzeug der Power Platform wie <code>make.powerapps.com</code>, das immer in einer gewählten Umgebung arbeitet.</dd>
+<dt>Managed Environment</dt>
+<dd>Bündel von Verwaltungsfunktionen, das auf einer Umgebung eingeschaltet wird und Premium-Lizenzen für deren Nutzung voraussetzt.</dd>
+<dt>Managed Identity</dt>
+<dd>Von Azure verwaltete Identität einer Ressource, die ohne gespeichertes Secret auskommt.</dd>
+<dt>Mandant</dt>
+<dd>Dreistellige Nummer, die Benutzer und Geschäftsdaten innerhalb eines SAP-Systems trennt, während Code und Tabellendefinitionen geteilt sind; kein Tenant.</dd>
+<dt>MCA</dt>
+<dd>Microsoft Customer Agreement: Direktvertrag zwischen Microsoft und einem Käufer, an dem die Abrechnungshierarchie hängt.</dd>
+<dt>MCP</dt>
+<dd>Model Context Protocol: Standard, über den ein KI-Agent externe Werkzeuge und Datenquellen anspricht.</dd>
+<dt>Member</dt>
+<dd>Reguläres internes Nutzerkonto des Tenants.</dd>
+<dt>MFA</dt>
+<dd>Anmeldung mit mehr als einem Faktor.</dd>
+<dt>Microsoft 365</dt>
+<dd>Sammlung der Dienste für Zusammenarbeit wie SharePoint, OneDrive, Teams und Exchange Online.</dd>
+<dt>Microsoft-365-Gruppe</dt>
+<dd>Gruppe, an der gemeinsame Dienste wie Team, Site und Postfach hängen.</dd>
+<dt>Model-driven App</dt>
+<dd>App der Power Platform, deren Oberfläche aus dem Datenmodell in Dataverse erzeugt wird und deren Rechte aus Sicherheitsrollen kommen.</dd>
+<dt>MSAL</dt>
+<dd>Microsofts Bibliothek, mit der Apps Tokens holen und zwischenspeichern.</dd>
+<dt>OIDC</dt>
+<dd>Standard, mit dem GitHub dem Runner einen signierten Herkunftsnachweis ausstellt.</dd>
+<dt>On-Premises Data Gateway</dt>
+<dd>Dienst im lokalen Netz, über den Power Platform und Logic Apps ausgehend interne Systeme wie SAP erreichen.</dd>
+<dt>Orchestrierung</dt>
+<dd>Laufzeit eines Agenten, die entscheidet, welche Wissensquellen, Tools und Topics bei einer Anfrage benutzt werden.</dd>
+<dt>Oversharing</dt>
+<dd>Zustand, in dem mehr Personen Zugriff haben als fachlich gewollt.</dd>
+<dt>pac CLI</dt>
+<dd>Kommandozeile der Power Platform für Anmeldung, Solutions, Dataverse und Automatisierung.</dd>
+<dt>Personenbezogene Daten</dt>
+<dd>Alle Informationen, die sich auf eine identifizierte oder identifizierbare Person beziehen.</dd>
+<dt>PFCG-Rolle</dt>
+<dd>Rolle im SAP-Profilgenerator aus Menü und Berechtigungsdaten, aus der ein Profil erzeugt wird; als Einzel-, Sammel- oder abgeleitete Rolle.</dd>
+<dt>PIM</dt>
+<dd>Privileged Identity Management: Admin-Rechte werden nur bei Bedarf und befristet aktiviert.</dd>
+<dt>Pipeline (Power Platform)</dt>
+<dd>Eingebaute Auslieferung einer Solution als managed über festgelegte Stufen, auf Wunsch delegiert über einen Service Principal.</dd>
+<dt>Power Automate</dt>
+<dd>Automatisierungsdienst der Power Platform, in dem Flows laufen.</dd>
+<dt>Power Pages</dt>
+<dd>Baustein der Power Platform für Websites, deren Besucher Kontakte in Dataverse statt Konten im Tenant sind.</dd>
+<dt>Power Platform</dt>
+<dd>Microsofts Low-Code-Plattform, unter anderem mit Power Apps, Power Automate und Copilot Studio.</dd>
+<dt>Power Platform Admin Center</dt>
+<dd>Verwaltungsort für Umgebungen, Kapazität, DLP-Richtlinien und Abrechnungsrichtlinien.</dd>
+<dt>Premium-Connector</dt>
+<dd>Connector oder Baustein wie HTTP, Dataverse oder AI Builder, der eine eigene Power-Automate-Lizenz erfordert.</dd>
+<dt>Principal</dt>
+<dd>Oberbegriff für alles, dem Rechte zugewiesen werden können: Nutzer, Gruppe, Service Principal, Managed Identity.</dd>
+<dt>Principal Propagation</dt>
+<dd>Durchreichen der Identität einer angemeldeten Person bis in ein SAP-System, das sie einem eigenen SAP-Benutzer zuordnet; das SAP-Gegenstück zur delegierten Berechtigung.</dd>
+<dt>Product Terms</dt>
+<dd>Nutzungsbedingungen für Microsoft-Produkte, die unter dem Kundenvertrag gelten und das DPA einbeziehen.</dd>
+<dt>Projekt</dt>
+<dd>Arbeitsbereich für Agenten und zugehörige Inhalte als Unterressource einer Foundry-Ressource, mit eigener Managed Identity.</dd>
+<dt>Prompt Injection</dt>
+<dd>Anweisung in verarbeiteten Daten, die ein Modell fälschlich wie einen Auftrag befolgt.</dd>
+<dt>Publisher</dt>
+<dd>Herausgeber einer Solution, der das Präfix der technischen Namen aller neuen Komponenten festlegt.</dd>
+<dt>Rechnungsabschnitt</dt>
+<dd>Ebene unter dem Rechnungsprofil, die Kosten auf einer Rechnung gruppiert und der Abonnements und Subscriptions zugeordnet sind.</dd>
+<dt>Rechnungskonto</dt>
+<dd>Oberste Ebene der Abrechnung unter einer MCA, die den Vertrag und das Unterschriftsrecht trägt; Typ Business oder Individual.</dd>
+<dt>Rechnungsprofil</dt>
+<dd>Ebene unter dem Rechnungskonto, die eine Rechnung erzeugt und das Zahlungsmittel trägt.</dd>
+<dt>Refresh Token</dt>
+<dd>Länger gültiges Token, mit dem neue Access Tokens geholt werden.</dd>
+<dt>Region</dt>
+<dd>Rechenzentrumsstandort einer Ressource oder Umgebung, unabhängig vom Tenant.</dd>
+<dt>Resource Group</dt>
+<dd>Logischer Ordner für zusammengehörige Azure-Ressourcen.</dd>
+<dt>Ressource</dt>
+<dd>Einzelnes verwaltetes Objekt in Azure, etwa eine Web-App oder ein Key Vault.</dd>
+<dt>Role Collection</dt>
+<dd>Bündel von Rollen auf der SAP BTP, das Benutzern oder Gruppen eines Identitätsanbieters zugewiesen wird.</dd>
+<dt>Rollenzuweisung</dt>
+<dd>Verknüpfung aus Principal, Rolle und Scope (Azure).</dd>
+<dt>Runner</dt>
+<dd>Rechner, auf dem ein Workflow ausgeführt wird.</dd>
+<dt>Sandbox</dt>
+<dd>Vom Betriebssystem oder einer Laufzeitumgebung durchgesetzte Grenze dafür, welche Dateien und Netzziele ein Prozess erreicht.</dd>
+<dt>SAP BTP</dt>
+<dd>Business Technology Platform: SAPs Plattform für Integration, Erweiterungen, Daten, KI und Identität, gegliedert in Global Account und Subaccounts.</dd>
+<dt>SAP GRC</dt>
+<dd>SAP-Werkzeug für Anträge, Prüfung der Funktionstrennung, Notfallzugriff und Rezertifizierung in klassischen SAP-Systemen; für Cloud-Produkte ergänzt durch Cloud Identity Access Governance.</dd>
+<dt>Schicht</dt>
+<dd>Ebene im Stapel einer Komponente aus System, managed Solutions und unmanaged Anpassungen, von der zur Laufzeit die oberste gilt.</dd>
+<dt>Schlüssel</dt>
+<dd>Statisches Zugangsgeheimnis einer Foundry-Ressource, das die Data Plane ohne Azure RBAC öffnet und sich mit <code>disableLocalAuth</code> abschalten lässt.</dd>
+<dt>Scope (Azure)</dt>
+<dd>Ebene einer Azure-Rollenzuweisung, die nach unten vererbt wird: Management Group, Subscription, Resource Group, Ressource.</dd>
+<dt>Security Defaults</dt>
+<dd>Grundschutz-Regeln ohne Einzelkonfiguration, etwa Pflicht-MFA, typisch für kleine Tenants.</dd>
+<dt>Security Trimming</dt>
+<dd>Filterung von Such- und Abrufergebnissen auf das, was die anfragende Identität sehen darf.</dd>
+<dt>Service Plan</dt>
+<dd>Einzelner Dienstbaustein innerhalb einer SKU, etwa Exchange Online, der sich bei der Zuweisung abschalten lässt.</dd>
+<dt>Service Principal</dt>
+<dd>Lokale Vertretung einer App in einem Tenant, an der Zustimmungen und Rollen hängen.</dd>
+<dt>Sicherheitsgruppe</dt>
+<dd>Gruppe, die vor allem zum Zuweisen von Rechten dient.</dd>
+<dt>Sicherheitsrolle</dt>
+<dd>Rolle in Dataverse, die regelt, wer in einer Umgebung welche Daten und Bausteine sehen und ändern darf.</dd>
+<dt>SID</dt>
+<dd>Dreistellige Kennung eines SAP-Systems, etwa PRD.</dd>
+<dt>Sign-in-Log</dt>
+<dd>Protokoll der Anmeldungen in Entra ID.</dd>
+<dt>Site</dt>
+<dd>SharePoint-Bereich mit Bibliotheken, Listen und eigenen Rechten.</dd>
+<dt>Sites.Selected</dt>
+<dd>Anwendungs- oder delegierte Berechtigung, die zunächst nichts erlaubt und jede Site einzeln freigibt.</dd>
+<dt>SKU</dt>
+<dd>Technische Kennung eines kaufbaren Microsoft-Produkts, in der Graph API als <code>skuId</code> und <code>skuPartNumber</code>.</dd>
+<dt>Solution</dt>
+<dd>Paket aus Komponenten der Power Platform ohne Daten, unmanaged als Quelle und managed als Artefakt für Test und Produktion.</dd>
+<dt>Spaltensicherheit</dt>
+<dd>Schutz einzelner Spalten in Dataverse über Sicherheitsprofile, der nur innerhalb vorhandenen Zeilenzugriffs wirkt.</dd>
+<dt>Standard-Connector</dt>
+<dd>Connector wie SharePoint oder Outlook, der in den meisten Microsoft-365-Lizenzen enthalten ist.</dd>
+<dt>Subscription</dt>
+<dd>Abrechnungs- und Rechtegrenze in Azure, die an genau einen Tenant gebunden ist.</dd>
+<dt>Technischer Benutzer</dt>
+<dd>System- oder Kommunikationsbenutzer in SAP mit festen Zugangsdaten für Schnittstellen; das SAP-Gegenstück zur Anwendungsberechtigung.</dd>
+<dt>Tenant</dt>
+<dd>Abgeschlossener Bereich einer Organisation in der Microsoft-Cloud mit eigenen Identitäten, Daten und Regeln.</dd>
+<dt>Testversion</dt>
+<dd>Kostenloses, befristetes Abonnement eines Produkts, das sich bei eingeschalteter wiederkehrender Abrechnung am Ende in ein bezahltes umwandelt.</dd>
+<dt>Token</dt>
+<dd>Signierter, zeitlich begrenzter Ausweis.</dd>
+<dt>Topic</dt>
+<dd>Fest gebauter Gesprächsablauf in Copilot Studio.</dd>
+<dt>Transportauftrag</dt>
+<dd>Sammlung von Änderungen in SAP, die in der Entwicklung freigegeben und über einen festen Weg nach Test und Produktion importiert wird.</dd>
+<dt>Umgebung</dt>
+<dd>Abgegrenzter Container der Power Platform mit eigener Region, eigenen Rechten und optional eigener Dataverse-Datenbank.</dd>
+<dt>Umgebungsrolle</dt>
+<dd>Rolle in einer Umgebung ohne Dataverse, etwa <code>Environment Admin</code> oder <code>Environment Maker</code>.</dd>
+<dt>Umgebungsvariable</dt>
+<dd>Solution-Komponente mit einer Definition und einem eigenen Wert je Umgebung, auch als Verweis auf ein Geheimnis im Key Vault.</dd>
+<dt>Unterauftragsverarbeiter</dt>
+<dd>Dienstleister, den ein Auftragsverarbeiter einsetzt und den der Verantwortliche genehmigen muss.</dd>
+<dt>Verantwortlicher</dt>
+<dd>Stelle, die nach Art. 4 Nr. 7 DSGVO über Zwecke und Mittel einer Verarbeitung entscheidet.</dd>
+<dt>Verbindung</dt>
+<dd>Gespeicherte Anmeldung einer bestimmten Identität bei einem Connector; ein Flow handelt mit den Rechten ihrer Besitzerin.</dd>
+<dt>Verbindungsreferenz</dt>
+<dd>Platzhalter in einer Solution, dem beim Import eine Verbindung der Zielumgebung zugeordnet wird.</dd>
+<dt>Vererbung</dt>
+<dd>Standardregel, dass Elemente die Rechte ihres übergeordneten Elements übernehmen.</dd>
+<dt>Vertraulichkeitsvereinbarung</dt>
+<dd>Vertrag, der die Nutzung und Weitergabe vertraulicher Informationen begrenzt.</dd>
+<dt>Wiederkehrende Abrechnung</dt>
+<dd>Einstellung eines Abonnements, ob es am Laufzeitende automatisch verlängert oder aus einer Testversion gekauft wird.</dd>
+<dt>Workflow</dt>
+<dd>YAML-Datei in <code>.github/workflows</code>, die festlegt, wann welche Schritte laufen.</dd>
+<dt>Workload Identity Federation</dt>
+<dd>Vertrauensregel, mit der ein externes Token, etwa von GitHub, gegen ein Entra-Token getauscht wird, ohne dass ein Secret nötig ist.</dd>
+<dt>Zugriffsebene</dt>
+<dd>Reichweite eines Privilegs in einer Sicherheitsrolle: User, Business Unit, Parent: Child Business Units oder Organization.</dd>
+</dl>
+<nav style="display:flex;justify-content:space-between;gap:1rem;margin-top:3rem;border-top:1px solid var(--rule);padding-top:1rem;font-family:'Helvetica Neue',Arial,sans-serif;font-size:.9rem"><span><a href="21-sap-microsoft.html">← Zurück</a></span><a href="index.html">Übersicht</a><span></span></nav>
+</body>
+</html>

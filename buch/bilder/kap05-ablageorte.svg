@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 380" width="680" role="img" aria-labelledby="kap05-ablageorte-t kap05-ablageorte-d" style="background:#ffffff"><style>text{font-family:"Helvetica Neue",Arial,sans-serif;fill:#1f2230}.legend-text{font-size:11px;fill:#5b6072}</style><title id="kap05-ablageorte-t">Wo Dateien und Nachrichten wirklich liegen</title><desc id="kap05-ablageorte-d">Zeigt, wo Dateien und Nachrichten aus Teams, OneDrive und SharePoint tatsächlich gespeichert werden und welche Bereiche außerhalb des SharePoint-Rechtemodells liegen.</desc><defs><marker id="kap05-ablageorte-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="kap05-ablageorte-h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker><marker id="kap05-ablageorte-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker></defs>
+<text x="249" y="22" text-anchor="middle" font-size="13" font-weight="600" style="fill:#2f5d8a">Für Dateien: drei Zugänge, ein System</text>
+<text x="587" y="22" text-anchor="middle" font-size="13" font-weight="600" style="fill:#b8472a">Eigenes Rechtemodell</text>
+<rect x="20" y="112" width="458" height="214" rx="10" fill="#d9e4ef" stroke="#2f5d8a" stroke-width="1.5"/>
+<rect x="20" y="36" width="146" height="54" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="93" y="59" text-anchor="middle" font-size="13" font-weight="600">Team</text>
+<text x="93" y="76" text-anchor="middle" font-size="11" style="fill:#5b6072">mit Microsoft-365-Gruppe</text>
+<line x1="93" y1="90" x2="93" y2="128" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#kap05-ablageorte-a)"/>
+<rect x="26" y="128" width="134" height="146" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="93" y="148" text-anchor="middle" font-size="12.5" font-weight="600">Team-Site</text>
+<text x="93" y="164" text-anchor="middle" font-size="11" style="fill:#5b6072">hängt an der Gruppe</text>
+<rect x="33" y="174" width="120" height="90" rx="5" fill="#d9e4ef" stroke="#2f5d8a" stroke-width="1"/>
+<text x="93" y="192" text-anchor="middle" font-size="11.5" font-weight="600" style="fill:#2f5d8a">Bibliothek</text>
+<rect x="39" y="202" width="108" height="52" rx="3" fill="#ffffff" stroke="#2f5d8a" stroke-width="1"/>
+<text x="93" y="224" text-anchor="middle" font-size="11" font-weight="600">Ordner</text>
+<text x="93" y="240" text-anchor="middle" font-size="10" style="fill:#5b6072">Standardkanal</text>
+<rect x="176" y="36" width="146" height="54" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="249" y="59" text-anchor="middle" font-size="13" font-weight="600">Privater Kanal</text>
+<text x="249" y="76" text-anchor="middle" font-size="11" style="fill:#5b6072">eigener Personenkreis</text>
+<line x1="249" y1="90" x2="249" y2="128" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#kap05-ablageorte-a)"/>
+<rect x="182" y="128" width="134" height="146" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="249" y="148" text-anchor="middle" font-size="12.5" font-weight="600">Eigene Site</text>
+<text x="249" y="164" text-anchor="middle" font-size="11" style="fill:#5b6072">nur für diesen Kanal</text>
+<rect x="189" y="174" width="120" height="90" rx="5" fill="#d9e4ef" stroke="#2f5d8a" stroke-width="1"/>
+<text x="249" y="192" text-anchor="middle" font-size="11.5" font-weight="600" style="fill:#2f5d8a">Bibliothek</text>
+<rect x="195" y="202" width="108" height="52" rx="3" fill="#ffffff" stroke="#2f5d8a" stroke-width="1"/>
+<text x="249" y="224" text-anchor="middle" font-size="11" font-weight="600">Dateien</text>
+<text x="249" y="240" text-anchor="middle" font-size="10" style="fill:#5b6072">des Kanals</text>
+<rect x="332" y="36" width="146" height="54" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="405" y="59" text-anchor="middle" font-size="13" font-weight="600">OneDrive</text>
+<text x="405" y="76" text-anchor="middle" font-size="11" style="fill:#5b6072">pro Nutzer eine Site</text>
+<line x1="405" y1="90" x2="405" y2="128" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#kap05-ablageorte-a)"/>
+<rect x="338" y="128" width="134" height="146" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="405" y="148" text-anchor="middle" font-size="12.5" font-weight="600">Persönliche Site</text>
+<text x="405" y="164" text-anchor="middle" font-size="11" style="fill:#5b6072">ein Eigentümer</text>
+<rect x="345" y="174" width="120" height="90" rx="5" fill="#d9e4ef" stroke="#2f5d8a" stroke-width="1"/>
+<text x="405" y="192" text-anchor="middle" font-size="11.5" font-weight="600" style="fill:#2f5d8a">Bibliothek</text>
+<rect x="351" y="202" width="108" height="52" rx="3" fill="#ffffff" stroke="#2f5d8a" stroke-width="1"/>
+<text x="405" y="224" text-anchor="middle" font-size="11" font-weight="600">Chat-Dateien</text>
+<text x="405" y="240" text-anchor="middle" font-size="10" style="fill:#5b6072">der sendenden Person</text>
+<text x="249" y="296" text-anchor="middle" font-size="13" font-weight="600" style="fill:#2f5d8a">SharePoint-Rechtemodell</text>
+<text x="249" y="314" text-anchor="middle" font-size="11.5">Site-Rollen, Vererbung und Freigabelinks gelten überall gleich</text>
+<line x1="494" y1="10" x2="494" y2="340" stroke="#5b6072" stroke-width="1.4" stroke-dasharray="6 5"/>
+<rect x="510" y="36" width="154" height="122" rx="8" fill="#ffffff" stroke="#b8472a" stroke-width="2"/>
+<text x="587" y="59" text-anchor="middle" font-size="12.5" font-weight="600">Exchange-Postfach</text>
+<text x="587" y="78" text-anchor="middle" font-size="11">E-Mails, Kalender,</text>
+<text x="587" y="93" text-anchor="middle" font-size="11">Anhänge als Kopien</text>
+<text x="587" y="120" text-anchor="middle" font-size="11" style="fill:#b8472a">Rechte am Postfach:</text>
+<text x="587" y="135" text-anchor="middle" font-size="10.5" style="fill:#b8472a">Vollzugriff, Stellvertretung</text>
+<rect x="510" y="174" width="154" height="122" rx="8" fill="#ffffff" stroke="#b8472a" stroke-width="2"/>
+<text x="587" y="197" text-anchor="middle" font-size="12.5" font-weight="600">Teams-Nachrichten</text>
+<text x="587" y="216" text-anchor="middle" font-size="11">liegen im Teams-Dienst</text>
+<text x="587" y="243" text-anchor="middle" font-size="10.5" style="fill:#b8472a">Rechte aus Chat-Teilnahme</text>
+<text x="587" y="258" text-anchor="middle" font-size="10.5" style="fill:#b8472a">oder Mitgliedschaft</text>
+<text x="587" y="273" text-anchor="middle" font-size="10.5" style="fill:#b8472a">in Team oder Kanal</text>
+<text x="587" y="316" text-anchor="middle" font-size="11" style="fill:#5b6072">keine Site-Rollen,</text>
+<text x="587" y="331" text-anchor="middle" font-size="11" style="fill:#5b6072">keine Freigabelinks</text>
+<line x1="24" y1="362" x2="56" y2="362" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#kap05-ablageorte-a)"/>
+<text x="64" y="366" text-anchor="start" class="legend-text">speichert Dateien in dieser Site</text>
+<line x1="300" y1="362" x2="340" y2="362" stroke="#5b6072" stroke-width="1.4" stroke-dasharray="6 5"/>
+<text x="348" y="366" text-anchor="start" class="legend-text">Grenze des SharePoint-Rechtemodells</text>
+</svg>

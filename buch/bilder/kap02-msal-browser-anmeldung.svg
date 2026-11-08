@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 630" width="680" role="img" aria-labelledby="d3-t d3-d" style="background:#ffffff"><style>text{font-family:"Helvetica Neue",Arial,sans-serif;fill:#1f2230}.legend-text{font-size:11px;fill:#5b6072}</style>
+<title id="d3-t">Authorization-Code-Flow mit PKCE</title>
+<desc id="d3-d">Authorization-Code-Flow mit PKCE von der ersten Anfrage im Browser bis zum Graph-Aufruf und zur späteren stillen Erneuerung. Bei einer App mit eigenem Server sieht der Browser nur den kurzlebigen Code, während die Tokens im direkten Austausch zwischen Server und Entra ID entstehen und jedes einen eigenen Empfänger hat.</desc>
+<defs><marker id="d3-a" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="10" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,0 L10,4 L0,8 z" fill="#2f5d8a"/></marker><marker id="d3-r" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="10" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,0 L10,4 L0,8 z" fill="#b8472a"/></marker><marker id="d3-m" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="10" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,0 L10,4 L0,8 z" fill="#5b6072"/></marker></defs>
+<line x1="85" y1="80" x2="85" y2="590" stroke="#5b6072" stroke-width="1"/>
+<line x1="255" y1="80" x2="255" y2="590" stroke="#5b6072" stroke-width="1"/>
+<line x1="460" y1="80" x2="460" y2="590" stroke="#5b6072" stroke-width="1"/>
+<line x1="610" y1="80" x2="610" y2="590" stroke="#5b6072" stroke-width="1"/>
+<circle cx="85" cy="45" r="34" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="85" y="49.0" text-anchor="middle" font-size="11.5" font-weight="600">Browser</text>
+<circle cx="255" cy="45" r="34" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="255" y="41.75" text-anchor="middle" font-size="11.5" font-weight="600">Web-App</text>
+<text x="255" y="56.25" text-anchor="middle" font-size="11.5" font-weight="600">mit MSAL</text>
+<circle cx="460" cy="45" r="34" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="460" y="49.0" text-anchor="middle" font-size="11.5" font-weight="600">Entra ID</text>
+<circle cx="610" cy="45" r="34" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="610" y="49.0" text-anchor="middle" font-size="11.5" font-weight="600">Graph API</text>
+<line x1="85" y1="110" x2="255" y2="110" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d3-a)"/>
+<text x="170.0" y="104" text-anchor="middle" font-size="11.5" style="paint-order:stroke;stroke:#fafaf7;stroke-width:5px;stroke-linejoin:round">geschützte Seite aufrufen</text>
+<line x1="255" y1="142" x2="85" y2="142" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d3-a)"/>
+<text x="170.0" y="136" text-anchor="middle" font-size="11.5" style="paint-order:stroke;stroke:#fafaf7;stroke-width:5px;stroke-linejoin:round">Weiterleitung auf authorize</text>
+<line x1="85" y1="174" x2="460" y2="174" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d3-a)"/>
+<text x="272.5" y="168" text-anchor="middle" font-size="11.5" style="paint-order:stroke;stroke:#fafaf7;stroke-width:5px;stroke-linejoin:round">authorize: Client-ID, Scopes, PKCE-Hash</text>
+<rect x="400" y="186" width="120" height="38" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.2"/>
+<text x="460.0" y="202.0" text-anchor="middle" font-size="11">Anmeldung und</text>
+<text x="460.0" y="216.0" text-anchor="middle" font-size="11">Zugriffsprüfung</text>
+<line x1="460" y1="254" x2="85" y2="254" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d3-a)"/>
+<text x="272.5" y="248" text-anchor="middle" font-size="11.5" style="paint-order:stroke;stroke:#fafaf7;stroke-width:5px;stroke-linejoin:round">Rückleitung mit kurzlebigem Code</text>
+<line x1="85" y1="286" x2="255" y2="286" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d3-a)"/>
+<text x="170.0" y="280" text-anchor="middle" font-size="11.5" style="paint-order:stroke;stroke:#fafaf7;stroke-width:5px;stroke-linejoin:round">Code an Redirect-URI</text>
+<text x="357" y="310" text-anchor="middle" font-size="11" font-weight="600" style="fill:#b8472a">token-Endpunkt: Code, PKCE-Wert,</text>
+<text x="357" y="325" text-anchor="middle" font-size="11" font-weight="600" style="fill:#b8472a">App-Anmeldedaten</text>
+<line x1="255" y1="333" x2="460" y2="333" stroke="#b8472a" stroke-width="2.5" marker-end="url(#d3-r)"/>
+<text x="357" y="351" text-anchor="middle" font-size="11" font-weight="600" style="fill:#b8472a">Rückgabe der Tokens</text>
+<line x1="460" y1="358" x2="255" y2="358" stroke="#b8472a" stroke-width="2.5" marker-end="url(#d3-r)"/>
+<rect x="268" y="368" width="178" height="20" rx="2" fill="#ffffff" stroke="#b8472a" stroke-width="1.2"/>
+<text x="357.0" y="382.0" text-anchor="middle" font-size="11">ID-Token: für die App</text>
+<rect x="268" y="392" width="178" height="20" rx="2" fill="#ffffff" stroke="#b8472a" stroke-width="1.2"/>
+<text x="357.0" y="406.0" text-anchor="middle" font-size="11">Access Token: für Graph API</text>
+<rect x="268" y="416" width="178" height="20" rx="2" fill="#ffffff" stroke="#b8472a" stroke-width="1.2"/>
+<text x="357.0" y="430.0" text-anchor="middle" font-size="11">Refresh Token: für Entra ID</text>
+<text x="85" y="348" text-anchor="middle" font-size="12" font-weight="600" style="fill:#b8472a;paint-order:stroke;stroke:#fafaf7;stroke-width:5px;stroke-linejoin:round">Browser sieht</text>
+<text x="85" y="364" text-anchor="middle" font-size="12" font-weight="600" style="fill:#b8472a;paint-order:stroke;stroke:#fafaf7;stroke-width:5px;stroke-linejoin:round">nur den Code,</text>
+<text x="85" y="380" text-anchor="middle" font-size="12" font-weight="600" style="fill:#b8472a;paint-order:stroke;stroke:#fafaf7;stroke-width:5px;stroke-linejoin:round">keine Tokens</text>
+<line x1="255" y1="466" x2="610" y2="466" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d3-a)"/>
+<text x="432.5" y="460" text-anchor="middle" font-size="11.5" style="paint-order:stroke;stroke:#fafaf7;stroke-width:5px;stroke-linejoin:round">Graph-Aufruf mit Bearer-Token</text>
+<rect x="195" y="484" width="120" height="36" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.2"/>
+<text x="255.0" y="499.0" text-anchor="middle" font-size="11">stille Erneuerung</text>
+<text x="255.0" y="513.0" text-anchor="middle" font-size="11">aus dem Cache</text>
+<line x1="255" y1="548" x2="460" y2="548" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d3-a)"/>
+<text x="357.5" y="542" text-anchor="middle" font-size="11.5" style="paint-order:stroke;stroke:#fafaf7;stroke-width:5px;stroke-linejoin:round">falls abgelaufen: Refresh Token</text>
+<line x1="460" y1="576" x2="255" y2="576" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d3-a)"/>
+<text x="357.5" y="570" text-anchor="middle" font-size="11.5" style="paint-order:stroke;stroke:#fafaf7;stroke-width:5px;stroke-linejoin:round">neues Access Token</text>
+<text x="340" y="615" text-anchor="middle" class="legend-text">Pfeil: Nachricht, Zeit läuft von oben nach unten  |  rot: direkter Austausch zwischen Server und Entra ID</text>
+</svg>

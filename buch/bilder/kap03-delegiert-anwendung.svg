@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 350" width="680" height="350" role="img" aria-labelledby="k4-title k4-desc" style="background:#ffffff"><style>text{font-family:"Helvetica Neue",Arial,sans-serif;fill:#1f2230}.legend-text{font-size:11px;fill:#5b6072}</style><title id="k4-title">Delegierte Berechtigung und Anwendungsberechtigung im Vergleich</title><desc id="k4-desc">Links überlappen sich die Mengen Files.Read.All als App-Recht und Dateien des Nutzers, nur die Schnittmenge ist wirksam, der Claim heißt scp. Rechts wirkt Files.Read.All ohne Nutzerrecht auf alle Sites des Tenants, der Claim heißt roles.</desc><defs><marker id="k4-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="k4-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker><marker id="k4-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker></defs><defs><clipPath id="k4-clip"><circle cx="125" cy="175" r="80"/></clipPath></defs>
+<rect x="10" y="10" width="320" height="330" rx="10" fill="#ffffff" stroke="#c8ccd6" stroke-width="1"/>
+<rect x="350" y="10" width="320" height="330" rx="10" fill="#ffffff" stroke="#c8ccd6" stroke-width="1"/>
+<text x="170" y="36" text-anchor="middle" font-size="15" font-weight="600" style="fill:#2f5d8a">Delegierte Berechtigung</text>
+<text x="170" y="54" text-anchor="middle" font-size="12" style="fill:#5b6072">im Namen eines Nutzers</text>
+<circle cx="125" cy="175" r="80" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<circle cx="215" cy="175" r="80" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<circle cx="215" cy="175" r="80" fill="#b8472a" fill-opacity="0.18" clip-path="url(#k4-clip)"/>
+<circle cx="125" cy="175" r="80" fill="none" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="90" y="172" text-anchor="middle" font-size="11" font-weight="600">Files.Read.All</text>
+<text x="90" y="188" text-anchor="middle" font-size="11" style="fill:#5b6072">App-Recht</text>
+<text x="170" y="179" text-anchor="middle" font-size="12" font-weight="600" style="fill:#b8472a">wirksam</text>
+<text x="250" y="172" text-anchor="middle" font-size="11" font-weight="600">Dateien</text>
+<text x="250" y="188" text-anchor="middle" font-size="11" font-weight="600">des Nutzers</text>
+<text x="170" y="278" text-anchor="middle" font-size="12" style="fill:#b8472a">Wirksam: nur die Schnittmenge</text>
+<rect x="115" y="294" width="110" height="30" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="170" y="314" text-anchor="middle" font-size="12">Claim: scp</text>
+<text x="510" y="36" text-anchor="middle" font-size="15" font-weight="600" style="fill:#2f5d8a">Anwendungsberechtigung</text>
+<text x="510" y="54" text-anchor="middle" font-size="12" style="fill:#5b6072">als App selbst, ohne Nutzer</text>
+<rect x="430" y="68" width="160" height="38" rx="8" fill="#ffffff" stroke="#b8472a" stroke-width="2.5"/>
+<text x="510" y="92" text-anchor="middle" font-size="13" font-weight="600">Files.Read.All</text>
+<line x1="510" y1="106" x2="510" y2="149" stroke="#b8472a" stroke-width="2" marker-end="url(#k4-r)"/>
+<text x="520" y="124" text-anchor="start" font-size="11" style="fill:#b8472a">kein Nutzerrecht</text>
+<text x="520" y="138" text-anchor="start" font-size="11" style="fill:#b8472a">als Grenze</text>
+<rect x="370" y="150" width="280" height="112" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="510" y="170" text-anchor="middle" font-size="12" font-weight="600">Alle Sites des Tenants</text>
+<rect x="390" y="180" width="70" height="32" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/>
+<rect x="390" y="180" width="70" height="32" rx="4" fill="#b8472a" fill-opacity="0.18"/>
+<text x="425" y="200" text-anchor="middle" font-size="11">Site</text>
+<rect x="475" y="180" width="70" height="32" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/>
+<rect x="475" y="180" width="70" height="32" rx="4" fill="#b8472a" fill-opacity="0.18"/>
+<text x="510" y="200" text-anchor="middle" font-size="11">Site</text>
+<rect x="560" y="180" width="70" height="32" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/>
+<rect x="560" y="180" width="70" height="32" rx="4" fill="#b8472a" fill-opacity="0.18"/>
+<text x="595" y="200" text-anchor="middle" font-size="11">Site</text>
+<rect x="390" y="220" width="70" height="32" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/>
+<rect x="390" y="220" width="70" height="32" rx="4" fill="#b8472a" fill-opacity="0.18"/>
+<text x="425" y="240" text-anchor="middle" font-size="11">Site</text>
+<rect x="475" y="220" width="70" height="32" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/>
+<rect x="475" y="220" width="70" height="32" rx="4" fill="#b8472a" fill-opacity="0.18"/>
+<text x="510" y="240" text-anchor="middle" font-size="11">Site</text>
+<rect x="560" y="220" width="70" height="32" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/>
+<rect x="560" y="220" width="70" height="32" rx="4" fill="#b8472a" fill-opacity="0.18"/>
+<text x="595" y="240" text-anchor="middle" font-size="11">Site</text>
+<text x="510" y="278" text-anchor="middle" font-size="12" style="fill:#b8472a">Wirksam: alle Dateien im ganzen Tenant</text>
+<rect x="455" y="294" width="110" height="30" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="510" y="314" text-anchor="middle" font-size="12">Claim: roles</text>
+</svg>

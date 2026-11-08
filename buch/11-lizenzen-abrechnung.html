@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>11. Lizenzen und Abrechnung: Wer bezahlt, wer darf kaufen?</title>
+<style>
+:root { --bg:#fafaf7; --text:#1f2230; --muted:#5b6072; --accent:#2f5d8a;
+  --accent-soft:#d9e4ef; --leader:#b8472a; --node-fill:#ffffff;
+  --node-stroke:#2f5d8a; --rule:#c8ccd6; --code-bg:#eef1f5; }
+html,body { background:var(--bg); color:var(--text);
+  font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+  line-height:1.65; font-size:18px; }
+body { max-width:760px; margin:3rem auto 6rem; padding:0 1.5rem; }
+h1 { font-size:2rem; line-height:1.2; margin:0 0 2rem;
+  border-bottom:1px solid var(--rule); padding-bottom:0.6rem; }
+h2 { font-size:1.35rem; margin-top:2.4rem; margin-bottom:0.8rem;
+  color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif;
+  font-weight:600; letter-spacing:0.01em; }
+p { margin:0 0 1.1rem; }
+figure { margin:2rem auto; text-align:center; }
+figure svg { max-width:100%; height:auto; display:block; margin:0 auto; }
+figcaption { font-family:"Helvetica Neue",Arial,sans-serif; font-size:0.85rem;
+  color:var(--muted); margin-top:0.6rem; text-align:center; }
+svg text { font-family:"Helvetica Neue",Arial,sans-serif; fill:var(--text); }
+.legend-text { font-size:11px; fill:var(--muted); }
+pre { background:var(--code-bg); padding:0.9rem 1.1rem; overflow-x:auto;
+  border-radius:6px; font-size:0.82em; }
+code { background:var(--code-bg); font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:0.85em; padding:0.1em 0.3em; border-radius:3px; }
+pre code { background:none; padding:0; }
+.table-wrap { overflow-x:auto; margin:1.5rem 0; }
+table { border-collapse:collapse; width:100%; font-size:0.85em; line-height:1.45; }
+th { text-align:left; color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif;
+  font-weight:600; border-bottom:2px solid var(--accent); padding:0.45rem 0.6rem;
+  vertical-align:bottom; }
+td { border-bottom:1px solid var(--rule); padding:0.45rem 0.6rem; vertical-align:top; }
+tr { break-inside:avoid; }
+</style>
+</head>
+<body>
+<h1>11. Lizenzen und Abrechnung: Wer bezahlt, wer darf kaufen?</h1>
+
+<p>Eine Lizenz ist kein Recht im Sinne der übrigen Rechtesysteme. Sie entscheidet nicht, wer eine Datei lesen oder eine Ressource ändern darf. Sie entscheidet, ob ein Dienst für ein Konto überhaupt eingeschaltet ist und welche Funktionen ein Tenant nutzen kann.</p>
+
+<p>Daneben steht die Abrechnung. Sie hat eigene Rollen, die festlegen, wer kaufen, bezahlen und Verträge mit Microsoft unterschreiben darf. Diese Abrechnungsrollen bilden ein weiteres Rechtesystem neben Entra-Rollen, Azure RBAC und App-Rechten (siehe Kapitel 3, Die drei Rechtesysteme). Es folgt demselben Muster: eigene Zuweisungen, eigener Zielbereich, und ein Recht in einem anderen System hilft nur, wenn es ausdrücklich verknüpft ist.</p>
+
+<p>Produktnamen, Preise und die Oberfläche der Abrechnung ändern sich bei Microsoft häufig. Portalbeschriftungen werden hier auf Englisch wiedergegeben, so wie sie im Test-Tenant zu sehen waren. Sie können abweichen.</p>
+
+<h2>Produkt, Lizenz, Service Plan</h2>
+
+<p>Ein <strong>Abonnement</strong>, kurz Abo, ist in Microsoft 365 der Vertrag über eine bestimmte Anzahl Lizenzen eines Produkts. Mit einer Subscription in Azure hat es nichts zu tun (siehe Kapitel 1, Die Landkarte). Drei weitere Begriffe werden im Alltag oft vermischt:</p>
+
+<ul>
+<li>Ein <strong>Produkt</strong> ist das, was im Marketplace des Microsoft 365 Admin Center gekauft wird, etwa „Microsoft 365 Business Standard“ oder „Power Automate Premium“. Technisch heißt es <strong>SKU</strong>. In der Graph API trägt es eine GUID (<code>skuId</code>) und einen Kurznamen (<code>skuPartNumber</code>) wie <code>O365_BUSINESS_PREMIUM</code> oder <code>POWERAUTOMATE_ATTENDED_RPA</code>, der mit dem Marketingnamen oft wenig zu tun hat. Der erste steht für Business Standard, der zweite für Power Automate Premium.</li>
+<li>Eine <strong>Lizenz</strong> ist ein einzelner Platz aus einem Abo. Ein Abo über 25 Lizenzen erlaubt es, das Produkt 25 Konten zuzuweisen. Erst die Zuweisung an ein Konto schaltet für dieses Konto etwas frei.</li>
+<li>Ein <strong>Service Plan</strong> ist ein Baustein innerhalb eines Produkts, etwa Exchange Online, SharePoint oder Teams. Ein Produkt bündelt viele Service Plans. Bei der Zuweisung lassen sich einzelne davon abschalten.</li>
+</ul>
+
+<h2>Was eine Lizenz bewirkt und was nicht</h2>
+
+<p>Eine zugewiesene Lizenz bewirkt, dass der Dienst für das Konto bereitgestellt wird. Mit einer Lizenz, die Exchange Online enthält, entsteht ein Postfach. Mit SharePoint und OneDrive bekommt das Konto einen eigenen OneDrive. Fehlt die Lizenz, ist der Dienst für dieses Konto aus oder gar nicht vorhanden.</p>
+
+<p>Eine Lizenz kann außerdem eine Funktion für den Tenant freischalten. Conditional Access setzt Entra ID P1 voraus, PIM Entra ID P2 oder Entra ID Governance (siehe Kapitel 6, Geräte und Zugriffsregeln, und Kapitel 4, Admin-Rollen). Copilot mit Zugriff auf Arbeitsdaten braucht eine Copilot-Lizenz für jedes Konto, das ihn nutzt. Einige Copilot-Funktionen lassen sich stattdessen nutzungsbasiert abrechnen (siehe unten).</p>
+
+<p>Was eine Lizenz nicht bewirkt: Sie gibt kein Recht auf Daten. Ein Konto mit allen Lizenzen sieht trotzdem nur das, worauf es Zugriff hat, über Mitgliedschaften oder Freigabelinks (siehe Kapitel 5, Daten und Freigaben). Umgekehrt kann ein Konto ohne Lizenz als Mitglied oder Besitzer einer Site eingetragen sein. Es kann die Inhalte dann nur nicht selbst über die Oberfläche nutzen.</p>
+
+<figure id="kap11-lizenz-vs-recht">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 534" role="img" aria-labelledby="d11-lz-title d11-lz-desc"><title id="d11-lz-title">Lizenz und Recht: zwei getrennte Prüfungen</title><desc id="d11-lz-desc">Links schaltet die Kette aus Produkt, Service Plans und Lizenz den Dienst für ein Konto ein. Rechts entscheidet die Kette aus Site und Mitgliedschaft oder Freigabelink über den Zugriff auf die Daten. Nur wenn beide Prüfungen bestanden sind, kann das Konto mit der Datei arbeiten.</desc><defs><marker id="d11-lz-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="d11-lz-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker><marker id="d11-lz-l" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker></defs><line x1="340" y1="18" x2="340" y2="356" stroke="#c8ccd6" stroke-width="1.5"/><text x="175" y="30" font-size="15" text-anchor="middle" font-weight="600" style="fill:#2f5d8a">Prüfung 1: Lizenz</text><text x="175" y="48" font-size="12" text-anchor="middle" style="fill:#5b6072">Dienst eingeschaltet?</text><text x="505" y="30" font-size="15" text-anchor="middle" font-weight="600" style="fill:#2f5d8a">Prüfung 2: Recht</text><text x="505" y="48" font-size="12" text-anchor="middle" style="fill:#5b6072">Zugriff auf die Daten?</text><rect x="75" y="66" width="200" height="40" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="175" y="91" font-size="12.5" text-anchor="middle" font-weight="600">Produkt (SKU)</text><path d="M175 106 L175 126" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d11-lz-a)"/><rect x="55" y="128" width="240" height="66" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="175" y="147" font-size="12.5" text-anchor="middle" font-weight="600">Service Plans</text><rect x="65" y="158" width="68" height="24" rx="2" fill="#d9e4ef" stroke="#2f5d8a" stroke-width="1"/><text x="99" y="174" font-size="11" text-anchor="middle">Exchange</text><rect x="141" y="158" width="68" height="24" rx="2" fill="#d9e4ef" stroke="#2f5d8a" stroke-width="1"/><text x="175" y="174" font-size="11" text-anchor="middle">SharePoint</text><rect x="217" y="158" width="68" height="24" rx="2" fill="#d9e4ef" stroke="#2f5d8a" stroke-width="1"/><text x="251" y="174" font-size="11" text-anchor="middle">Teams</text><path d="M175 194 L175 214" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d11-lz-a)"/><rect x="75" y="216" width="200" height="44" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="175" y="234" font-size="12.5" text-anchor="middle" font-weight="600">Lizenz</text><text x="175" y="251" font-size="11" text-anchor="middle" style="fill:#5b6072">ein Platz aus dem Abo</text><path d="M175 260 L175 282" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d11-lz-a)"/><circle cx="175" cy="318" r="34" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="175" y="322" font-size="12.5" text-anchor="middle" font-weight="600">Konto</text><rect x="405" y="66" width="200" height="40" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="505" y="91" font-size="12.5" text-anchor="middle" font-weight="600">Site</text><path d="M505 106 L505 166" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d11-lz-a)"/><rect x="405" y="168" width="200" height="50" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="505" y="189" font-size="12.5" text-anchor="middle" font-weight="600">Mitgliedschaft oder</text><text x="505" y="206" font-size="12.5" text-anchor="middle" font-weight="600">Freigabelink</text><path d="M505 218 L505 282" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d11-lz-a)"/><circle cx="505" cy="318" r="34" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="505" y="322" font-size="12.5" text-anchor="middle" font-weight="600">Konto</text><text x="340" y="384" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#5b6072">Beide Prüfungen sind getrennt nötig</text><rect x="20" y="398" width="200" height="66" rx="4" fill="#ffffff" stroke="#5b6072" stroke-width="1.5"/><text x="120" y="421" font-size="12" text-anchor="middle" font-weight="600">Lizenz ja, Recht nein</text><text x="120" y="442" font-size="12" text-anchor="middle" style="fill:#5b6072">sieht nichts</text><rect x="240" y="398" width="200" height="66" rx="4" fill="#ffffff" stroke="#5b6072" stroke-width="1.5"/><text x="340" y="421" font-size="12" text-anchor="middle" font-weight="600">Lizenz nein, Recht ja</text><text x="340" y="440" font-size="12" text-anchor="middle" style="fill:#5b6072">eingetragen, kann</text><text x="340" y="455" font-size="12" text-anchor="middle" style="fill:#5b6072">aber nicht arbeiten</text><rect x="460" y="398" width="200" height="66" rx="4" fill="#d9e4ef" stroke="#2f5d8a" stroke-width="2.5"/><text x="560" y="421" font-size="12" text-anchor="middle" font-weight="600">Lizenz ja, Recht ja</text><text x="560" y="442" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#2f5d8a">arbeitet</text><rect x="20" y="482" width="640" height="36" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/><text x="340" y="505" font-size="13" text-anchor="middle" font-weight="600" style="fill:#b8472a">Die Lizenz schaltet den Dienst frei, die Rechte entscheiden über die Daten.</text></svg>
+<figcaption>Zwei getrennte Prüfungen: Die Lizenz schaltet den Dienst frei, die Rechte entscheiden über die Daten; erst wenn beides zutrifft, kann ein Konto mit einer Datei arbeiten.</figcaption>
+</figure>
+
+<h2>Lizenzen per Kommandozeile abfragen</h2>
+
+<p>Das Admin Center zeigt Lizenzen unter „Billing“, „Your products“ und unter „Licenses“. Schneller und vollständiger ist die Graph API. Zwei Abfragen beantworten die häufigsten Fragen.</p>
+
+<p><code>/subscribedSkus</code> zeigt die Produkte des Tenants mit belegten und verfügbaren Plätzen. <code>/directory/subscriptions</code> zeigt die Abos selbst, einschließlich der Angabe, ob es eine Testversion ist, und dem Datum des nächsten Schritts im Lebenszyklus:</p>
+
+<pre><code class="language-bash">az rest --method get \
+  --url "https://graph.microsoft.com/v1.0/directory/subscriptions" \
+  --query "value[].{sku:skuPartNumber, status:status, testversion:isTrial, naechsterSchritt:nextLifecycleDateTime, plaetze:totalLicenses}" \
+  -o table</code></pre>
+
+<p><code>nextLifecycleDateTime</code> ist bei einer Testversion das Ende, bei einem gekündigten Abo der nächste Abbauschritt. Die Zeiten stehen in UTC. Ob sich eine Testversion danach in ein bezahltes Abo umwandelt, zeigt die Abfrage nicht. Das steht nur in der Abrechnung. Welche Lizenzen ein einzelnes Konto hat, steht unter <code>/users/&lt;user-id&gt;/licenseDetails</code>.</p>
+
+<h2>Lebenszyklus eines Abos</h2>
+
+<p>Ein Abo durchläuft feste Zustände. Die genauen Fristen hängen von der Abo-Art ab und haben sich mehrfach geändert. Das Grundmuster bleibt gleich.</p>
+
+<figure id="kap11-abo-lebenszyklus">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 400" role="img" aria-labelledby="d11-lc-title d11-lc-desc"><title id="d11-lc-title">Lebenszyklus eines Abos</title><desc id="d11-lc-desc">Eine Testversion wird am Ende mit eingeschalteter wiederkehrender Abrechnung zum bezahlten Abo. Mit ausgeschalteter wiederkehrender Abrechnung läuft sie ab, wird deaktiviert und schließlich gelöscht. „Cancel subscription“ führt dagegen sofort von der laufenden Testversion in den deaktivierten Zustand.</desc><defs><marker id="d11-lc-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="d11-lc-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker><marker id="d11-lc-l" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker></defs><g transform="translate(0,-46)"><rect x="20" y="70" width="180" height="60" rx="14" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="110" y="96" font-size="13" text-anchor="middle" font-weight="600">Testversion aktiv</text><text x="110" y="114" font-size="11.5" text-anchor="middle" style="fill:#2f5d8a">Graph: Enabled</text><rect x="480" y="70" width="180" height="60" rx="14" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="570" y="96" font-size="13" text-anchor="middle" font-weight="600">Bezahltes Abo aktiv</text><text x="570" y="114" font-size="11.5" text-anchor="middle" style="fill:#2f5d8a">Graph: Enabled</text><rect x="20" y="230" width="180" height="60" rx="14" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="110" y="256" font-size="13" text-anchor="middle" font-weight="600">Abgelaufen</text><text x="110" y="274" font-size="11.5" text-anchor="middle" style="fill:#2f5d8a">Graph: Warning</text><rect x="250" y="230" width="180" height="60" rx="14" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="340" y="256" font-size="13" text-anchor="middle" font-weight="600">Deaktiviert</text><text x="340" y="274" font-size="11.5" text-anchor="middle" style="fill:#2f5d8a">Graph: Suspended</text><rect x="480" y="230" width="180" height="60" rx="14" fill="#ffffff" stroke="#5b6072" stroke-width="1.5" stroke-dasharray="5 4"/><text x="570" y="256" font-size="13" text-anchor="middle" font-weight="600">Gelöscht</text><text x="570" y="274" font-size="11.5" text-anchor="middle" style="fill:#5b6072">nicht mehr in der Abfrage</text><path d="M200 100 L478 100" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d11-lc-a)"/><text x="340" y="78" font-size="11.5" text-anchor="middle" font-weight="600">Ende, wiederkehrende</text><text x="340" y="92" font-size="11.5" text-anchor="middle" font-weight="600">Abrechnung an</text><path d="M60 130 L60 228" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d11-lc-a)"/><text x="70" y="166" font-size="11.5" text-anchor="start" font-weight="600">Ende, wiederkehrende</text><text x="70" y="180" font-size="11.5" text-anchor="start" font-weight="600">Abrechnung aus</text><path d="M185 130 L318 228" fill="none" stroke="#b8472a" stroke-width="2.5" marker-end="url(#d11-lc-l)"/><text x="250" y="156" font-size="12" text-anchor="start" font-weight="600" style="fill:#b8472a">„Cancel subscription“</text><text x="250" y="172" font-size="11.5" text-anchor="start" style="fill:#b8472a">wirkt sofort</text><path d="M200 260 L248 260" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d11-lc-a)"/><path d="M430 260 L478 260" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d11-lc-a)"/><text x="225" y="252" font-size="11" text-anchor="middle" style="fill:#5b6072">Frist</text><text x="455" y="252" font-size="11" text-anchor="middle" style="fill:#5b6072">Frist</text><text x="110" y="310" font-size="11" text-anchor="middle" style="fill:#5b6072">Nutzer arbeiten zunächst</text><text x="110" y="324" font-size="11" text-anchor="middle" style="fill:#5b6072">weiter, Hinweise im Portal</text><text x="340" y="310" font-size="11" text-anchor="middle" style="fill:#5b6072">nur noch Admins kommen</text><text x="340" y="324" font-size="11" text-anchor="middle" style="fill:#5b6072">an die Daten</text><text x="570" y="310" font-size="11" text-anchor="middle" style="fill:#5b6072">Daten weg, Abo verschwindet</text><text x="570" y="324" font-size="11" text-anchor="middle" style="fill:#5b6072">aus der Abfrage</text><rect x="20" y="350" width="640" height="52" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/><text x="340" y="371" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">Am Ende der Testversion entscheidet die wiederkehrende Abrechnung, ob gekauft wird.</text><text x="340" y="389" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">„Cancel subscription“ ist ein anderer, sofort wirkender Weg.</text><line x1="20" y1="428" x2="58" y2="428" stroke="#2f5d8a" stroke-width="1.5"/><text x="66" y="432" font-size="11" text-anchor="start" style="fill:#5b6072">Übergang</text><line x1="160" y1="428" x2="198" y2="428" stroke="#b8472a" stroke-width="2.5"/><text x="206" y="432" font-size="11" text-anchor="start" style="fill:#5b6072">sofortiger Abbruch</text><rect x="340" y="421" width="22" height="14" rx="4" fill="#ffffff" stroke="#5b6072" stroke-width="1.5" stroke-dasharray="5 4"/><text x="370" y="432" font-size="11" text-anchor="start" style="fill:#5b6072">Abo existiert nicht mehr</text></g></svg>
+<figcaption>Am Ende einer Testversion entscheidet die wiederkehrende Abrechnung, ob gekauft wird; „Cancel subscription“ ist ein anderer, sofort wirkender Weg.</figcaption>
+</figure>
+
+<p>Solange ein Abo aktiv ist, steht es in der Graph API auf <code>Enabled</code>. Läuft es ohne Verlängerung aus, arbeiten Nutzer zunächst weiter, und das Portal zeigt Warnungen (<code>Warning</code>). Danach wird das Abo deaktiviert, und nur noch Admins kommen an die Daten (<code>Suspended</code>). Am Ende wird gelöscht, und das Abo verschwindet aus der Abfrage. Daneben kennt die API weitere Werte wie <code>Expired</code> und <code>LockedOut</code>. Die Phasen dauern zusammen meist Wochen. Wer Daten aus einem auslaufenden Abo braucht, sollte sie trotzdem vor dem Ende sichern und sich nicht auf die Fristen verlassen.</p>
+
+<h2>Testversionen: der Unterschied zwischen „aus“ und „kündigen“</h2>
+
+<p>Bei Testversionen entsteht der häufigste teure Fehler. Die <strong>wiederkehrende Abrechnung</strong> ist die Einstellung, ob ein Abo am Ende seiner Laufzeit automatisch verlängert oder, bei einer Testversion, gekauft wird. Ist in der Abrechnung ein Zahlungsmittel hinterlegt, starten Testversionen in der Regel mit eingeschalteter wiederkehrender Abrechnung. Am Ende wandeln sie sich dann ohne weitere Rückfrage in ein bezahltes Abo um. Microsoft kündigt das vorher per E-Mail an.</p>
+
+<p>Die Produktseite einer Testversion im Admin Center zeigt deshalb zwei Spalten: „Trial subscription“ ist das laufende Abo. „Paid subscription“ ist eine Vorschau auf das Abo, das beim Ende entstehen würde. Es existiert noch nicht, und es wurde noch nichts berechnet. Die Vorschau kann von der Ankündigungsmail abweichen, etwa bei der Platzzahl: Die Mail kann alle Plätze der Testversion rechnen, die Vorschau nur die tatsächlich zugewiesenen.</p>
+
+<p>Zum Abschalten gibt es in der Spalte „Trial subscription“ zwei Wege, die sehr ähnlich klingen:</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Aktion</th><th>Wirkung</th></tr></thead>
+<tbody>
+<tr><td><strong>Wiederkehrende Abrechnung aus:</strong> „Edit recurring billing“, dann „Cancel on expiration“</td><td>Testversion läuft bis zum Ende weiter, danach wird nichts gekauft</td></tr>
+<tr><td><strong>Abo kündigen:</strong> „Cancel subscription“</td><td>Testversion wird sofort deaktiviert</td></tr>
+</tbody>
+</table></div>
+
+<p>Der erste Weg ist fast immer der richtige. Die Bestätigung spricht von einer „Scheduled change“, die entfernt wird. Gemeint ist der geplante Kauf. Danach steht unter „Recurring billing“ ein Ablaufdatum, und der Status im Admin Center bleibt „Active“, in der Graph API <code>Enabled</code>. Die Spalte „Paid subscription“ bietet nur noch an, die Abrechnung wieder einzuschalten. Die Änderung wird einige Sekunden bis Minuten lang als „pending transaction“ angezeigt.</p>
+
+<p>Pro Tenant gibt es von jedem Produkt meist nur eine Testversion. Andere Produkte derselben Familie, etwa Business Premium nach Business Standard, lassen sich oft trotzdem testen. Eine neue Testversion hat oft eine feste Platzzahl, die sich im Checkout nicht ändern lässt.</p>
+
+<h2>Die Abrechnungshierarchie</h2>
+
+<p>Wer direkt bei Microsoft kauft, rechnet heute meist über eine <strong>Microsoft Customer Agreement</strong> ab, kurz MCA. Das ist ein Vertrag zwischen Microsoft und dem Käufer, an dem eine eigene Hierarchie hängt. Sie ist unabhängig von der Struktur aus Tenant, Subscription und Resource Group. Andere Wege, etwa der Kauf über einen Microsoft-Partner (CSP) oder ein Enterprise Agreement, haben eine andere Struktur und andere Rollen. In Firmen ist der Partnerweg häufig. Was er für Rollen und Abrechnung bedeutet, ist eigens beschrieben (siehe <a href="14-it-dienstleister.html">Kapitel 14, Mit externem IT-Dienstleister</a>). Das Folgende gilt für Direktkäufe unter einer MCA.</p>
+
+<figure id="kap11-abrechnungshierarchie">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 562" role="img" aria-labelledby="d11-hi-title d11-hi-desc"><title id="d11-hi-title">Abrechnungshierarchie unter einer MCA</title><desc id="d11-hi-desc">Unter einer Microsoft Customer Agreement liegen Rechnungskonto, Rechnungsprofil und Rechnungsabschnitt untereinander, darunter die Abos. Auf jeder Ebene gibt es eigene Abrechnungsrollen. Entra-Rollen werden auf das Rechnungskonto abgebildet, wirken im Checkout aber nicht immer.</desc><defs><marker id="d11-hi-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="d11-hi-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker><marker id="d11-hi-l" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker></defs><rect x="10" y="70" width="660" height="410" rx="6" fill="none" stroke="#c8ccd6" stroke-width="1.5"/><text x="660" y="92" font-size="11.5" text-anchor="end" font-weight="600" style="fill:#5b6072">Microsoft Customer Agreement (MCA)</text><rect x="30" y="16" width="150" height="34" rx="4" fill="#ffffff" stroke="#5b6072" stroke-width="1.5" stroke-dasharray="5 4"/><text x="105" y="38" font-size="12.5" text-anchor="middle" font-weight="600">Entra-Rollen</text><path d="M105 50 L105 108" fill="none" stroke="#b8472a" stroke-width="1.5" marker-end="url(#d11-hi-l)"/><text x="115" y="82" font-size="11" text-anchor="start" style="fill:#b8472a">abgebildet, im Checkout</text><text x="115" y="96" font-size="11" text-anchor="start" style="fill:#b8472a">nicht immer wirksam</text><rect x="40" y="110" width="270" height="66" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="175" y="131" font-size="13" text-anchor="middle" font-weight="600">Rechnungskonto</text><text x="175" y="148" font-size="11.5" text-anchor="middle" style="fill:#5b6072">Billing account</text><text x="175" y="164" font-size="11.5" text-anchor="middle" style="fill:#2f5d8a">der Vertrag, Unterschriftsrecht</text><line x1="310" y1="143" x2="390" y2="143" stroke="#5b6072" stroke-width="1.5"/><text x="350" y="137" font-size="11" text-anchor="middle" style="fill:#5b6072">Rollen</text><rect x="390" y="110" width="270" height="66" rx="4" fill="#d9e4ef" stroke="#2f5d8a" stroke-width="1"/><text x="405" y="129" font-size="11.5" text-anchor="start">Billing account owner</text><text x="405" y="146" font-size="11.5" text-anchor="start">Billing account contributor</text><text x="405" y="163" font-size="11.5" text-anchor="start">Billing account reader</text><line x1="175" y1="176" x2="175" y2="210" stroke="#2f5d8a" stroke-width="1.5"/><rect x="40" y="210" width="270" height="66" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="175" y="231" font-size="13" text-anchor="middle" font-weight="600">Rechnungsprofil</text><text x="175" y="248" font-size="11.5" text-anchor="middle" style="fill:#5b6072">Billing profile</text><text x="175" y="264" font-size="11.5" text-anchor="middle" style="fill:#2f5d8a">eine Rechnung, ein Zahlungsmittel</text><line x1="310" y1="243" x2="390" y2="243" stroke="#5b6072" stroke-width="1.5"/><text x="350" y="237" font-size="11" text-anchor="middle" style="fill:#5b6072">Rollen</text><rect x="390" y="210" width="270" height="66" rx="4" fill="#d9e4ef" stroke="#2f5d8a" stroke-width="1"/><text x="405" y="229" font-size="11.5" text-anchor="start">Billing profile owner</text><text x="405" y="246" font-size="11.5" text-anchor="start">Billing profile contributor, reader</text><text x="405" y="263" font-size="11.5" text-anchor="start">Invoice manager</text><line x1="175" y1="276" x2="175" y2="310" stroke="#2f5d8a" stroke-width="1.5"/><rect x="40" y="310" width="270" height="66" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="175" y="331" font-size="13" text-anchor="middle" font-weight="600">Rechnungsabschnitt</text><text x="175" y="348" font-size="11.5" text-anchor="middle" style="fill:#5b6072">Invoice section</text><text x="175" y="364" font-size="11.5" text-anchor="middle" style="fill:#2f5d8a">gruppiert Kosten</text><line x1="310" y1="343" x2="390" y2="343" stroke="#5b6072" stroke-width="1.5"/><text x="350" y="337" font-size="11" text-anchor="middle" style="fill:#5b6072">Rollen</text><rect x="390" y="310" width="270" height="66" rx="4" fill="#d9e4ef" stroke="#2f5d8a" stroke-width="1"/><text x="405" y="329" font-size="11.5" text-anchor="start">Invoice section owner</text><text x="405" y="346" font-size="11.5" text-anchor="start">Invoice section contributor, reader</text><text x="405" y="363" font-size="11.5" text-anchor="start">Azure subscription creator</text><line x1="175" y1="376" x2="67" y2="410" stroke="#2f5d8a" stroke-width="1.5"/><line x1="175" y1="376" x2="172" y2="410" stroke="#2f5d8a" stroke-width="1.5"/><line x1="175" y1="376" x2="290" y2="410" stroke="#2f5d8a" stroke-width="1.5"/><rect x="20" y="410" width="95" height="40" rx="2" fill="#ffffff" stroke="#2f5d8a" stroke-width="1"/><text x="67" y="434" font-size="11" text-anchor="middle">M365-Produkt</text><rect x="125" y="410" width="95" height="40" rx="2" fill="#ffffff" stroke="#2f5d8a" stroke-width="1"/><text x="172" y="434" font-size="11" text-anchor="middle">M365-Produkt</text><rect x="230" y="410" width="120" height="40" rx="2" fill="#ffffff" stroke="#2f5d8a" stroke-width="1" stroke-dasharray="4 3"/><text x="290" y="426" font-size="11" text-anchor="middle">Azure-Subscription</text><text x="290" y="441" font-size="11" text-anchor="middle" style="fill:#5b6072">(optional)</text><text x="185" y="468" font-size="11" text-anchor="middle" style="fill:#5b6072">Abos, je einem Rechnungsabschnitt zugeordnet</text><rect x="20" y="494" width="640" height="52" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/><text x="340" y="515" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">Die Abrechnung hat eine eigene Hierarchie mit eigenen Rollen.</text><text x="340" y="533" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">Die Ebene der Rolle entscheidet: kaufen, bezahlen oder unterschreiben.</text></svg>
+<figcaption>Die Abrechnung hat ihre eigene Hierarchie mit eigenen Rollen; wer auf welcher Ebene sitzt, entscheidet, was er kaufen, bezahlen oder unterschreiben darf.</figcaption>
+</figure>
+
+<ul>
+<li>Das <strong>Rechnungskonto</strong> (Billing account) ist der Vertrag selbst. Hier wird festgelegt, wer im Namen des Käufers Vereinbarungen mit Microsoft unterschreiben darf.</li>
+<li>Ein <strong>Rechnungsprofil</strong> (Billing profile) erzeugt eine Rechnung und trägt ein Zahlungsmittel, etwa eine Kreditkarte. Ein Rechnungskonto kann mehrere Profile haben, zum Beispiel für getrennte Kostenstellen.</li>
+<li>Ein <strong>Rechnungsabschnitt</strong> (Invoice section) gliedert die Kosten auf einer Rechnung. Abos werden einem Abschnitt zugeordnet.</li>
+</ul>
+
+<p>Auch eine Azure-Subscription hängt unter einer MCA an einem Rechnungsabschnitt. Rechte auf der Subscription gibt das nicht, die regelt weiterhin Azure RBAC.</p>
+
+<h2>Zwei Rechnungskonten in einem Tenant</h2>
+
+<p>Ein Tenant kann mehrere Rechnungskonten haben. Ein typischer Weg dahin ist das kostenlose Startguthaben für Azure. Es gibt sie nur bei einer eigenen Registrierung, die eine Person mit Zahlungsmittel und Identitätsprüfung abschließt. Dabei legt Microsoft ein Rechnungskonto vom Typ <strong>Individual</strong> an, das auf die Person lautet. Microsoft-365-Käufe der Organisation laufen dagegen über ein Rechnungskonto vom Typ <strong>Business</strong>.</p>
+
+<p>Im Test-Tenant sah das so aus:</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Rechnungskonto</th><th>Typ</th><th>Abos</th></tr></thead>
+<tbody>
+<tr><td>Name der Organisation</td><td>Business</td><td>Microsoft-365-Produkte, Power Automate Premium</td></tr>
+<tr><td>Name der Person</td><td>Individual</td><td>die Azure-Subscription mit dem Startguthaben</td></tr>
+</tbody>
+</table></div>
+
+<p>Beide Konten waren mit demselben Tenant verknüpft, im Admin Center unter „Associated billing tenants“. Deshalb funktionierte technisch alles zusammen: Identitäten, Anmeldung und Rechte kommen aus Entra ID, und die Subscription gehört zum Tenant. Nur die Rechnungen laufen getrennt. Das hat Folgen, die man kennen sollte. Die Azure-Kosten landen auf der Rechnung der Person, nicht der Organisation. Ein Billing account owner der Organisation sieht diese Kosten nicht automatisch. Und die Rollen auf dem einen Konto gelten nicht für das andere.</p>
+
+<p>Per Kommandozeile lassen sich alle Rechnungskonten mit ihren Abos auflisten. Die Abfrage geht über die Billing-API von Azure, die auch die Microsoft-365-Abos zeigt:</p>
+
+<pre><code class="language-bash">az rest --method get \
+  --url "https://management.azure.com/providers/Microsoft.Billing/billingAccounts?api-version=2024-04-01" \
+  --query "value[].{name:name, anzeige:properties.displayName, vertrag:properties.agreementType}"
+
+az rest --method get \
+  --url "https://management.azure.com/providers/Microsoft.Billing/billingAccounts/&lt;billing-account-name&gt;/billingSubscriptions?api-version=2024-04-01" \
+  --query "value[].properties.{produkt:productType, art:productCategory, status:status}" -o table</code></pre>
+
+<p><code>productCategory</code> ist bei Microsoft-365-Abos <code>SeatBased</code>, also pro Platz, und bei Azure <code>UsageBased</code>, also nach Verbrauch.</p>
+
+<h2>Abrechnungsrollen</h2>
+
+<p>Auf jeder Ebene gibt es eigene Abrechnungsrollen. Im Admin Center liegen sie unter „Billing“, „Billing accounts“, dann das Konto und der Reiter „Billing account roles“. Die Rollen eines Profils stehen eine Ebene tiefer unter „Billing profiles“. „View related role assignments“ zeigt beide Ebenen zusammen. Per Kommandozeile liefert der Pfad <code>/billingRoleAssignments</code> unter dem Rechnungskonto dieselbe Liste.</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Rolle</th><th>Ebene</th><th>Rollen vergeben</th><th>Bearbeiten und kaufen</th><th>Vereinbarungen unterschreiben</th><th>Ansehen</th></tr></thead>
+<tbody>
+<tr><td><strong>Billing account owner</strong></td><td>Rechnungskonto</td><td>ja</td><td>ja</td><td>ja</td><td>ja</td></tr>
+<tr><td><strong>Billing account contributor</strong></td><td>Rechnungskonto</td><td>nein</td><td>ja</td><td>laut Portal ja</td><td>ja</td></tr>
+<tr><td><strong>Billing account reader</strong></td><td>Rechnungskonto</td><td>nein</td><td>nein</td><td>nein</td><td>ja</td></tr>
+<tr><td><strong>Billing profile owner</strong></td><td>Rechnungsprofil</td><td>auf dem Profil</td><td>Zahlungsmittel, Rechnungen, Käufe auf diesem Profil</td><td>nein</td><td>ja</td></tr>
+</tbody>
+</table></div>
+
+<p>Die Zeilen zum Rechnungskonto geben die Häkchen wieder, die das Admin Center beim Zuweisen zeigt. Ob ein Contributor im Checkout tatsächlich unterschreiben kann, ist nicht geprüft. Auf dem Profil gibt es zusätzlich Contributor, Reader und Invoice manager, der nur Rechnungen verwaltet. Auf dem Rechnungsabschnitt gibt es entsprechende Rollen und den <strong>Azure subscription creator</strong>, der neue Azure-Subscriptions auf diesen Abschnitt anlegen darf.</p>
+
+<p>In einer Firma werden die Rollen oft getrennt. Die Geschäftsführung ist Billing account owner und unterschreibt. Die Buchhaltung ist Billing profile owner, wenn sie nur Rechnungen und Zahlungsmittel eines Profils pflegen soll. Die IT hält Entra-Rollen wie License Administrator oder User Administrator und kann damit vorhandene Lizenzen zuweisen, aber keine neuen kaufen.</p>
+
+<h3>Abgebildete Entra-Rollen</h3>
+
+<p>Das Rechnungskonto zeigt einige Entra-Rollen als eigene Einträge an. Im Test-Tenant waren das:</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Eintrag</th><th>Abrechnungsrolle</th></tr></thead>
+<tbody>
+<tr><td>Global Administrator</td><td>Billing account owner</td></tr>
+<tr><td>Billing Administrator</td><td>Billing account contributor</td></tr>
+<tr><td>Global Reader</td><td>Billing account reader</td></tr>
+</tbody>
+</table></div>
+
+<p>Das sind keine Personen, sondern Abbildungen: Wer die Entra-Rolle hat, soll die Abrechnungsrolle automatisch mitbekommen. In der Billing-API stehen sie mit dem Typ <code>DirectoryRole</code>, direkt zugewiesene Personen mit dem Typ <code>User</code>. Billing Administrator ist eine eigene Entra-Rolle für Käufe, Abos und Rechnungen. Sie ist die übliche Wahl, wenn die Buchhaltung im Admin Center alles Kaufmännische erledigen soll, und reicht damit weiter als ein Billing profile owner.</p>
+
+<h2>Praxisfall: „Next“ bleibt grau</h2>
+
+<p>Im Test-Tenant ließ sich eine neue Testversion nicht starten. Der Checkout zeigte 0,00 € und ein gültiges Zahlungsmittel, aber der Knopf „Next“ blieb grau, in jedem Browser und für jedes Produkt. Eine Fehlermeldung gab es nicht.</p>
+
+<p>Einen Hinweis lieferten die Entwicklertools des Browsers. Im Reiter „Network“ zeigt der Checkout eine Reihe von Aufrufen an <code>commerceapi.office.net</code>. Das ist eine interne, nicht dokumentierte Schnittstelle, deren Namen sich ändern können:</p>
+
+<figure id="kap11-checkout-aufrufe">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 586" role="img" aria-labelledby="d11-co-title d11-co-desc"><title id="d11-co-title">Checkout-Aufrufe an die Commerce-API</title><desc id="d11-co-desc">Der Checkout im Browser ruft nacheinander createCart, previewagreement, getEligiblePaymentMethods und updateBillingInformation auf. Die Antworten auf createCart und updateBillingInformation enthalten isAuthorizedToSign: false. Am Ende bleibt der Knopf „Next“ gesperrt, weil die Vereinbarung nicht unterschrieben werden kann.</desc><defs><marker id="d11-co-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="d11-co-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker><marker id="d11-co-l" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker></defs><line x1="140" y1="88" x2="140" y2="470" stroke="#5b6072" stroke-width="1"/><line x1="540" y1="88" x2="540" y2="470" stroke="#5b6072" stroke-width="1"/><circle cx="140" cy="44" r="43" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="140" y="41" font-size="12" text-anchor="middle" font-weight="600">Browser</text><text x="140" y="56" font-size="11.5" text-anchor="middle" style="fill:#5b6072">(Checkout)</text><circle cx="540" cy="44" r="43" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="540" y="41" font-size="12" text-anchor="middle" font-weight="600">Commerce-</text><text x="540" y="56" font-size="12" text-anchor="middle" font-weight="600">API</text><path d="M140 120 L538 120" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d11-co-a)"/><text x="340.0" y="113" font-size="11.5" text-anchor="middle" style="paint-order:stroke;stroke:#fafaf7;stroke-width:5px;stroke-linejoin:round">createCart: Warenkorb mit Produkt und Platzzahl</text><path d="M540 152 L142 152" fill="none" stroke="#b8472a" stroke-width="2.5" marker-end="url(#d11-co-l)"/><text x="340.0" y="144" font-size="12" text-anchor="middle" font-weight="600" style="fill:#b8472a;paint-order:stroke;stroke:#fafaf7;stroke-width:5px;stroke-linejoin:round">Antwort: isAuthorizedToSign: false</text><path d="M140 204 L538 204" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d11-co-a)"/><text x="340.0" y="197" font-size="11.5" text-anchor="middle" style="paint-order:stroke;stroke:#fafaf7;stroke-width:5px;stroke-linejoin:round">previewagreement: Vereinbarung laden</text><path d="M540 236 L142 236" fill="none" stroke="#5b6072" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#d11-co-m)"/><text x="340.0" y="229" font-size="11.5" text-anchor="middle" style="fill:#5b6072;paint-order:stroke;stroke:#fafaf7;stroke-width:5px;stroke-linejoin:round">Antwort: Vereinbarung</text><path d="M140 288 L538 288" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d11-co-a)"/><text x="340.0" y="281" font-size="11.5" text-anchor="middle" style="paint-order:stroke;stroke:#fafaf7;stroke-width:5px;stroke-linejoin:round">getEligiblePaymentMethods: erlaubte Zahlungsmittel</text><path d="M540 320 L142 320" fill="none" stroke="#5b6072" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#d11-co-m)"/><text x="340.0" y="313" font-size="11.5" text-anchor="middle" style="fill:#5b6072;paint-order:stroke;stroke:#fafaf7;stroke-width:5px;stroke-linejoin:round">Antwort: Zahlungsmittel</text><path d="M140 372 L538 372" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d11-co-a)"/><text x="340.0" y="365" font-size="11.5" text-anchor="middle" style="paint-order:stroke;stroke:#fafaf7;stroke-width:5px;stroke-linejoin:round">updateBillingInformation: Rechnungsprofil anhängen</text><path d="M540 404 L142 404" fill="none" stroke="#b8472a" stroke-width="2.5" marker-end="url(#d11-co-l)"/><text x="340.0" y="396" font-size="12" text-anchor="middle" font-weight="600" style="fill:#b8472a;paint-order:stroke;stroke:#fafaf7;stroke-width:5px;stroke-linejoin:round">Antwort: isAuthorizedToSign: false</text><rect x="60" y="430" width="160" height="36" rx="6" fill="#eef1f5" stroke="#5b6072" stroke-width="1.5"/><text x="140" y="453" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#5b6072">„Next“ gesperrt</text><text x="236" y="446" font-size="11.5" text-anchor="start" style="fill:#b8472a">Vereinbarung kann nicht unterschrieben werden,</text><text x="236" y="461" font-size="11.5" text-anchor="start" style="fill:#b8472a">keine Fehlermeldung</text><rect x="20" y="492" width="640" height="52" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/><text x="340" y="513" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">Der Checkout prüft das Unterschriftsrecht des Kontos auf dem Rechnungskonto.</text><text x="340" y="531" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">Fehlt es, sperrt er den Kauf stillschweigend.</text><line x1="20" y1="570" x2="58" y2="570" stroke="#2f5d8a" stroke-width="1.5"/><text x="66" y="574" font-size="11" text-anchor="start" style="fill:#5b6072">Aufruf</text><line x1="130" y1="570" x2="168" y2="570" stroke="#5b6072" stroke-width="1.5" stroke-dasharray="5 4"/><text x="176" y="574" font-size="11" text-anchor="start" style="fill:#5b6072">Antwort</text><line x1="250" y1="570" x2="288" y2="570" stroke="#b8472a" stroke-width="2.5"/><text x="296" y="574" font-size="11" text-anchor="start" style="fill:#5b6072">Antwort ohne Unterschriftsrecht</text></svg>
+<figcaption>Der Checkout prüft das Unterschriftsrecht des angemeldeten Kontos auf dem Rechnungskonto und sperrt den Kauf ohne dieses Recht stillschweigend.</figcaption>
+</figure>
+
+<p>Die Antworten von <code>createCart</code> und <code>updateBillingInformation</code> enthalten den Warenkorb als JSON. Der entscheidende Ausschnitt:</p>
+
+<pre><code class="language-json">"agreementType": "MCA",
+"isAuthorizedToSign": false,
+"isAuthorizedToRead": true</code></pre>
+
+<p>Das Konto durfte das Rechnungskonto lesen, aber die Vereinbarung nicht unterschreiben. Der Checkout verlangt diese Zustimmung offenbar auch für eine kostenlose Testversion. Beim Produkt selbst stand <code>"error": null</code>, an ihm lag es also nicht.</p>
+
+<p>Das Konto war Global Administrator und damit laut Abbildung Billing account owner. Der Checkout hat die abgebildete Rolle hier offenbar nicht als Unterschriftsrecht gewertet. Ein Global Administrator kann sich die Rolle aber jederzeit selbst direkt zuweisen, über „Assign roles“ auf dem Rechnungskonto. Das wurde gemacht. Die Billing-API zeigte die direkte Zuweisung danach, und die MCA stand auf <code>Active</code>. Der Checkout lieferte unmittelbar danach trotzdem weiter <code>false</code>. Allerdings verwendete er noch denselben Warenkorb, erkennbar an der unveränderten <code>id</code>, und dieselbe Sitzung. Ob die Rolle nur verzögert ankommt, ob ein neuer Warenkorb nötig ist oder ob eine andere Ursache dahintersteckt, ist offen. Auch am nächsten Tag blieb der Kaufen-Knopf grau, mit frischer Anmeldung und neuem Warenkorb. Das Konto hatte inzwischen beide Rollen: Billing account owner und Billing profile owner. In Entra ID war nichts auffällig. Die Antwort des Checkouts enthielt drei Felder, die alle auf <code>false</code> standen: <code>isAuthorizedToSign</code>, <code>isAvsFullValidationSucceeded</code> (die Adressprüfung) und <code>isCustomerConsented</code>.</p>
+<p>Die Agreements-Liste zeigte einen Hinweis. Als Unterzeichner der MCA war nicht das Arbeitskonto im Tenant eingetragen, sondern ein privates Microsoft-Konto mit persönlicher E-Mail-Adresse. Damit wurde der Vertrag ursprünglich angenommen. Die naheliegende Vermutung: Der Checkout verlangt, dass der unterschreibende Nutzer derjenige ist, der die MCA angenommen hat, oder er scheitert an der Adressprüfung. Eine Abrechnungsrolle allein reicht dann nicht. Das ist eine Hypothese, geprüft ist sie nicht. Geklärt war das zum Stand des Texts nicht.</p>
+<p>Für die Praxis folgt daraus: Wer einen Tenant anlegt, sollte die MCA gleich mit dem Arbeitskonto annehmen, das später kauft. Ein privates Konto als Unterzeichner wirkt harmlos, kann aber Käufe für Konten im Tenant blockieren.</p>
+
+<p>Zwei Dinge lassen sich trotzdem mitnehmen. Erstens ist ein Global Administrator in der Abrechnung nicht automatisch handlungsfähig, kann sich die nötige Rolle aber selbst geben. Zweitens liefern die Entwicklertools im Browser bei stummen Fehlern im Admin Center oft den Grund. Die vielen roten Einträge in der Console sind dabei meist Rauschen, etwa blockierte Telemetrie oder nicht vorhandene Einstellungen. Aufschlussreich sind die Antworten der fachlichen Aufrufe im Reiter „Network“. Sie enthalten Adresse, Telefonnummer und Teile des Zahlungsmittels. Die Anfragen selbst tragen Bearer-Tokens und Cookies, und ein exportierter Mitschnitt (HAR-Datei) enthält beides. Solche Daten gehören nicht ungeschwärzt in Tickets oder Chats.</p>
+
+<h2>Azure: Guthaben, Ausgabenlimit und Budget</h2>
+
+<p>Azure rechnet nicht über Lizenzen ab, sondern nach Verbrauch. Für einen Test-Tenant sind zwei Einstellungen der Subscription wichtig, und sie lassen sich per Kommandozeile lesen:</p>
+
+<pre><code class="language-bash">az rest --method get \
+  --url "https://management.azure.com/subscriptions/&lt;subscription-id&gt;?api-version=2022-12-01" \
+  --query "{name:displayName, status:state, angebot:subscriptionPolicies.quotaId, ausgabenlimit:subscriptionPolicies.spendingLimit}"</code></pre>
+
+<ul>
+<li><strong>Angebot</strong> (<code>quotaId</code>): Unter anderem steht <code>FreeTrial_…</code> für das kostenlose Startangebot mit Guthaben und <code>PayAsYouGo_…</code> für nutzungsbasierte Abrechnung. Andere Vertragsarten zeigen andere Kennungen.</li>
+<li><strong>Ausgabenlimit</strong> (<code>spendingLimit</code>): Bei <code>On</code> deaktiviert Azure die Subscription, sobald das Guthaben aufgebraucht ist, und stoppt die Ressourcen. Die Daten bleiben zunächst erhalten. Bei <code>Off</code> läuft alles weiter und wird über das Zahlungsmittel abgerechnet. <code>CurrentPeriodOff</code> schaltet das Limit nur für den laufenden Abrechnungszeitraum ab.</li>
+</ul>
+
+<p>Dazu kommt das <strong>Budget</strong>. Es ist keine Einstellung der Subscription, sondern ein eigenes Objekt in Cost Management, dem Azure-Dienst für Kostenauswertung. Ein Budget schickt Warnungen bei Schwellen wie 50 und 90 Prozent. Es stoppt nichts.</p>
+
+<p>Ein Portalname wie „Azure Trial“ sagt wenig. Steht das Angebot schon auf Pay-as-you-go und das Ausgabenlimit auf <code>Off</code>, endet mit dem Guthaben nicht die Nutzung, sondern nur die Gratisphase. Was dann noch läuft, etwa ein App-Service-Plan oder ein Modell-Deployment, wird normal berechnet. Wer das nicht will, löscht die Ressourcen vor dem Ende des Guthabens.</p>
+
+<p>Einige Microsoft-365-Funktionen rechnen nutzungsbasiert über eine Azure-Subscription ab, etwa Pay-as-you-go für Copilot-Agenten. Dafür wird im Admin Center eine Abrechnungsrichtlinie angelegt, die eine Subscription und eine Resource Group verknüpft. In dieser Resource Group entstehen eigene Abrechnungsobjekte. Wer eine Subscription aufräumt, sollte vorher prüfen, ob solche Verknüpfungen daran hängen.</p>
+
+<h2>Power Platform: Standard- und Premium-Connectors</h2>
+
+<p><strong>Power Automate</strong> ist der Automatisierungsdienst von Microsoft, Teil der Power Platform. Ein <strong>Flow</strong> ist dort ein automatisierter Ablauf aus einem Auslöser und Aktionen. Ein <strong>Connector</strong> ist der Baustein, über den ein Flow einen Dienst anspricht, etwa SharePoint. <strong>Dataverse</strong> ist die Datenbank der Power Platform, und <strong>AI Builder</strong> stellt KI-Aktionen bereit, etwa „Run a prompt“.</p>
+
+<p>Power Automate hat eine eigene Lizenzlogik. Flows mit <strong>Standard-Connectors</strong> wie SharePoint, OneDrive, Outlook oder Approvals sind in den meisten Microsoft-365-Lizenzen enthalten, ebenso der manuelle Auslöser per Knopf. <strong>Premium-Connectors</strong> brauchen eine eigene Lizenz wie Power Automate Premium. Dazu gehören der HTTP-Auslöser und HTTP-Aktionen, Dataverse und in der Regel auch AI Builder. Im Portal markiert eine kleine Raute einen Flow mit Premium-Bausteinen. Verlässlich ist sie nicht für jeden Baustein.</p>
+
+<p>Welche Bausteine ein Flow nutzt, lässt sich ohne Portal prüfen, wenn die Umgebung eine Dataverse-Datenbank hat. Cloud-Flows sind dort Datensätze in der Tabelle <code>workflows</code> mit <code>category</code> gleich 5:</p>
+
+<pre><code class="language-bash">URL=https://&lt;umgebungs-url&gt;
+TOKEN=$(az account get-access-token --resource $URL --query accessToken -o tsv)
+curl -s -H "Authorization: Bearer $TOKEN" \
+  "$URL/api/data/v9.2/workflows?\$filter=category%20eq%205&amp;\$select=name,statecode,clientdata"</code></pre>
+
+<p>Die Adresse der Umgebung steht im Power Platform Admin Center bei der Umgebung. Sie enthält eine Regionskennung und sieht etwa so aus: <code>https://&lt;org&gt;.crm4.dynamics.com</code>. Das Feld <code>clientdata</code> ist ein JSON-Text, der erst geparst werden muss. Darin stehen:</p>
+
+<ul>
+<li><strong>Auslöser</strong> unter <code>properties.definition.triggers</code>: <code>Request</code> mit <code>kind</code> gleich <code>Http</code> ist Premium, mit <code>kind</code> gleich <code>Button</code> Standard.</li>
+<li><strong>Aktionen</strong> unter <code>properties.definition.actions</code>, verschachtelt in Bedingungen und Schleifen. Integrierte HTTP-Aktionen tauchen nur hier auf, nicht bei den Connections.</li>
+<li><strong>Connectors</strong> unter <code>properties.connectionReferences</code>, etwa <code>shared_sharepointonline</code> oder <code>shared_commondataserviceforapps</code> für Dataverse.</li>
+</ul>
+
+<p><code>statecode</code> ist 1 für eingeschaltete und 0 für ausgeschaltete Flows. Damit lässt sich vor dem Ende einer Premium-Lizenz entscheiden, welcher Flow danach nicht mehr läuft. Ein ausgeschalteter Flow mit Premium-Auslöser ist unkritisch, ein eingeschalteter mit AI Builder nicht.</p>
+
+<p>Auch hier wirkt ein eigenes Rechtesystem. Die Abfrage zeigt nur Flows, die das Konto über seine Sicherheitsrolle in Dataverse sehen darf. Für alle Flows einer Umgebung braucht es eine Rolle wie System Administrator. Ältere Flows, die nicht in Dataverse liegen, fehlen in der Liste.</p>
+
+<h2>Checkliste vor dem Ende eines Testzeitraums</h2>
+
+<ol>
+<li><strong>Enddaten abfragen:</strong> <code>directory/subscriptions</code> mit <code>nextLifecycleDateTime</code>, in Ortszeit umgerechnet.</li>
+<li><strong>Wiederkehrende Abrechnung prüfen:</strong> Für jede Testversion im Admin Center, bei Bedarf „Cancel on expiration“. Nicht „Cancel subscription“.</li>
+<li><strong>Abhängigkeiten klären:</strong> Welche Flows nutzen Premium-Bausteine, welche Konten verlieren mit der Lizenz Postfach oder OneDrive, welche Tests brauchen Copilot.</li>
+<li><strong>Azure prüfen:</strong> Angebot und Ausgabenlimit lesen, laufende Ressourcen löschen oder bewusst weiterlaufen lassen. Bei mehreren Rechnungskonten nachsehen, auf welchem die Subscription hängt.</li>
+<li><strong>Daten sichern:</strong> Was nur in einem auslaufenden Dienst liegt, vor dem Ende exportieren.</li>
+<li><strong>Abrechnungsrollen klären:</strong> Wer soll künftig kaufen und unterschreiben dürfen? In einem Firmen-Tenant ist das eine Entscheidung der Geschäftsführung, nicht der IT.</li>
+</ol>
+<nav style="display:flex;justify-content:space-between;gap:1rem;margin-top:3rem;border-top:1px solid var(--rule);padding-top:1rem;font-family:'Helvetica Neue',Arial,sans-serif;font-size:.9rem"><span><a href="10-bauen-ohne-admin-rechte.html">← Zurück</a></span><a href="index.html">Übersicht</a><span><a href="12-plattformen-verwaltung.html">Weiter →</a></span></nav>
+</body>
+</html>

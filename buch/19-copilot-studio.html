@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>19. Copilot Studio von innen und Pro-Code-Anbindung</title>
+<style>
+:root { --bg:#fafaf7; --text:#1f2230; --muted:#5b6072; --accent:#2f5d8a;
+  --accent-soft:#d9e4ef; --leader:#b8472a; --node-fill:#ffffff;
+  --node-stroke:#2f5d8a; --rule:#c8ccd6; --code-bg:#eef1f5; }
+html,body { background:var(--bg); color:var(--text);
+  font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+  line-height:1.65; font-size:18px; }
+body { max-width:760px; margin:3rem auto 6rem; padding:0 1.5rem; }
+h1 { font-size:2rem; line-height:1.2; margin:0 0 2rem;
+  border-bottom:1px solid var(--rule); padding-bottom:0.6rem; }
+h2 { font-size:1.35rem; margin-top:2.4rem; margin-bottom:0.8rem;
+  color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif;
+  font-weight:600; letter-spacing:0.01em; }
+p { margin:0 0 1.1rem; }
+figure { margin:2rem auto; text-align:center; }
+figure svg { max-width:100%; height:auto; display:block; margin:0 auto; }
+figcaption { font-family:"Helvetica Neue",Arial,sans-serif; font-size:0.85rem;
+  color:var(--muted); margin-top:0.6rem; text-align:center; }
+svg text { font-family:"Helvetica Neue",Arial,sans-serif; fill:var(--text); }
+.legend-text { font-size:11px; fill:var(--muted); }
+pre { background:var(--code-bg); padding:0.9rem 1.1rem; overflow-x:auto;
+  border-radius:6px; font-size:0.82em; }
+code { background:var(--code-bg); font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:0.85em; padding:0.1em 0.3em; border-radius:3px; }
+pre code { background:none; padding:0; }
+.table-wrap { overflow-x:auto; margin:1.5rem 0; }
+table { border-collapse:collapse; width:100%; font-size:0.85em; line-height:1.45; }
+th { text-align:left; color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif;
+  font-weight:600; border-bottom:2px solid var(--accent); padding:0.45rem 0.6rem;
+  vertical-align:bottom; }
+td { border-bottom:1px solid var(--rule); padding:0.45rem 0.6rem; vertical-align:top; }
+tr { break-inside:avoid; }
+</style>
+</head>
+<body>
+<h1>19. Copilot Studio von innen und Pro-Code-Anbindung</h1>
+
+<p>Copilot Studio ist das Werkzeug der Power Platform für Agenten. Ein Agent dort ist kein einzelnes Programm, sondern eine Konfiguration aus Anweisungen, Wissen und Werkzeugen, die ein Modell zur Laufzeit zusammensetzt. Kaum ein Teil der Microsoft-Welt ändert sich derzeit so schnell: Namen, Laufzeitmodelle und Abrechnungsdetails wechseln im Abstand von Monaten. Das Grundmodell darunter ist dagegen stabil, und genau das braucht man, um Agenten sicher zu bauen und Kunden zu beraten. Es beantwortet drei Fragen: Woraus besteht ein Agent? Mit wessen Rechten handelt er? Und was kostet er?</p>
+
+<h2>Woraus ein Agent besteht</h2>
+
+<p>Jeder Agent lässt sich in drei Schichten zerlegen:</p>
+
+<ul>
+<li><strong>Modell:</strong> das Sprachmodell, das liest, plant und antwortet.</li>
+<li><strong>Orchestrierung:</strong> die Laufzeit, die entscheidet, welche Bausteine bei einer Anfrage benutzt werden.</li>
+<li><strong>Bausteine:</strong> das, was der Maker konfiguriert hat.</li>
+</ul>
+
+<p>Die Bausteine im Einzelnen:</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Baustein</th><th>Was er ist</th></tr></thead>
+<tbody>
+<tr><td><strong>Anweisungen</strong></td><td>Text, der Rolle, Ton, Grenzen und Vorgehen des Agenten beschreibt</td></tr>
+<tr><td><strong>Wissen</strong></td><td>Quellen, aus denen der Agent Antworten belegt: SharePoint, Dataverse, hochgeladene Dateien, Websites, Unternehmensdaten über Connectors</td></tr>
+<tr><td><strong>Tools</strong></td><td>Aktionen, die der Agent ausführen kann: Connectors, Flows, Prompts, REST-APIs, MCP-Server, andere Agenten</td></tr>
+<tr><td><strong>Topics</strong></td><td>fest gebaute Gesprächsabläufe für Fälle, die genau so ablaufen sollen</td></tr>
+<tr><td><strong>Auslöser</strong></td><td>Ereignisse, auf die ein Agent ohne Chat reagiert, etwa eine neue Mail</td></tr>
+<tr><td><strong>Kanäle</strong></td><td>Orte, an denen der Agent erreichbar ist: Teams und Microsoft 365 Copilot, SharePoint, eine Website, weitere</td></tr>
+</tbody>
+</table></div>
+
+<p>Bei der <strong>klassischen Orchestrierung</strong> lösen Trigger-Phrasen bestimmte Topics aus, und der Maker legt fest, wann welches Tool läuft. Bei der <strong>generativen Orchestrierung</strong> plant das Modell selbst und kann mehrere Topics, Tools und Wissensquellen für eine Anfrage kombinieren. Es wählt dabei anhand von <strong>Name und Beschreibung</strong> der Bausteine. Eine gute Beschreibung eines Tools ist deshalb kein Kommentar, sondern Steuerung: Sie entscheidet, wann das Modell es benutzt.</p>
+
+<p>Eine wichtige Grenze gilt immer: Ein Agent nutzt nur Wissen, Tools und Topics, die der Maker ausdrücklich konfiguriert hat. Er findet nicht von selbst neue Datenquellen.</p>
+
+<p>Agenten liegen in einer Power-Platform-Umgebung mit Dataverse und lassen sich in Solutions paketieren (siehe <a href="18-solutions-alm.html">Kapitel 18, Solutions und ALM</a>). Für ernsthafte Agenten gilt dasselbe wie für Apps und Flows: Entwicklung, Test und Produktion in getrennten Umgebungen, nicht in der Default-Umgebung.</p>
+
+<h3>Agent Builder, Declarative Agent, Custom Engine Agent</h3>
+
+<p>In der Microsoft-Welt gibt es mehrere Wege, einen Agenten zu bauen. Sie unterscheiden sich vor allem darin, wessen Orchestrierung läuft.</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Weg</th><th>Orchestrierung und Modell</th><th>Typischer Einsatz</th></tr></thead>
+<tbody>
+<tr><td><strong>Agent Builder</strong> in Microsoft 365 Copilot</td><td>die von Microsoft 365 Copilot</td><td>persönlicher oder Team-Agent auf eigenem Wissen, ohne eigene Aktionen</td></tr>
+<tr><td><strong>Declarative Agent</strong></td><td>die von Microsoft 365 Copilot, ergänzt um Anweisungen, Wissen und Aktionen</td><td>Erweiterung von Copilot, auch per Code mit dem Agents Toolkit</td></tr>
+<tr><td><strong>Copilot Studio</strong></td><td>eigene Orchestrierung in Copilot Studio</td><td>Fachbereichs- und Prozess-Agenten mit Connectors, Flows und Kanälen</td></tr>
+<tr><td><strong>Foundry</strong> oder eigene App</td><td>eigene Orchestrierung, eigene Modelle</td><td>Entwicklerlösungen mit voller Kontrolle</td></tr>
+</tbody>
+</table></div>
+
+<p>Aus Sicht von Microsoft 365 ist ein Agent mit eigener Orchestrierung ein <strong>Custom Engine Agent</strong>. Damit verschiebt sich auch die Verantwortung: Bei einem Declarative Agent erbt man die Compliance von Microsoft 365 Copilot, bei einem Custom Engine Agent trägt sie der Betreiber.</p>
+
+<p>Copilot Studio selbst bietet inzwischen mehrere Laufzeitmodelle für Agenten, etwa für zielgerichtete Agenten, die selbst planen, oder für Kundendialoge. Die Namen und Grenzen sind noch in Bewegung. Am Grundmodell aus Modell, Orchestrierung und Bausteinen ändert das nichts.</p>
+
+<h2>Mit wessen Rechten ein Agent handelt</h2>
+
+<p>Bei Agenten gibt es zwei getrennte Fragen, die leicht verwechselt werden. Man kann sie sich als zwei Schlösser vorstellen.</p>
+
+<figure id="kap19-zwei-schloesser">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 345" role="img" aria-labelledby="d19-zs-title d19-zs-desc"><title id="d19-zs-title">Zwei Schlösser eines Agenten</title><desc id="d19-zs-desc">Eine Person in Teams passiert Schloss 1, die Anmeldung am Agenten, die regelt, wer chatten darf. Nach der Orchestrierung entscheidet Schloss 2, ob ein Tool mit den Rechten der Person oder mit denen des Makers handelt. Wissen aus SharePoint und Dataverse wird immer mit den Rechten der fragenden Person gefiltert.</desc><defs><marker id="d19-zs-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="d19-zs-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker><marker id="d19-zs-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker></defs><rect x="5" y="130" width="105" height="60" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="57.5" y="158" font-size="12.5" text-anchor="middle" font-weight="600">Person</text><text x="57.5" y="172" font-size="11" text-anchor="middle" style="fill:#5b6072">in Teams</text><rect x="128" y="118" width="134" height="84" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/><text x="195.0" y="150" font-size="12.5" text-anchor="middle" font-weight="600">Schloss 1</text><text x="195.0" y="166" font-size="11" text-anchor="middle" style="fill:#5b6072">Anmeldung am Agenten:</text><text x="195.0" y="180" font-size="11" text-anchor="middle" style="fill:#5b6072">wer darf chatten?</text><rect x="280" y="130" width="112" height="60" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="336.0" y="158" font-size="12.5" text-anchor="middle" font-weight="600">Agent</text><text x="336.0" y="172" font-size="11" text-anchor="middle" style="fill:#5b6072">Orchestrierung</text><rect x="410" y="118" width="134" height="84" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/><text x="477.0" y="150" font-size="12.5" text-anchor="middle" font-weight="600">Schloss 2</text><text x="477.0" y="166" font-size="11" text-anchor="middle" style="fill:#5b6072">mit wessen Rechten</text><text x="477.0" y="180" font-size="11" text-anchor="middle" style="fill:#5b6072">handelt das Tool?</text><rect x="562" y="40" width="113" height="56" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="618.5" y="66" font-size="12.5" text-anchor="middle" font-weight="600">Rechte Nutzer</text><text x="618.5" y="80" font-size="11" text-anchor="middle" style="fill:#5b6072">handelt als Person</text><rect x="562" y="224" width="113" height="56" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/><text x="618.5" y="242" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">Rechte Maker</text><text x="618.5" y="258" font-size="11" text-anchor="middle" style="fill:#5b6072">alle handeln</text><text x="618.5" y="272" font-size="11" text-anchor="middle" style="fill:#5b6072">als Maker</text><path d="M110 160 L126 160" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d19-zs-a)"/><path d="M262 160 L278 160" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d19-zs-a)"/><path d="M392 160 L408 160" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d19-zs-a)"/><path d="M544 145 L560 70" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d19-zs-a)"/><path d="M544 175 L560 250" fill="none" stroke="#b8472a" stroke-width="1.5" marker-end="url(#d19-zs-r)"/><rect x="20" y="296" width="640" height="40" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="340.0" y="320" font-size="12.5" text-anchor="middle" font-weight="600">Wissen aus SharePoint und Dataverse: immer mit den Rechten der fragenden Person</text></svg>
+<figcaption>Eine saubere Anmeldung am Agenten sagt nichts darüber, mit wessen Rechten ein Tool danach handelt. Beide Schlösser müssen einzeln geprüft werden.</figcaption>
+</figure>
+
+<h3>Schloss 1: Wer darf mit dem Agenten sprechen?</h3>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Einstellung</th><th>Bedeutung</th></tr></thead>
+<tbody>
+<tr><td><strong>Keine Authentifizierung</strong></td><td>Jeder mit Zugang zum Kanal oder Link kann chatten. Nur für öffentliche Inhalte geeignet; wer chatten darf, lässt sich nicht steuern.</td></tr>
+<tr><td><strong>Mit Microsoft authentifizieren</strong></td><td>Anmeldung über Entra ID in Microsoft-eigenen Oberflächen wie Teams, SharePoint und Microsoft 365 Copilot. Der übliche Fall für interne Agenten.</td></tr>
+<tr><td><strong>Manuell authentifizieren</strong></td><td>Eigene Konfiguration mit Entra ID oder einem anderen OAuth-Anbieter, nötig etwa für eine eigene Website.</td></tr>
+</tbody>
+</table></div>
+
+<p>Für interne Agenten mit Firmendaten ist „keine Authentifizierung“ falsch, auch wenn es im Test schneller geht.</p>
+
+<h3>Schloss 2: Mit wessen Rechten handeln Tools und Wissen?</h3>
+
+<p>Für <strong>Wissen</strong> aus SharePoint, Dataverse und Unternehmensdaten über Connectors ist die Antwort einfach: Der Agent sieht nur, was die <strong>fragende Person</strong> sehen darf. Das ist Security Trimming wie bei Copilot (siehe <a href="05-daten-freigaben.html">Kapitel 5, Daten und Freigaben</a>). Daraus folgt aber auch: Der Agent repariert kein Oversharing. Was in SharePoint zu breit freigegeben ist, findet er genauso. Hochgeladene Dateien sind dagegen für alle Nutzer des Agenten sichtbar.</p>
+
+<p>Bei <strong>Tools</strong> gibt es zwei Möglichkeiten:</p>
+
+<ul>
+<li><strong>Rechte der Nutzerin oder des Nutzers:</strong> Die fragende Person meldet sich beim Dienst an, und das Tool handelt mit ihren Rechten.</li>
+<li><strong>Rechte des Makers:</strong> Das Tool nutzt die Verbindung der Person, die den Agenten gebaut hat. Dann handeln alle Nutzer mit deren Rechten.</li>
+</ul>
+
+<p>Die zweite Variante ist dieselbe Rechteausweitung wie bei einem Flow mit der Verbindung des Besitzers (siehe <a href="17-apps-flows.html">Kapitel 17, Apps und Flows bauen</a>). Sie kann gewollt sein, etwa wenn ein Agent ein Ticket in einem System anlegt, auf das Nutzer keinen Zugriff haben. Sie muss aber bewusst entschieden und dokumentiert werden. Admins können das Teilen von Agenten mit eingebetteten Maker-Rechten einschränken. Für Agenten, die ohne Chat auf Ereignisse reagieren, gibt es keine fragende Person, sie handeln deshalb praktisch immer mit hinterlegten Rechten.</p>
+
+<h3>Agenten als eigene Identität</h3>
+
+<p>Microsoft gibt Agenten zunehmend eine eigene Identität in Entra ID, ähnlich einem Service Principal. Das macht Agenten in Entra sichtbar und verwaltbar, und es eröffnet Regeln wie Conditional Access für Agenten. Wie weit das reicht und für welche Kanäle es gilt, ändert sich noch. Das Prinzip passt zum Rest des Buchs: Was handelt, braucht eine Identität, an der Rechte und Protokolle hängen.</p>
+
+<h3>Steuerung durch Admins</h3>
+
+<p>Was ein Agent darf, steuern Admins an drei getrennten Stellen. Alle drei müssen passen:</p>
+
+<ol>
+<li><strong>DLP-Richtlinien</strong> der Power Platform (siehe <a href="12-plattformen-verwaltung.html">Kapitel 12, Plattformen und Verwaltungsorte</a>): welche Connectors, Kanäle und Wissensquellen erlaubt sind, ob Authentifizierung Pflicht ist, ob HTTP-Aufrufe erlaubt sind und an welche Adressen. Auch MCP-Server laufen technisch über Connectors und fallen darunter.</li>
+<li><strong>Freigabe in der Umgebung:</strong> mit wem ein Agent geteilt werden darf, in Managed Environments begrenzbar.</li>
+<li><strong>Freigabe als App</strong> in Teams und Microsoft 365: Ein Agent, der für die ganze Organisation erscheinen soll, wird als App eingereicht und von Admins freigegeben.</li>
+</ol>
+
+<p>Wer „nicht veröffentlichen kann“, hängt meist an einer dieser drei Stellen.</p>
+
+<h2>Was ein Agent kostet</h2>
+
+<p>Copilot Studio rechnet in <strong>Copilot Credits</strong> ab (siehe <a href="12-plattformen-verwaltung.html">Kapitel 12, Plattformen und Verwaltungsorte</a>). Die genauen Sätze ändern sich, das Modell nicht:</p>
+
+<ul>
+<li>Verschiedene Schritte kosten unterschiedlich viel. Eine fest gebaute Antwort ist billig, eine generative Antwort teurer, ein Tool-Aufruf oder eine Aktion noch teurer, und aufwendige Modelle oder Suchen im ganzen Tenant kosten zusätzlich.</li>
+<li>Eine einzelne Frage kann mehrere Posten erzeugen, wenn der Agent mehrere Werkzeuge nutzt.</li>
+<li>Credits kommen aus Prepaid-Paketen für den Tenant, die Admins auf Umgebungen verteilen, oder über Pay-as-you-go aus einer Azure-Subscription.</li>
+<li>Mit einer Lizenz für Microsoft 365 Copilot ist die Nutzung durch lizenzierte, angemeldete Mitarbeitende in Microsoft-365-Kanälen weitgehend abgedeckt. Externe Nutzer, nicht lizenzierte Nutzer und Agenten, die ohne Chat laufen, kosten weiterhin Credits.</li>
+<li>Eigene Modelle aus Foundry laufen nicht über Credits, sondern über die Azure-Rechnung.</li>
+</ul>
+
+<p>Die wichtigste Folgerung: <strong>Die Kosten hängen am Design des Agenten, nicht an der Zahl der Nutzer.</strong> Lange Anweisungen, viele Tool-Aufrufe und ein großes Modell machen jede Frage teurer. Eine Kostenschätzung beginnt deshalb mit der Frage, was ein typischer Dialog an Schritten auslöst.</p>
+
+<h2>Wo eigener Code andockt</h2>
+
+<p>Copilot Studio ist Low-Code, aber nicht abgeschlossen. Es gibt mehrere Stellen, an denen eigener Code ansetzt.</p>
+
+<figure id="kap19-spektrum">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 325" role="img" aria-labelledby="d19-sp-title d19-sp-desc"><title id="d19-sp-title">Vom Agent Builder zur eigenen App</title><desc id="d19-sp-desc">Fünf Stufen von links nach rechts: Agent Builder, Copilot Studio, Copilot Studio mit eigenen Tools, Foundry, eigene App mit Agents SDK. Darunter für jede Stufe, wer orchestriert, wer betreibt und wer die Compliance trägt. Ein Pfeil zeigt: mehr Kontrolle, mehr Verantwortung.</desc><defs><marker id="d19-sp-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="d19-sp-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker><marker id="d19-sp-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker></defs><rect x="5" y="30" width="128" height="80" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="69.0" y="68" font-size="12.5" text-anchor="middle" font-weight="600">Agent Builder</text><text x="69.0" y="82" font-size="11" text-anchor="middle" style="fill:#5b6072">in M365 Copilot</text><rect x="138" y="30" width="128" height="80" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="202.0" y="68" font-size="12.5" text-anchor="middle" font-weight="600">Copilot Studio</text><text x="202.0" y="82" font-size="11" text-anchor="middle" style="fill:#5b6072">Low-Code</text><rect x="271" y="30" width="128" height="80" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="335.0" y="60" font-size="12.5" text-anchor="middle" font-weight="600">Copilot Studio</text><text x="335.0" y="76" font-size="11" text-anchor="middle" style="fill:#5b6072">+ Connector, API,</text><text x="335.0" y="90" font-size="11" text-anchor="middle" style="fill:#5b6072">MCP, Foundry</text><rect x="404" y="30" width="128" height="80" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="468.0" y="60" font-size="12.5" text-anchor="middle" font-weight="600">Foundry</text><text x="468.0" y="76" font-size="11" text-anchor="middle" style="fill:#5b6072">eigene</text><text x="468.0" y="90" font-size="11" text-anchor="middle" style="fill:#5b6072">Orchestrierung</text><rect x="537" y="30" width="128" height="80" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="601.0" y="68" font-size="12.5" text-anchor="middle" font-weight="600">Eigene App</text><text x="601.0" y="82" font-size="11" text-anchor="middle" style="fill:#5b6072">Agents SDK</text><line x1="5" y1="170" x2="665" y2="170" stroke="#c8ccd6" stroke-width="1"/><text x="5" y="140" font-size="11" text-anchor="start" font-weight="600" style="fill:#5b6072">Wer orchestriert</text><text x="69.0" y="160" font-size="11.5" text-anchor="middle">Microsoft</text><text x="202.0" y="160" font-size="11.5" text-anchor="middle">Copilot Studio</text><text x="335.0" y="160" font-size="11.5" text-anchor="middle">Copilot Studio</text><text x="468.0" y="160" font-size="11.5" text-anchor="middle">eigener Code</text><text x="601.0" y="160" font-size="11.5" text-anchor="middle">eigener Code</text><line x1="5" y1="222" x2="665" y2="222" stroke="#c8ccd6" stroke-width="1"/><text x="5" y="192" font-size="11" text-anchor="start" font-weight="600" style="fill:#5b6072">Wer betreibt</text><text x="69.0" y="212" font-size="11.5" text-anchor="middle">Microsoft</text><text x="202.0" y="212" font-size="11.5" text-anchor="middle">Microsoft</text><text x="335.0" y="212" font-size="11.5" text-anchor="middle">plus eigene API</text><text x="468.0" y="212" font-size="11.5" text-anchor="middle">eigenes Azure</text><text x="601.0" y="212" font-size="11.5" text-anchor="middle">alles selbst</text><line x1="5" y1="274" x2="665" y2="274" stroke="#c8ccd6" stroke-width="1"/><text x="5" y="244" font-size="11" text-anchor="start" font-weight="600" style="fill:#5b6072">Compliance</text><text x="69.0" y="264" font-size="11.5" text-anchor="middle">von M365</text><text x="202.0" y="264" font-size="11.5" text-anchor="middle">Power Platform</text><text x="335.0" y="264" font-size="11.5" text-anchor="middle">geteilt</text><text x="468.0" y="264" font-size="11.5" text-anchor="middle">Betreiber</text><text x="601.0" y="264" font-size="11.5" text-anchor="middle">Betreiber</text><path d="M20 310 L660 310" fill="none" stroke="#b8472a" stroke-width="1.5" marker-end="url(#d19-sp-r)"/><text x="340" y="300" font-size="12" text-anchor="middle" font-weight="600" style="fill:#b8472a">mehr Kontrolle, mehr Verantwortung</text></svg>
+<figcaption>Mehr Kontrolle heißt mehr Verantwortung. Die Übergänge sind fließend: Copilot Studio kann vorn in Microsoft 365 stehen und hinten eigenen Code oder Foundry aufrufen.</figcaption>
+</figure>
+
+<ul>
+<li><strong>Custom Connector:</strong> Eine eigene API wird mit einer OpenAPI-Beschreibung als Connector eingebunden. Für die Anmeldung mit Entra ID braucht es eine App-Registrierung, deren Redirect-URI der Connector vorgibt; das Token wird delegiert im Namen der Person geholt. Der Connector ist dann in Flows, Apps und Agenten nutzbar und unterliegt den DLP-Richtlinien.</li>
+<li><strong>Eigene API oder Azure Function:</strong> Hinter dem Connector oder einem REST-API-Tool steht oft eine Azure Function oder ein App Service mit Entra-Anmeldung (siehe <a href="07-server-github.html">Kapitel 7, Server und GitHub</a>). Die API prüft das Token und entscheidet selbst über Rechte. So bleibt die eigentliche Rechtelogik im eigenen Code.</li>
+<li><strong>MCP-Server:</strong> Ein Agent kann Tools eines MCP-Servers nutzen, mit Anmeldung über API-Schlüssel oder OAuth. Damit werden Werkzeuge, die für andere KI-Agenten gebaut wurden (siehe <a href="09-ki-agenten.html">Kapitel 9, KI-Agenten im Rechtemodell</a>), auch in Copilot Studio nutzbar.</li>
+<li><strong>Foundry:</strong> Ein Modell aus Foundry lässt sich für einzelne Prompt-Tools einbinden, und ein Agent aus Foundry kann als verbundener Agent aufgerufen werden. Copilot Studio steht dann vorn in Teams, die eigentliche Logik läuft in Foundry mit eigener Managed Identity und eigenem Deployment-Typ (siehe <a href="13-recht-datenweg.html">Kapitel 13, Rechtliche Einordnung</a>).</li>
+<li><strong>Agents SDK und Agents Toolkit:</strong> Für vollständig eigene Agenten in Teams und Microsoft 365 gibt es ein SDK, das Kanäle und Nachrichten abwickelt, und eine Erweiterung für VS Code. Modell und Logik bringt man selbst mit.</li>
+</ul>
+
+<h3>Wann was</h3>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Situation</th><th>Sinnvoller Weg</th></tr></thead>
+<tbody>
+<tr><td>Persönlicher Agent auf eigenen Dokumenten</td><td>Agent Builder</td></tr>
+<tr><td>Fachbereichs-Agent in Teams mit Firmenwissen und einigen Aktionen</td><td>Copilot Studio</td></tr>
+<tr><td>Agent braucht eine eigene Geschäftslogik oder ein internes System</td><td>Copilot Studio mit Custom Connector oder eigener API</td></tr>
+<tr><td>Tiefe Analyse über viele Dokumente, eigene Modelle, Auswertung der Qualität</td><td>Foundry, eventuell mit Copilot Studio als Oberfläche in Teams</td></tr>
+<tr><td>Eigene Oberfläche, eigene Kanäle, volle Kontrolle</td><td>eigene App</td></tr>
+</tbody>
+</table></div>
+
+<p>Die Wahl ist auch eine Frage von Betrieb und Freigaben. Copilot Studio nutzt die Governance der Power Platform, die in einer Firma meist schon da ist. Foundry und eigene Apps bringen eigene Ressourcen, eigene Identitäten und eigene Kosten mit, die jemand betreuen muss (siehe <a href="14-it-dienstleister.html">Kapitel 14, Mit externem IT-Dienstleister</a>).</p>
+
+<h2>Typische Missverständnisse</h2>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Annahme</th><th>Was stimmt</th></tr></thead>
+<tbody>
+<tr><td>„Der Agent sieht alles in SharePoint.“</td><td>Er sieht nur, was die fragende Person sieht. Er macht Oversharing aber sichtbar und repariert es nicht.</td></tr>
+<tr><td>„Die Person ist angemeldet, also handelt das Tool mit ihren Rechten.“</td><td>Anmeldung am Agenten und Rechte des Tools sind getrennte Einstellungen.</td></tr>
+<tr><td>„Für einen internen Agenten reicht keine Authentifizierung.“</td><td>Dann kann jeder mit Zugang chatten, und Teilen lässt sich nicht steuern.</td></tr>
+<tr><td>„Mit Microsoft 365 Copilot ist Copilot Studio kostenlos.“</td><td>Nur für lizenzierte, angemeldete Mitarbeitende in Microsoft-365-Kanälen; anderes kostet Credits.</td></tr>
+<tr><td>„Die Kosten richten sich nach der Zahl der Nutzer.“</td><td>Sie richten sich nach den Schritten, die ein Dialog auslöst.</td></tr>
+<tr><td>„Bessere Anweisungen lösen jedes Routing-Problem.“</td><td>Bei generativer Orchestrierung steuern die Beschreibungen der Tools und Topics, welcher Baustein benutzt wird.</td></tr>
+<tr><td>„Veröffentlichen scheitert an Copilot Studio.“</td><td>Meist fehlt eine Freigabe in DLP, in der Umgebung oder als App in Teams.</td></tr>
+</tbody>
+</table></div>
+<nav style="display:flex;justify-content:space-between;gap:1rem;margin-top:3rem;border-top:1px solid var(--rule);padding-top:1rem;font-family:'Helvetica Neue',Arial,sans-serif;font-size:.9rem"><span><a href="18-solutions-alm.html">← Zurück</a></span><a href="index.html">Übersicht</a><span><a href="20-sap-grundlagen.html">Weiter →</a></span></nav>
+</body>
+</html>

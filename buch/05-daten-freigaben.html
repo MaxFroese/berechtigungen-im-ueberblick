@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>5. Daten und Freigaben: Wer kommt an welche Datei?</title>
+<style>
+:root { --bg:#fafaf7; --text:#1f2230; --muted:#5b6072; --accent:#2f5d8a;
+  --accent-soft:#d9e4ef; --leader:#b8472a; --node-fill:#ffffff;
+  --node-stroke:#2f5d8a; --rule:#c8ccd6; --code-bg:#eef1f5; }
+html,body { background:var(--bg); color:var(--text);
+  font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+  line-height:1.65; font-size:18px; }
+body { max-width:760px; margin:3rem auto 6rem; padding:0 1.5rem; }
+h1 { font-size:2rem; line-height:1.2; margin:0 0 2rem;
+  border-bottom:1px solid var(--rule); padding-bottom:0.6rem; }
+h2 { font-size:1.35rem; margin-top:2.4rem; margin-bottom:0.8rem;
+  color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif;
+  font-weight:600; letter-spacing:0.01em; }
+p { margin:0 0 1.1rem; }
+figure { margin:2rem auto; text-align:center; }
+figure svg { max-width:100%; height:auto; display:block; margin:0 auto; }
+figcaption { font-family:"Helvetica Neue",Arial,sans-serif; font-size:0.85rem;
+  color:var(--muted); margin-top:0.6rem; text-align:center; }
+svg text { font-family:"Helvetica Neue",Arial,sans-serif; fill:var(--text); }
+.legend-text { font-size:11px; fill:var(--muted); }
+pre { background:var(--code-bg); padding:0.9rem 1.1rem; overflow-x:auto;
+  border-radius:6px; font-size:0.82em; }
+code { background:var(--code-bg); font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:0.85em; padding:0.1em 0.3em; border-radius:3px; }
+pre code { background:none; padding:0; }
+.table-wrap { overflow-x:auto; margin:0 0 1.3rem; }
+table { border-collapse:collapse; width:100%; font-size:0.86em; line-height:1.45; }
+th, td { border-bottom:1px solid var(--rule); padding:0.5rem 0.7rem;
+  text-align:left; vertical-align:top; }
+th { color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif;
+  font-weight:600; border-bottom:2px solid var(--accent); }
+tr { break-inside:avoid; }
+@media print { .table-wrap { overflow:visible; } }
+</style>
+</head>
+<body>
+<h1>5. Daten und Freigaben: Wer kommt an welche Datei?</h1>
+
+<p>Eine Datei in Microsoft 365 hat keine einzelne Stelle, an der ihre Rechte stehen. Ob jemand sie öffnen kann, ergibt sich aus dem Ort, an dem sie liegt, aus den Rollen auf diesem Ort, aus Abweichungen auf Ordner- oder Dateiebene und aus allen Links, die irgendwann erzeugt wurden. Dazu kommen Apps, die über ganz eigene Wege zugreifen.</p>
+
+<p>Das Grundmodell ist trotzdem überschaubar: Fast alle Dateien liegen in SharePoint, die Rechte fließen von oben nach unten, und Freigaben schaffen Ausnahmen. Suche, Graph API und KI-Dienste bauen auf diesem Modell auf und führen kein eigenes.</p>
+
+<h2>Wo die Daten wirklich liegen</h2>
+
+<p>Teams, OneDrive und SharePoint wirken im Alltag wie drei getrennte Ablagen. Für Dateien sind sie im Kern ein einziges System. Eine <strong>Site</strong> ist ein SharePoint-Bereich mit Bibliotheken, Listen und eigenen Rechten, und eine <strong>Bibliothek</strong> ist eine Dokumentablage innerhalb einer Site. Fast jede Datei in Microsoft 365 liegt in irgendeiner Bibliothek irgendeiner Site.</p>
+
+<p><strong>SharePoint</strong> ist die sichtbare Form dieses Systems. Eine Site hat eine Adresse wie <code>https://contoso.sharepoint.com/sites/projekt-a</code> und mindestens eine Bibliothek.</p>
+
+<p><strong>Teams</strong> speichert Dateien nicht selbst. Zu jedem Team gehört eine Microsoft-365-Gruppe, und an dieser Gruppe hängt eine SharePoint-Site. Ein Standardkanal ist darin ein Ordner in der Standardbibliothek. Die Registerkarte „Dateien“ im Kanal ist nur eine andere Ansicht auf diesen Ordner. Private und geteilte Kanäle bekommen eine eigene Site, weil ihr Personenkreis vom Team abweicht. Die Teamzugehörigkeit bestimmt also die Dateirechte, weil sie über die Gruppe in die Site durchschlägt.</p>
+
+<p><strong>OneDrive</strong> ist eine persönliche Site pro Nutzer, mit einer Adresse der Form <code>https://contoso-my.sharepoint.com/personal/&lt;nutzer&gt;</code>. Technisch gelten dieselben Regeln wie in SharePoint: Bibliothek, Vererbung, Freigabelinks. Der Unterschied ist organisatorisch. Der Nutzer ist alleiniger Eigentümer und entscheidet selbst über Freigaben.</p>
+
+<p><strong>Dateien aus Teams-Chats</strong> liegen deshalb nicht „im Chat“. Eine in einem Einzel- oder Gruppenchat gesendete Datei landet im OneDrive der sendenden Person und wird für die Chatteilnehmer freigegeben. Wer also einen Chat-Anhang bereitstellt, erzeugt damit eine Freigabe in der eigenen persönlichen Site.</p>
+
+<p>Getrennt davon liegen zwei Dinge, die nicht dem SharePoint-Rechtemodell folgen:</p>
+
+<ul>
+<li><strong>Exchange Online</strong> speichert Postfächer mit E-Mails, Kalendern und Anhängen. Die Rechte hängen am Postfach, zum Beispiel über Vollzugriff oder Stellvertretung, und kennen weder Site-Rollen noch Freigabelinks.</li>
+<li><strong>Teams-Nachrichten</strong> liegen im Teams-Dienst und nicht in einer Bibliothek. Wer sie lesen darf, ergibt sich aus der Teilnahme am Chat oder der Mitgliedschaft im Team oder Kanal.</li>
+</ul>
+
+<p>Ein Anhang in einer Mail ist außerdem eine Kopie. Sie liegt im Postfach und hat mit den Rechten der Originaldatei nichts mehr zu tun. Wer dort später den Zugriff entzieht, erreicht die verschickte Kopie nicht.</p>
+
+<figure id="kap05-ablageorte" style="break-inside:avoid">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 380" width="680" role="img" aria-labelledby="kap05-ablageorte-t kap05-ablageorte-d"><title id="kap05-ablageorte-t">Wo Dateien und Nachrichten wirklich liegen</title><desc id="kap05-ablageorte-d">Zeigt, wo Dateien und Nachrichten aus Teams, OneDrive und SharePoint tatsächlich gespeichert werden und welche Bereiche außerhalb des SharePoint-Rechtemodells liegen.</desc><defs><marker id="kap05-ablageorte-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="kap05-ablageorte-h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker><marker id="kap05-ablageorte-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker></defs>
+<text x="249" y="22" text-anchor="middle" font-size="13" font-weight="600" style="fill:#2f5d8a">Für Dateien: drei Zugänge, ein System</text>
+<text x="587" y="22" text-anchor="middle" font-size="13" font-weight="600" style="fill:#b8472a">Eigenes Rechtemodell</text>
+<rect x="20" y="112" width="458" height="214" rx="10" fill="#d9e4ef" stroke="#2f5d8a" stroke-width="1.5"/>
+<rect x="20" y="36" width="146" height="54" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="93" y="59" text-anchor="middle" font-size="13" font-weight="600">Team</text>
+<text x="93" y="76" text-anchor="middle" font-size="11" style="fill:#5b6072">mit Microsoft-365-Gruppe</text>
+<line x1="93" y1="90" x2="93" y2="128" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#kap05-ablageorte-a)"/>
+<rect x="26" y="128" width="134" height="146" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="93" y="148" text-anchor="middle" font-size="12.5" font-weight="600">Team-Site</text>
+<text x="93" y="164" text-anchor="middle" font-size="11" style="fill:#5b6072">hängt an der Gruppe</text>
+<rect x="33" y="174" width="120" height="90" rx="5" fill="#d9e4ef" stroke="#2f5d8a" stroke-width="1"/>
+<text x="93" y="192" text-anchor="middle" font-size="11.5" font-weight="600" style="fill:#2f5d8a">Bibliothek</text>
+<rect x="39" y="202" width="108" height="52" rx="3" fill="#ffffff" stroke="#2f5d8a" stroke-width="1"/>
+<text x="93" y="224" text-anchor="middle" font-size="11" font-weight="600">Ordner</text>
+<text x="93" y="240" text-anchor="middle" font-size="10" style="fill:#5b6072">Standardkanal</text>
+<rect x="176" y="36" width="146" height="54" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="249" y="59" text-anchor="middle" font-size="13" font-weight="600">Privater Kanal</text>
+<text x="249" y="76" text-anchor="middle" font-size="11" style="fill:#5b6072">eigener Personenkreis</text>
+<line x1="249" y1="90" x2="249" y2="128" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#kap05-ablageorte-a)"/>
+<rect x="182" y="128" width="134" height="146" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="249" y="148" text-anchor="middle" font-size="12.5" font-weight="600">Eigene Site</text>
+<text x="249" y="164" text-anchor="middle" font-size="11" style="fill:#5b6072">nur für diesen Kanal</text>
+<rect x="189" y="174" width="120" height="90" rx="5" fill="#d9e4ef" stroke="#2f5d8a" stroke-width="1"/>
+<text x="249" y="192" text-anchor="middle" font-size="11.5" font-weight="600" style="fill:#2f5d8a">Bibliothek</text>
+<rect x="195" y="202" width="108" height="52" rx="3" fill="#ffffff" stroke="#2f5d8a" stroke-width="1"/>
+<text x="249" y="224" text-anchor="middle" font-size="11" font-weight="600">Dateien</text>
+<text x="249" y="240" text-anchor="middle" font-size="10" style="fill:#5b6072">des Kanals</text>
+<rect x="332" y="36" width="146" height="54" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="405" y="59" text-anchor="middle" font-size="13" font-weight="600">OneDrive</text>
+<text x="405" y="76" text-anchor="middle" font-size="11" style="fill:#5b6072">pro Nutzer eine Site</text>
+<line x1="405" y1="90" x2="405" y2="128" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#kap05-ablageorte-a)"/>
+<rect x="338" y="128" width="134" height="146" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="405" y="148" text-anchor="middle" font-size="12.5" font-weight="600">Persönliche Site</text>
+<text x="405" y="164" text-anchor="middle" font-size="11" style="fill:#5b6072">ein Eigentümer</text>
+<rect x="345" y="174" width="120" height="90" rx="5" fill="#d9e4ef" stroke="#2f5d8a" stroke-width="1"/>
+<text x="405" y="192" text-anchor="middle" font-size="11.5" font-weight="600" style="fill:#2f5d8a">Bibliothek</text>
+<rect x="351" y="202" width="108" height="52" rx="3" fill="#ffffff" stroke="#2f5d8a" stroke-width="1"/>
+<text x="405" y="224" text-anchor="middle" font-size="11" font-weight="600">Chat-Dateien</text>
+<text x="405" y="240" text-anchor="middle" font-size="10" style="fill:#5b6072">der sendenden Person</text>
+<text x="249" y="296" text-anchor="middle" font-size="13" font-weight="600" style="fill:#2f5d8a">SharePoint-Rechtemodell</text>
+<text x="249" y="314" text-anchor="middle" font-size="11.5">Site-Rollen, Vererbung und Freigabelinks gelten überall gleich</text>
+<line x1="494" y1="10" x2="494" y2="340" stroke="#5b6072" stroke-width="1.4" stroke-dasharray="6 5"/>
+<rect x="510" y="36" width="154" height="122" rx="8" fill="#ffffff" stroke="#b8472a" stroke-width="2"/>
+<text x="587" y="59" text-anchor="middle" font-size="12.5" font-weight="600">Exchange-Postfach</text>
+<text x="587" y="78" text-anchor="middle" font-size="11">E-Mails, Kalender,</text>
+<text x="587" y="93" text-anchor="middle" font-size="11">Anhänge als Kopien</text>
+<text x="587" y="120" text-anchor="middle" font-size="11" style="fill:#b8472a">Rechte am Postfach:</text>
+<text x="587" y="135" text-anchor="middle" font-size="10.5" style="fill:#b8472a">Vollzugriff, Stellvertretung</text>
+<rect x="510" y="174" width="154" height="122" rx="8" fill="#ffffff" stroke="#b8472a" stroke-width="2"/>
+<text x="587" y="197" text-anchor="middle" font-size="12.5" font-weight="600">Teams-Nachrichten</text>
+<text x="587" y="216" text-anchor="middle" font-size="11">liegen im Teams-Dienst</text>
+<text x="587" y="243" text-anchor="middle" font-size="10.5" style="fill:#b8472a">Rechte aus Chat-Teilnahme</text>
+<text x="587" y="258" text-anchor="middle" font-size="10.5" style="fill:#b8472a">oder Mitgliedschaft</text>
+<text x="587" y="273" text-anchor="middle" font-size="10.5" style="fill:#b8472a">in Team oder Kanal</text>
+<text x="587" y="316" text-anchor="middle" font-size="11" style="fill:#5b6072">keine Site-Rollen,</text>
+<text x="587" y="331" text-anchor="middle" font-size="11" style="fill:#5b6072">keine Freigabelinks</text>
+<line x1="24" y1="362" x2="56" y2="362" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#kap05-ablageorte-a)"/>
+<text x="64" y="366" text-anchor="start" class="legend-text">speichert Dateien in dieser Site</text>
+<line x1="300" y1="362" x2="340" y2="362" stroke="#5b6072" stroke-width="1.4" stroke-dasharray="6 5"/>
+<text x="348" y="366" text-anchor="start" class="legend-text">Grenze des SharePoint-Rechtemodells</text>
+</svg>
+<figcaption>Teams und OneDrive sind für Dateien nur andere Zugänge zu SharePoint-Sites; nur Postfächer und Chat-Nachrichten folgen einem eigenen Rechtemodell.</figcaption>
+</figure>
+
+<h2>Site-Rollen und Vererbung</h2>
+
+<p>Eine SharePoint-Gruppe existiert nur innerhalb ihrer Site und nicht in Entra ID. Jede Site bringt drei Standardrollen mit, die als SharePoint-Gruppen angelegt sind:</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Site-Rolle</th><th>Berechtigungsstufe</th><th>Typische Bedeutung</th></tr></thead>
+<tbody>
+<tr><td>Owner</td><td>Vollzugriff</td><td>Inhalte bearbeiten, Mitglieder und Rechte verwalten</td></tr>
+<tr><td>Member</td><td>Bearbeiten</td><td>Dateien anlegen, ändern und löschen</td></tr>
+<tr><td>Visitor</td><td>Lesen</td><td>Dateien ansehen und herunterladen</td></tr>
+</tbody></table></div>
+
+<p>„Member“ bedeutet hier etwas anderes als das Member-Konto im Tenant. Das Member-Konto beschreibt ein reguläres internes Nutzerkonto, die Site-Rolle Member beschreibt ein Bearbeitungsrecht auf einer Site. Auch ein Gast kann auf einer Site die Rolle Member haben, wenn er in die entsprechende SharePoint-Gruppe aufgenommen wird.</p>
+
+<p>Bei Sites, die zu einer Microsoft-365-Gruppe gehören, sind die Rollen mit der Microsoft-365-Gruppe gekoppelt. Die Besitzer der Microsoft-365-Gruppe sind Owner der Site, die Mitglieder der Microsoft-365-Gruppe sind Member der Site. Wer jemanden zum Team hinzufügt, gibt ihm damit Bearbeitungsrechte auf die Dateien des Teams. Die Visitor-Rolle hat keine Entsprechung in der Microsoft-365-Gruppe und wird direkt in SharePoint gepflegt.</p>
+
+<p>Darüber steht noch der <strong>Site-Administrator</strong>, ein Konto mit Vollzugriff auf die gesamte Site, auch auf Bereiche mit abweichenden Rechten. Diese Zuweisung wird leicht übersehen, weil sie nicht in den drei Standard-SharePoint-Gruppen auftaucht. SharePoint-Administratoren können sich selbst dorthin bringen (siehe Kapitel 4, Admin-Rollen).</p>
+
+<p><strong>Vererbung</strong> ist die Standardregel, dass Elemente die Rechte ihres übergeordneten Elements übernehmen. Die Bibliothek erbt von der Site, der Ordner von der Bibliothek, die Datei vom Ordner. Solange niemand eingreift, reicht ein Blick auf die Site, um alle Rechte darin zu kennen. Das ist der Grund, warum das Modell überhaupt beherrschbar ist.</p>
+
+<p>Auf jeder Ebene lässt sich die Vererbung aber unterbrechen. Ein Ordner bekommt dann eigene Berechtigungen, die sich unabhängig von der Site weiterentwickeln. Solche Eingriffe entstehen auf zwei Wegen:</p>
+
+<ol>
+<li><strong>Bewusst:</strong> Jemand richtet für einen Ordner „Personal“ eigene Rechte ein und entfernt die Site-Member.</li>
+<li><strong>Nebenbei:</strong> Jemand gibt eine einzelne Datei per Link frei. Damit erhält die Datei einen eigenen Rechteeintrag, ohne dass jemand aktiv über Vererbung nachgedacht hat.</li>
+</ol>
+
+<p>Der zweite Weg ist der häufigere. In einer lange genutzten Site entstehen so viele kleine Ausnahmen, die in der normalen Dateiansicht nicht auffallen.</p>
+
+<p>Zwei Folgen sind wichtig. Änderungen auf Site-Ebene erreichen Elemente mit eigenen Rechten nicht mehr: Wer jemanden aus der SharePoint-Gruppe der Site-Member entfernt, hat damit nicht den direkten Zugriff auf eine einzeln freigegebene Datei entzogen. Umgekehrt kann eine Datei weiter offen sein als ihr Ordner, denn ein Link auf einer einzelnen Datei öffnet genau diese Datei, auch wenn der Empfänger die Site sonst nicht sehen darf.</p>
+
+<p>Für Ordner mit strengeren Anforderungen ist deshalb eine eigene Site meist die sauberere Lösung. Die Grenze ist dann sichtbar, und die Rollen lassen sich auf einen Blick prüfen. Ein Ordner mit unterbrochener Vererbung sieht dagegen aus wie jeder andere Ordner.</p>
+
+<figure id="kap05-vererbung" style="break-inside:avoid">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 450" width="680" role="img" aria-labelledby="kap05-vererbung-t kap05-vererbung-d"><title id="kap05-vererbung-t">Vererbung und Ausnahmen in einer Site</title><desc id="kap05-vererbung-d">Baum aus Site, Bibliothek, Ordnern und Dateien, in dem die Rechte von oben nach unten fließen und an zwei Stellen abweichen.</desc><defs><marker id="kap05-vererbung-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="kap05-vererbung-h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker><marker id="kap05-vererbung-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker></defs>
+<text x="20" y="32" text-anchor="start" font-size="12" font-weight="600" style="fill:#2f5d8a">Ohne Ausnahme:</text>
+<text x="20" y="48" text-anchor="start" font-size="12" style="fill:#2f5d8a">Rechte sind an der</text>
+<text x="20" y="64" text-anchor="start" font-size="12" style="fill:#2f5d8a">Site ablesbar</text>
+<text x="498" y="32" text-anchor="start" font-size="12" font-weight="600" style="fill:#b8472a">Änderung an der Site</text>
+<text x="498" y="48" text-anchor="start" font-size="12" style="fill:#b8472a">erreicht Ausnahmen</text>
+<text x="498" y="64" text-anchor="start" font-size="12" style="fill:#b8472a">nicht vollständig</text>
+<rect x="200" y="16" width="280" height="62" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="2.5"/>
+<text x="340" y="42" text-anchor="middle" font-size="14" font-weight="600">Site</text>
+<text x="340" y="62" text-anchor="middle" font-size="12" style="fill:#5b6072">Owner · Member · Visitor</text>
+<line x1="340" y1="78" x2="340" y2="112" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#kap05-vererbung-a)"/>
+<text x="348" y="99" text-anchor="start" font-size="11" style="fill:#2f5d8a">erbt</text>
+<rect x="260" y="112" width="160" height="38" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="340" y="136" text-anchor="middle" font-size="13" font-weight="600">Bibliothek</text>
+<line x1="290" y1="150" x2="190" y2="200" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#kap05-vererbung-a)"/>
+<text x="226" y="168" text-anchor="end" font-size="11" style="fill:#2f5d8a">erbt</text>
+<line x1="390" y1="150" x2="510" y2="200" stroke="#b8472a" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#kap05-vererbung-h)"/>
+<text x="470" y="168" text-anchor="start" font-size="11" style="fill:#b8472a">Vererbung getrennt</text>
+<rect x="70" y="200" width="190" height="48" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="165" y="221" text-anchor="middle" font-size="13" font-weight="600">Ordner A</text>
+<text x="165" y="238" text-anchor="middle" font-size="11" style="fill:#5b6072">erbt von der Bibliothek</text>
+<rect x="430" y="200" width="220" height="48" rx="8" fill="#ffffff" stroke="#b8472a" stroke-width="2.5"/>
+<text x="540" y="221" text-anchor="middle" font-size="13" font-weight="600">Ordner B</text>
+<text x="540" y="238" text-anchor="middle" font-size="11" style="fill:#b8472a">Vererbung unterbrochen</text>
+<line x1="540" y1="248" x2="540" y2="280" stroke="#b8472a" stroke-width="1.6" marker-end="url(#kap05-vererbung-h)"/>
+<rect x="440" y="280" width="200" height="58" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/>
+<text x="540" y="304" text-anchor="middle" font-size="12.5" font-weight="600">Eigene Rechteliste</text>
+<text x="540" y="323" text-anchor="middle" font-size="11" style="fill:#5b6072">unabhängig von der Site</text>
+<line x1="125" y1="248" x2="95" y2="290" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#kap05-vererbung-a)"/>
+<line x1="205" y1="248" x2="265" y2="290" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#kap05-vererbung-a)"/>
+<rect x="30" y="290" width="130" height="40" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="95" y="315" text-anchor="middle" font-size="12.5" font-weight="600">Datei</text>
+<rect x="190" y="290" width="170" height="40" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="2.5"/>
+<text x="275" y="315" text-anchor="middle" font-size="12.5" font-weight="600">Datei mit Ausnahme</text>
+<line x1="275" y1="330" x2="275" y2="354" stroke="#b8472a" stroke-width="1.6" marker-end="url(#kap05-vererbung-h)"/>
+<rect x="190" y="354" width="170" height="48" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/>
+<text x="275" y="374" text-anchor="middle" font-size="12.5" font-weight="600">Freigabelink</text>
+<text x="275" y="391" text-anchor="middle" font-size="11" style="fill:#5b6072">eigener Rechteeintrag</text>
+<line x1="24" y1="432" x2="56" y2="432" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#kap05-vererbung-a)"/>
+<text x="64" y="436" text-anchor="start" class="legend-text">geerbte Rechte</text>
+<rect x="190" y="424" width="30" height="16" rx="3" fill="#ffffff" stroke="#b8472a" stroke-width="2"/>
+<text x="228" y="436" text-anchor="start" class="legend-text">Ausnahme mit eigenen Rechten</text>
+</svg>
+<figcaption>Vererbung macht Rechte von der Site aus ablesbar; jede Ausnahme, auch ein einzelner Freigabelink, entkoppelt ein Element davon, sodass Änderungen an der Site es nicht mehr vollständig erreichen.</figcaption>
+</figure>
+
+<h2>Freigabelinks</h2>
+
+<p>Ein <strong>Freigabelink</strong> ist ein Link, der Zugriff auf ein Element gewährt und je nach Art bestimmte Personen, die Organisation oder jeden umfasst. Außer bei „Personen mit vorhandenem Zugriff“ ist der Link also selbst eine Berechtigung und nicht bloß eine Adresse. Das unterscheidet ihn von der normalen Datei-URL, die nur funktioniert, wenn die Rechte schon anderswo bestehen.</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Link-Art</th><th>Wer kommt hinein?</th><th>Anmeldung nötig?</th><th>Bleibt der Personenkreis kontrolliert?</th></tr></thead>
+<tbody>
+<tr><td>Personen mit vorhandenem Zugriff</td><td>Nur wer bereits Rechte hat, der Link gewährt nichts Neues</td><td>Ja</td><td>Ja, er ändert nichts</td></tr>
+<tr><td>Bestimmte Personen</td><td>Namentlich angegebene Identitäten, auch Gäste</td><td>Ja</td><td>Ja, Weiterleiten hilft Dritten nicht</td></tr>
+<tr><td>Personen in der Organisation</td><td>Jedes Member-Konto des Tenants, das den Link hat</td><td>Ja</td><td>Nein, nur durch Weitergabe begrenzt</td></tr>
+<tr><td>Jeder („Anyone“)</td><td>Jeder, der den Link hat, auch ohne Konto</td><td>Nein</td><td>Nein, und ohne Identität im Protokoll</td></tr>
+</tbody></table></div>
+
+<p>Jeder Link trägt zusätzlich eine Stufe wie Anzeigen oder Bearbeiten. Welche Arten überhaupt erlaubt sind, was voreingestellt ist und ob Links ablaufen, legen Admins im SharePoint Admin Center fest, unter den Richtlinien zur Freigabe. Einzelne Sites können strenger sein als der Tenant, aber nicht lockerer. „Anyone“-Links sind in vielen Firmen deshalb abgeschaltet.</p>
+
+<h3>Warum „alle in der Organisation“ gefährlich ist</h3>
+
+<p>Der „Anyone“-Link ist offensichtlich riskant, daher schaut man bei ihm genauer hin. Der Organisationslink ist tückischer, weil er harmlos wirkt. Mehrere Eigenschaften kommen dabei zusammen:</p>
+
+<ul>
+<li><strong>Der Personenkreis ist der ganze Tenant.</strong> In einer großen Firma umfasst „intern“ zehntausende Konten, darunter Praktikanten, Dienstleister mit Member-Konto und kompromittierte Konten.</li>
+<li><strong>Niemand wird benannt.</strong> Der Link enthält keine Liste von Personen. Niemand kann später aus ihm ablesen, wer gemeint war.</li>
+<li><strong>Er breitet sich aus.</strong> Ein Link in einer Mail, einem Wiki oder einem Kanal wird weitergereicht, ohne dass die freigebende Person davon erfährt. Er funktioniert für jedes interne Konto, das ihn erhält.</li>
+<li><strong>Er lebt lange.</strong> Ohne Ablaufrichtlinie bleibt er gültig, oft auch dann noch, wenn das Projekt längst beendet ist.</li>
+<li><strong>Er ist bequem.</strong> Wo er voreingestellt ist, entsteht er ohne bewusste Entscheidung. Die Auswahl der genauen Empfänger kostet zusätzliche Klicks, der Organisationslink keine.</li>
+</ul>
+
+<p>Eine verwandte Falle sitzt nicht in einem Link, sondern direkt in der Rechteliste: die eingebaute Gruppe „Jeder außer externen Benutzern“ (englisch „Everyone except external users“), die jedes interne Konto umfasst. Trägt jemand sie auf einer Site oder einem Ordner ein, ist der Inhalt für die gesamte Firma lesbar und auch auffindbar. Ähnlich wirken öffentliche Teams und Microsoft-365-Gruppen: „öffentlich“ heißt hier offen für den ganzen Tenant.</p>
+
+<h2>Oversharing und was KI daran ändert</h2>
+
+<p><strong>Oversharing</strong> ist der Zustand, in dem mehr Personen Zugriff haben als fachlich gewollt. Es entsteht selten durch einen einzelnen Fehler. Meist sammelt es sich an: ein zu breit vergebener Link, ein öffentliches Team für eine Vertragsablage, ein Ordner, den jemand vor Jahren für eine Abteilung geöffnet hat, ein Mitglied, das nach einem Wechsel in der Gruppe geblieben ist.</p>
+
+<p>Solange Dateien nur über Ordner und direkte Links gefunden werden, bleibt das oft folgenlos. Die Gehaltsliste in einer offenen Site ist zwar lesbar, aber niemand weiß, dass sie dort liegt, und niemand durchsucht von Hand fremde Sites. Faktisch schützt dabei nur die Unauffindbarkeit und kein Recht.</p>
+
+<p>Microsoft 365 Copilot ist ein in die Microsoft-365-Dienste eingebetteter Assistent, der im Namen des Nutzers auf dessen Daten zugreift. KI-Assistenten wie dieser beseitigen den Schutz durch Unauffindbarkeit. Eine Frage wie „Was verdienen die Leute in meinem Team?“ durchsucht alles, was das Konto lesen darf, und fasst die Treffer in einer Antwort zusammen. Die KI umgeht dabei keine Rechte. Sie nutzt genau die Rechte, die schon vergeben waren. Das Problem war vorher da, es wird nur sichtbar. Das gilt genauso für die normale Suche und für jedes Skript, das im Namen eines Nutzers Dateien durchsucht, nur mit weniger Reichweite und Komfort.</p>
+
+<p>Daraus ergibt sich die Reihenfolge für den Einsatz solcher Dienste: Zuerst Freigaben und offene Sites aufräumen, danach die KI einschalten. Filter und Ausschlüsse von der Suche können ein Hilfsmittel sein, ersetzen aber keine korrigierten Rechte, denn die Datei bleibt auf anderem Weg weiterhin lesbar.</p>
+
+<h2>Security Trimming</h2>
+
+<p><strong>Security Trimming</strong> ist die Filterung von Such- und Abrufergebnissen auf das, was die anfragende Identität sehen darf. Die Suche in SharePoint, Teams und Microsoft 365, die Graph API und die darauf aufbauenden KI-Dienste prüfen die Rechte zum Zeitpunkt der Abfrage. Treffer, auf die die Identität keinen Zugriff hat, erscheinen nicht.</p>
+
+<p>Zwei Nutzer erhalten also für dieselbe Suchanfrage unterschiedliche Ergebnisse. Zwei Dinge folgen daraus. Security Trimming ist kein eigenes Rechtesystem, sondern eine Anwendung der vorhandenen Rechte; es kann Oversharing nicht ausgleichen, weil es zu breite Rechte für korrekt hält. Und die Filterung braucht eine Identität, gegen die sie prüft. Genau hier unterscheiden sich die beiden Berechtigungsarten der Graph API (siehe Kapitel 3, Die drei Rechtesysteme).</p>
+
+<p>Bei einer <strong>Delegierten Berechtigung</strong> handelt die App im Namen eines angemeldeten Nutzers. Wirksam ist die Schnittmenge aus App-Recht und Nutzerrecht. Auch <code>Files.Read.All</code> wirkt delegiert daher nicht auf „alle Dateien“, sondern auf alle Dateien, die dieser Nutzer lesen darf. Der Name täuscht an dieser Stelle. Das Recht steht im Token in <code>scp</code>.</p>
+
+<p>Bei einer <strong>Anwendungsberechtigung</strong> gibt es keinen Nutzer. Die App handelt als sie selbst, und ihr Recht gilt für den ganzen Tenant. <code>Sites.Read.All</code> als Anwendungsberechtigung liest jede Site, einschließlich aller OneDrives und unabhängig davon, wer sie freigegeben hat. Eine Filterung auf einen Personenkreis findet nicht statt, denn das Recht selbst lautet „alles“. Das Recht steht im Token in <code>roles</code>.</p>
+
+<p>Das hat eine praktische Konsequenz für selbst gebaute Assistenten und Suchanwendungen. Baut jemand eine App, die Dokumente aus SharePoint indexiert und über eine Chat-Oberfläche anbietet, muss die App eine dieser Fragen beantworten: Mit wessen Rechten liest sie? Läuft sie mit einer Anwendungsberechtigung und antwortet jedem Nutzer aus demselben Index, hat sie das Security Trimming faktisch abgeschaltet. Jeder Nutzer sieht dann, was die App sehen darf, und nicht, was er selbst sehen darf. Die Filterung müsste die App selbst nachbauen, inklusive aller Änderungen an Rechten nach der Indexierung.</p>
+
+<figure id="kap05-delegiert-vs-anwendung" style="break-inside:avoid">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 505" width="680" role="img" aria-labelledby="kap05-delegiert-vs-anwendung-t kap05-delegiert-vs-anwendung-d"><title id="kap05-delegiert-vs-anwendung-t">Delegierte Berechtigung und Anwendungsberechtigung im Vergleich</title><desc id="kap05-delegiert-vs-anwendung-d">Stellt nebeneinander dar, welche Dateien eine App beim gleichen Graph-Aufruf erreicht, einmal delegiert im Namen eines Nutzers, einmal mit Anwendungsberechtigung.</desc><defs><marker id="kap05-delegiert-vs-anwendung-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="kap05-delegiert-vs-anwendung-h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker><marker id="kap05-delegiert-vs-anwendung-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker></defs>
+<rect x="15" y="14" width="315" height="454" rx="10" fill="none" stroke="#c8ccd6" stroke-width="1"/>
+<text x="172" y="38" text-anchor="middle" font-size="14" font-weight="600" style="fill:#2f5d8a">Delegierte Berechtigung</text>
+<rect x="350" y="14" width="315" height="454" rx="10" fill="none" stroke="#c8ccd6" stroke-width="1"/>
+<text x="508" y="38" text-anchor="middle" font-size="14" font-weight="600" style="fill:#b8472a">Anwendungsberechtigung</text>
+<circle cx="90" cy="85" r="30" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="90" y="89" text-anchor="middle" font-size="12" font-weight="600">Nutzer</text>
+<circle cx="255" cy="85" r="30" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="255" y="89" text-anchor="middle" font-size="12" font-weight="600">App</text>
+<line x1="120" y1="85" x2="225" y2="85" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#kap05-delegiert-vs-anwendung-a)"/>
+<text x="172" y="77" text-anchor="middle" font-size="11" style="fill:#2f5d8a">im Namen von</text>
+<circle cx="425" cy="85" r="30" fill="#ffffff" stroke="#5b6072" stroke-width="1.2" stroke-dasharray="4 3"/>
+<text x="425" y="82" text-anchor="middle" font-size="11" style="fill:#5b6072">kein</text>
+<text x="425" y="96" text-anchor="middle" font-size="11" style="fill:#5b6072">Nutzer</text>
+<circle cx="590" cy="85" r="30" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="590" y="89" text-anchor="middle" font-size="12" font-weight="600">App</text>
+<text x="508" y="81" text-anchor="middle" font-size="11" style="fill:#b8472a">handelt als</text>
+<text x="508" y="95" text-anchor="middle" font-size="11" style="fill:#b8472a">sie selbst</text>
+<line x1="255" y1="115" x2="255" y2="140" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#kap05-delegiert-vs-anwendung-a)"/>
+<line x1="590" y1="115" x2="590" y2="140" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#kap05-delegiert-vs-anwendung-a)"/>
+<rect x="30" y="140" width="285" height="52" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="172" y="161" text-anchor="middle" font-size="12.5" font-weight="600">Access Token</text>
+<text x="172" y="179" text-anchor="middle" font-size="11.5" style="fill:#2f5d8a;font-family:ui-monospace,Menlo,Consolas,monospace">scp: Files.Read.All</text>
+<line x1="172" y1="192" x2="172" y2="222" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#kap05-delegiert-vs-anwendung-a)"/>
+<text x="180" y="212" text-anchor="start" font-size="11" style="fill:#5b6072">Graph-Aufruf</text>
+<rect x="365" y="140" width="285" height="52" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="508" y="161" text-anchor="middle" font-size="12.5" font-weight="600">Access Token</text>
+<text x="508" y="179" text-anchor="middle" font-size="11.5" style="fill:#b8472a;font-family:ui-monospace,Menlo,Consolas,monospace">roles: Sites.Read.All</text>
+<line x1="508" y1="192" x2="508" y2="222" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#kap05-delegiert-vs-anwendung-a)"/>
+<text x="516" y="212" text-anchor="start" font-size="11" style="fill:#5b6072">Graph-Aufruf</text>
+<rect x="30" y="222" width="285" height="70" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="172" y="244" text-anchor="middle" font-size="12.5" font-weight="600">Security Trimming</text>
+<text x="172" y="262" text-anchor="middle" font-size="11.5" style="fill:#2f5d8a">anfragende Identität: der Nutzer</text>
+<text x="172" y="279" text-anchor="middle" font-size="10.5" style="fill:#5b6072">wirksam: Schnittmenge aus App- und Nutzerrecht</text>
+<rect x="365" y="222" width="285" height="70" rx="8" fill="#ffffff" stroke="#b8472a" stroke-width="2"/>
+<text x="508" y="244" text-anchor="middle" font-size="12.5" font-weight="600">Security Trimming</text>
+<text x="508" y="262" text-anchor="middle" font-size="11.5" style="fill:#b8472a">anfragende Identität: die App</text>
+<text x="508" y="279" text-anchor="middle" font-size="10.5" style="fill:#5b6072">keine Prüfung gegen Nutzerrechte</text>
+<line x1="172" y1="292" x2="172" y2="322" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#kap05-delegiert-vs-anwendung-a)"/>
+<line x1="508" y1="292" x2="508" y2="322" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#kap05-delegiert-vs-anwendung-a)"/>
+<rect x="30" y="322" width="285" height="130" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="172" y="344" text-anchor="middle" font-size="12" font-weight="600">Sites und OneDrives des Tenants</text>
+<rect x="48" y="356" width="24" height="18" rx="2" fill="#2f5d8a" stroke="#2f5d8a" stroke-width="1"/>
+<rect x="80" y="356" width="24" height="18" rx="2" fill="#2f5d8a" stroke="#2f5d8a" stroke-width="1"/>
+<rect x="112" y="356" width="24" height="18" rx="2" fill="#2f5d8a" stroke="#2f5d8a" stroke-width="1"/>
+<rect x="144" y="356" width="24" height="18" rx="2" fill="#ffffff" stroke="#c8ccd6" stroke-width="1"/>
+<rect x="176" y="356" width="24" height="18" rx="2" fill="#ffffff" stroke="#c8ccd6" stroke-width="1"/>
+<rect x="208" y="356" width="24" height="18" rx="2" fill="#ffffff" stroke="#c8ccd6" stroke-width="1"/>
+<rect x="240" y="356" width="24" height="18" rx="2" fill="#ffffff" stroke="#c8ccd6" stroke-width="1"/>
+<rect x="272" y="356" width="24" height="18" rx="2" fill="#ffffff" stroke="#c8ccd6" stroke-width="1"/>
+<rect x="48" y="382" width="24" height="18" rx="2" fill="#ffffff" stroke="#c8ccd6" stroke-width="1"/>
+<rect x="80" y="382" width="24" height="18" rx="2" fill="#ffffff" stroke="#c8ccd6" stroke-width="1"/>
+<rect x="112" y="382" width="24" height="18" rx="2" fill="#ffffff" stroke="#c8ccd6" stroke-width="1"/>
+<rect x="144" y="382" width="24" height="18" rx="2" fill="#ffffff" stroke="#c8ccd6" stroke-width="1"/>
+<rect x="176" y="382" width="24" height="18" rx="2" fill="#ffffff" stroke="#c8ccd6" stroke-width="1"/>
+<rect x="208" y="382" width="24" height="18" rx="2" fill="#ffffff" stroke="#c8ccd6" stroke-width="1"/>
+<rect x="240" y="382" width="24" height="18" rx="2" fill="#ffffff" stroke="#c8ccd6" stroke-width="1"/>
+<rect x="272" y="382" width="24" height="18" rx="2" fill="#ffffff" stroke="#c8ccd6" stroke-width="1"/>
+<text x="172" y="428" text-anchor="middle" font-size="11" font-weight="600" style="fill:#2f5d8a">erreichbar: nur, was dieser Nutzer lesen darf</text>
+<rect x="365" y="322" width="285" height="130" rx="8" fill="#ffffff" stroke="#b8472a" stroke-width="2"/>
+<text x="508" y="344" text-anchor="middle" font-size="12" font-weight="600">Sites und OneDrives des Tenants</text>
+<rect x="384" y="356" width="24" height="18" rx="2" fill="#b8472a" stroke="#b8472a" stroke-width="1"/>
+<rect x="416" y="356" width="24" height="18" rx="2" fill="#b8472a" stroke="#b8472a" stroke-width="1"/>
+<rect x="448" y="356" width="24" height="18" rx="2" fill="#b8472a" stroke="#b8472a" stroke-width="1"/>
+<rect x="480" y="356" width="24" height="18" rx="2" fill="#b8472a" stroke="#b8472a" stroke-width="1"/>
+<rect x="512" y="356" width="24" height="18" rx="2" fill="#b8472a" stroke="#b8472a" stroke-width="1"/>
+<rect x="544" y="356" width="24" height="18" rx="2" fill="#b8472a" stroke="#b8472a" stroke-width="1"/>
+<rect x="576" y="356" width="24" height="18" rx="2" fill="#b8472a" stroke="#b8472a" stroke-width="1"/>
+<rect x="608" y="356" width="24" height="18" rx="2" fill="#b8472a" stroke="#b8472a" stroke-width="1"/>
+<rect x="384" y="382" width="24" height="18" rx="2" fill="#b8472a" stroke="#b8472a" stroke-width="1"/>
+<rect x="416" y="382" width="24" height="18" rx="2" fill="#b8472a" stroke="#b8472a" stroke-width="1"/>
+<rect x="448" y="382" width="24" height="18" rx="2" fill="#b8472a" stroke="#b8472a" stroke-width="1"/>
+<rect x="480" y="382" width="24" height="18" rx="2" fill="#b8472a" stroke="#b8472a" stroke-width="1"/>
+<rect x="512" y="382" width="24" height="18" rx="2" fill="#b8472a" stroke="#b8472a" stroke-width="1"/>
+<rect x="544" y="382" width="24" height="18" rx="2" fill="#b8472a" stroke="#b8472a" stroke-width="1"/>
+<rect x="576" y="382" width="24" height="18" rx="2" fill="#b8472a" stroke="#b8472a" stroke-width="1"/>
+<rect x="608" y="382" width="24" height="18" rx="2" fill="#b8472a" stroke="#b8472a" stroke-width="1"/>
+<text x="508" y="428" text-anchor="middle" font-size="11" font-weight="600" style="fill:#b8472a">erreichbar: alle Sites und OneDrives des Tenants</text>
+<rect x="24" y="484" width="16" height="12" rx="2" fill="#2f5d8a" stroke="#2f5d8a" stroke-width="1"/>
+<rect x="44" y="484" width="16" height="12" rx="2" fill="#b8472a" stroke="#b8472a" stroke-width="1"/>
+<text x="68" y="494" text-anchor="start" class="legend-text">für die App erreichbar</text>
+<rect x="230" y="484" width="16" height="12" rx="2" fill="#ffffff" stroke="#c8ccd6" stroke-width="1"/>
+<text x="254" y="494" text-anchor="start" class="legend-text">nicht erreichbar</text>
+</svg>
+<figcaption>Security Trimming prüft immer gegen die anfragende Identität; bei einer Anwendungsberechtigung ist das die App selbst, deren Recht den ganzen Tenant umfasst.</figcaption>
+</figure>
+
+<h2>Sites.Selected: Skripte begrenzen</h2>
+
+<p>Für Automatisierung ist eine Delegierte Berechtigung oft unpassend, weil kein Mensch angemeldet ist. Ein Skript, das nachts Berichte in eine Bibliothek schreibt, braucht aber auch nicht jede Site des Tenants. Fließen seine Anmeldedaten ab, wäre mit <code>Sites.ReadWrite.All</code> jede Datei der Firma gefährdet.</p>
+
+<p>Sites.Selected löst das in zwei Schritten. Die Berechtigung erlaubt zunächst nichts. Erst eine zusätzliche Freigabe auf einer konkreten Site gibt der App dort Rechte.</p>
+
+<ol>
+<li>Die App-Registrierung fordert Sites.Selected als Anwendungsberechtigung an, und ein Admin erteilt dafür Admin Consent. Danach trägt das Token den Eintrag in <code>roles</code>, kann aber noch auf keine Site zugreifen.</li>
+<li>Eine dafür berechtigte Identität, etwa mit <code>Sites.FullControl.All</code>, gibt der App die gewünschte Site frei. Die ID der Site liefert vorher ein Aufruf wie <code>GET /sites/contoso.sharepoint.com:/sites/projekt-a</code>.</li>
+</ol>
+
+<pre><code class="language-http">POST https://graph.microsoft.com/v1.0/sites/&lt;site-id&gt;/permissions
+Content-Type: application/json
+
+{
+  "roles": ["write"],
+  "grantedToIdentities": [
+    { "application": { "id": "&lt;client-id&gt;", "displayName": "meine-app" } }
+  ]
+}</code></pre>
+
+<figure id="kap05-sites-selected" style="break-inside:avoid">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 292" width="680" role="img" aria-labelledby="kap05-sites-selected-t kap05-sites-selected-d"><title id="kap05-sites-selected-t">Sites.Selected in zwei Schritten</title><desc id="kap05-sites-selected-d">Zeigt die zwei Schritte, mit denen eine App über Sites.Selected Zugriff auf genau eine Site erhält.</desc><defs><marker id="kap05-sites-selected-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="kap05-sites-selected-h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker><marker id="kap05-sites-selected-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker></defs>
+<rect x="15" y="16" width="200" height="158" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="115" y="38" text-anchor="middle" font-size="12" font-weight="600" style="fill:#2f5d8a">Schritt 1</text>
+<text x="115" y="56" text-anchor="middle" font-size="13" font-weight="600">Admin Consent</text>
+<text x="115" y="80" text-anchor="middle" font-size="11.5">App-Registrierung fordert</text>
+<text x="115" y="96" text-anchor="middle" font-size="11.5">Sites.Selected an, ein Admin</text>
+<text x="115" y="112" text-anchor="middle" font-size="11.5">erteilt Admin Consent.</text>
+<text x="115" y="144" text-anchor="middle" font-size="10.5" style="fill:#2f5d8a;font-family:ui-monospace,Menlo,Consolas,monospace">roles: Sites.Selected</text>
+<rect x="240" y="16" width="200" height="158" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="340" y="38" text-anchor="middle" font-size="12" font-weight="600" style="fill:#2f5d8a">Schritt 2</text>
+<text x="340" y="56" text-anchor="middle" font-size="13" font-weight="600">Freigabe je Site</text>
+<text x="340" y="80" text-anchor="middle" font-size="11.5">Eine berechtigte Identität</text>
+<text x="340" y="96" text-anchor="middle" font-size="11.5">gibt der App eine konkrete</text>
+<text x="340" y="112" text-anchor="middle" font-size="11.5">Site frei.</text>
+<text x="340" y="144" text-anchor="middle" font-size="10.5" style="fill:#2f5d8a;font-family:ui-monospace,Menlo,Consolas,monospace">POST /sites/&lt;site-id&gt;</text>
+<text x="340" y="159" text-anchor="middle" font-size="10.5" style="fill:#2f5d8a;font-family:ui-monospace,Menlo,Consolas,monospace">/permissions</text>
+<rect x="465" y="16" width="200" height="158" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="565" y="38" text-anchor="middle" font-size="12" font-weight="600" style="fill:#2f5d8a">Ergebnis</text>
+<text x="565" y="56" text-anchor="middle" font-size="13" font-weight="600">Zugriff auf genau eine Site</text>
+<text x="565" y="80" text-anchor="middle" font-size="11.5">Die App hat Rechte auf</text>
+<text x="565" y="96" text-anchor="middle" font-size="11.5">dieser Site, alle anderen</text>
+<text x="565" y="112" text-anchor="middle" font-size="11.5">Sites bleiben gesperrt.</text>
+<line x1="215" y1="95" x2="240" y2="95" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#kap05-sites-selected-a)"/>
+<line x1="440" y1="95" x2="465" y2="95" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#kap05-sites-selected-a)"/>
+<text x="340" y="198" text-anchor="middle" font-size="11" style="fill:#5b6072">Was die App in diesem Moment erreicht</text>
+<rect x="15" y="210" width="56" height="44" rx="4" fill="#ffffff" stroke="#5b6072" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="43" y="229" text-anchor="middle" font-size="11" style="fill:#5b6072">Site 1</text>
+<text x="43" y="244" text-anchor="middle" font-size="10" style="fill:#5b6072">gesperrt</text>
+<rect x="87" y="210" width="56" height="44" rx="4" fill="#ffffff" stroke="#5b6072" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="115" y="229" text-anchor="middle" font-size="11" style="fill:#5b6072">Site 2</text>
+<text x="115" y="244" text-anchor="middle" font-size="10" style="fill:#5b6072">gesperrt</text>
+<rect x="159" y="210" width="56" height="44" rx="4" fill="#ffffff" stroke="#5b6072" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="187" y="229" text-anchor="middle" font-size="11" style="fill:#5b6072">Site 3</text>
+<text x="187" y="244" text-anchor="middle" font-size="10" style="fill:#5b6072">gesperrt</text>
+<rect x="240" y="210" width="56" height="44" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="2.2"/>
+<text x="268" y="229" text-anchor="middle" font-size="11" font-weight="600">Site 1</text>
+<text x="268" y="244" text-anchor="middle" font-size="10" style="fill:#b8472a">Freigabe</text>
+<rect x="312" y="210" width="56" height="44" rx="4" fill="#ffffff" stroke="#5b6072" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="340" y="229" text-anchor="middle" font-size="11" style="fill:#5b6072">Site 2</text>
+<text x="340" y="244" text-anchor="middle" font-size="10" style="fill:#5b6072">gesperrt</text>
+<rect x="384" y="210" width="56" height="44" rx="4" fill="#ffffff" stroke="#5b6072" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="412" y="229" text-anchor="middle" font-size="11" style="fill:#5b6072">Site 3</text>
+<text x="412" y="244" text-anchor="middle" font-size="10" style="fill:#5b6072">gesperrt</text>
+<rect x="465" y="210" width="56" height="44" rx="4" fill="#2f5d8a" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="493" y="229" text-anchor="middle" font-size="11" font-weight="600" style="fill:#ffffff">Site 1</text>
+<text x="493" y="244" text-anchor="middle" font-size="10" style="fill:#ffffff">Rechte</text>
+<rect x="537" y="210" width="56" height="44" rx="4" fill="#ffffff" stroke="#5b6072" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="565" y="229" text-anchor="middle" font-size="11" style="fill:#5b6072">Site 2</text>
+<text x="565" y="244" text-anchor="middle" font-size="10" style="fill:#5b6072">gesperrt</text>
+<rect x="609" y="210" width="56" height="44" rx="4" fill="#ffffff" stroke="#5b6072" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="637" y="229" text-anchor="middle" font-size="11" style="fill:#5b6072">Site 3</text>
+<text x="637" y="244" text-anchor="middle" font-size="10" style="fill:#5b6072">gesperrt</text>
+<text x="115" y="276" text-anchor="middle" font-size="12" font-weight="600" style="fill:#b8472a">Consent allein: keine Site</text>
+<text x="340" y="276" text-anchor="middle" font-size="12" style="fill:#5b6072">wird für diese Site eingetragen</text>
+<text x="565" y="276" text-anchor="middle" font-size="12" font-weight="600" style="fill:#2f5d8a">nur diese eine Site</text>
+</svg>
+<figcaption>Admin Consent allein erlaubt nichts; erst die Freigabe je Site schafft Zugriff.</figcaption>
+</figure>
+
+<p>Das Ergebnis ist ein Skript, das bei einem Abfluss seiner Anmeldedaten nur diese eine Site gefährdet. Der gleiche Weg funktioniert auch für eine Managed Identity, der die Berechtigung zugewiesen wurde. Die Trennung ist auch organisatorisch nützlich: Admin Consent erteilt die zentrale IT einmalig, die Freigabe jeder Site bleibt eine einzelne, nachvollziehbare Entscheidung. <code>GET /sites/&lt;site-id&gt;/permissions</code> zeigt, welche Apps auf diese Weise auf einer Site eingetragen sind.</p>
+
+<p>Sites.Selected gilt nur für Sites, also auch für OneDrive, aber nicht für Postfächer oder Chats. Für Exchange gibt es eigene Mechanismen, mit denen sich Anwendungsberechtigungen auf bestimmte Postfächer einschränken lassen. Ohne sie gilt zum Beispiel <code>Mail.Read</code> als Anwendungsberechtigung für jedes Postfach im Tenant.</p>
+
+<h2>„Wer hat Zugriff?“ prüfen</h2>
+
+<p>Für diese Frage gibt es mehrere Werkzeuge, und jedes zeigt einen anderen Ausschnitt.</p>
+
+<ul>
+<li><strong>Auf der Datei oder dem Ordner:</strong> Der Dialog „Zugriff verwalten“ zeigt direkt berechtigte Personen, Gruppen und vorhandene Links. Über die Graph API, die eine Bibliothek als „Drive“ bezeichnet, liefert <code>GET /drives/&lt;drive-id&gt;/items/&lt;item-id&gt;/permissions</code> dieselbe Art von Information.</li>
+<li><strong>Auf der Site:</strong> Die Site-Einstellungen zeigen unter den Site-Berechtigungen die SharePoint-Gruppen. In den erweiterten Berechtigungen beantwortet „Berechtigungen prüfen“ die Frage für eine einzelne Person.</li>
+<li><strong>Für den ganzen Tenant:</strong> Das SharePoint Admin Center zeigt aktive Sites mit Besitzern und Mitgliedern und, je nach Lizenz, Berichte über Links und breit freigegebene Inhalte.</li>
+<li><strong>Für Apps:</strong> Im Entra Admin Center zeigt eine Enterprise Application unter den Berechtigungen, welche Rechte sie im Tenant hat. So fallen Apps mit <code>Sites.Read.All</code> oder ähnlich breiten Rechten auf, allerdings App für App.</li>
+<li><strong>Für die Vergangenheit:</strong> Das dienstübergreifende Audit in Microsoft Purview zeigt, wer tatsächlich auf Dateien zugegriffen oder Links erzeugt hat, in lizenzabhängigem Umfang (siehe Kapitel 4, Admin-Rollen).</li>
+</ul>
+
+<p>Die Antworten daraus sind nützlich, aber lückenhaft:</p>
+
+<ul>
+<li><strong>Anwendungsberechtigungen fehlen im Dateidialog.</strong> „Zugriff verwalten“ zeigt keine App, die über <code>Sites.Read.All</code> alles lesen darf. Der Dialog kann eine kurze, harmlos wirkende Liste zeigen, obwohl ein Skript die Datei jederzeit lesen kann. Das ist die wichtigste Lücke.</li>
+<li><strong>Gruppen sind noch nicht aufgelöst.</strong> Ein Eintrag „Projekt-A-Mitglieder“ oder „Jeder außer externen Benutzern“ kann für drei oder dreißigtausend Konten stehen. Die Mitgliedschaft muss getrennt geprüft werden und kann sich morgen ändern.</li>
+<li><strong>Links benennen keine Personen.</strong> Bei einem Organisationslink oder „Anyone“-Link zeigt die Prüfung nur, dass er existiert. Wer ihn hat, lässt sich nicht ablesen, höchstens nachträglich aus dem Protokoll, und bei „Anyone“ auch dort nicht personenbezogen.</li>
+<li><strong>Admins erscheinen nicht immer.</strong> Rollen wie SharePoint Administrator können sich Zugang verschaffen, ohne vorab auf der Site zu stehen.</li>
+<li><strong>Prüfungen sehen nur den Ort, nicht die Kopien.</strong> Heruntergeladene Dateien, Mail-Anhänge und per OneDrive synchronisierte lokale Kopien liegen außerhalb des Modells. Ein entzogenes Recht löscht sie nicht (siehe Kapitel 6, Geräte und Zugriffsregeln).</li>
+<li><strong>Es gibt keine Gesamtsicht auf Ausnahmen.</strong> Die Dateiansicht zeigt nicht, wo die Vererbung unterbrochen ist. Über eine ganze Site hinweg braucht es dafür ein Skript oder einen lizenzabhängigen Bericht.</li>
+</ul>
+
+<p>Die ehrliche Antwort auf „Wer hat Zugriff auf diese Datei?“ besteht daher aus mehreren Teilen: die Einträge am Element, die aufgelösten Gruppen, die offenen Links, die Site-Administratoren, die Admin-Rollen, die sich Zugang verschaffen können, und alle Apps mit tenantweiten Anwendungsberechtigungen. Erst alle zusammen ergeben das Bild, und auch das gilt nur für den Moment der Prüfung. Kopien wie heruntergeladene Dateien und Mail-Anhänge bleiben dabei außerhalb.</p>
+
+<figure id="kap05-zugriffsquellen" style="break-inside:avoid">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 385" width="680" role="img" aria-labelledby="kap05-zugriffsquellen-t kap05-zugriffsquellen-d"><title id="kap05-zugriffsquellen-t">Quellen des Zugriffs auf eine Datei</title><desc id="kap05-zugriffsquellen-d">Zeigt eine Datei in der Mitte und darum die Quellen, aus denen sich der Zugriff auf sie ergibt.</desc><defs><marker id="kap05-zugriffsquellen-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="kap05-zugriffsquellen-h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker><marker id="kap05-zugriffsquellen-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker></defs>
+<rect x="15" y="16" width="225" height="318" rx="10" fill="none" stroke="#2f5d8a" stroke-width="1"/>
+<rect x="440" y="16" width="225" height="318" rx="10" fill="none" stroke="#b8472a" stroke-width="1" stroke-dasharray="6 4"/>
+<text x="127" y="40" text-anchor="middle" font-size="13" font-weight="600" style="fill:#2f5d8a">Zeigt der Dialog</text>
+<text x="127" y="57" text-anchor="middle" font-size="12" style="fill:#2f5d8a">„Zugriff verwalten“</text>
+<text x="552" y="40" text-anchor="middle" font-size="13" font-weight="600" style="fill:#b8472a">Zeigt der Dialog nicht</text>
+<text x="552" y="57" text-anchor="middle" font-size="12" style="fill:#b8472a">„Zugriff verwalten“</text>
+<rect x="30" y="74" width="195" height="72" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="127" y="105" text-anchor="middle" font-size="13" font-weight="600">Einträge am Element</text>
+<text x="127" y="124" text-anchor="middle" font-size="11" style="fill:#5b6072">direkt berechtigte Personen</text>
+<rect x="30" y="160" width="195" height="72" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="127" y="191" text-anchor="middle" font-size="13" font-weight="600">Gruppen</text>
+<text x="127" y="210" text-anchor="middle" font-size="11" style="fill:#5b6072">ohne aufgelöste Mitglieder</text>
+<rect x="30" y="246" width="195" height="72" rx="8" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/>
+<text x="127" y="277" text-anchor="middle" font-size="13" font-weight="600">Links</text>
+<text x="127" y="296" text-anchor="middle" font-size="11" style="fill:#5b6072">ohne Empfänger</text>
+<rect x="455" y="88" width="195" height="76" rx="8" fill="#ffffff" stroke="#b8472a" stroke-width="2"/>
+<text x="552" y="120" text-anchor="middle" font-size="13" font-weight="600">Site-Administratoren</text>
+<text x="552" y="139" text-anchor="middle" font-size="11" style="fill:#5b6072">Vollzugriff auf die gesamte Site</text>
+<rect x="455" y="204" width="195" height="92" rx="8" fill="#ffffff" stroke="#b8472a" stroke-width="2"/>
+<text x="552" y="235" text-anchor="middle" font-size="13" font-weight="600">Apps</text>
+<text x="552" y="254" text-anchor="middle" font-size="11" style="fill:#5b6072">mit tenantweiten</text>
+<text x="552" y="270" text-anchor="middle" font-size="11" style="fill:#5b6072">Anwendungsberechtigungen</text>
+<text x="340" y="138" text-anchor="middle" font-size="11" style="fill:#5b6072">Quellen des Zugriffs</text>
+<rect x="290" y="150" width="100" height="92" rx="6" fill="#d9e4ef" stroke="#2f5d8a" stroke-width="2.5"/>
+<text x="340" y="201" text-anchor="middle" font-size="15" font-weight="600">Datei</text>
+<line x1="225" y1="110" x2="290" y2="170" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#kap05-zugriffsquellen-a)"/>
+<line x1="225" y1="196" x2="290" y2="196" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#kap05-zugriffsquellen-a)"/>
+<line x1="225" y1="282" x2="290" y2="222" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#kap05-zugriffsquellen-a)"/>
+<line x1="455" y1="126" x2="390" y2="176" stroke="#b8472a" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#kap05-zugriffsquellen-h)"/>
+<line x1="455" y1="250" x2="390" y2="216" stroke="#b8472a" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#kap05-zugriffsquellen-h)"/>
+<line x1="24" y1="362" x2="56" y2="362" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#kap05-zugriffsquellen-a)"/>
+<text x="64" y="366" text-anchor="start" class="legend-text">Zugriff, im Dialog sichtbar</text>
+<line x1="270" y1="362" x2="302" y2="362" stroke="#b8472a" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#kap05-zugriffsquellen-h)"/>
+<text x="310" y="366" text-anchor="start" class="legend-text">Zugriff besteht, erscheint im Dialog nicht</text>
+</svg>
+<figcaption>Welche dieser Quellen zeigt der Dateidialog, und welche nicht? Er zeigt Einträge am Element, Gruppen ohne aufgelöste Mitglieder und Links ohne Empfänger; Site-Administratoren und Apps zeigt er nicht.</figcaption>
+</figure>
+<nav style="display:flex;justify-content:space-between;gap:1rem;margin-top:3rem;border-top:1px solid var(--rule);padding-top:1rem;font-family:'Helvetica Neue',Arial,sans-serif;font-size:.9rem"><span><a href="04-admin-rollen.html">← Zurück</a></span><a href="index.html">Übersicht</a><span><a href="06-geraete-zugriff.html">Weiter →</a></span></nav>
+</body>
+</html>

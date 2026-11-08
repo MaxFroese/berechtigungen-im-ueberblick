@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>16. Dataverse: Datenmodell und Sicherheitsmodell</title>
+<style>
+:root { --bg:#fafaf7; --text:#1f2230; --muted:#5b6072; --accent:#2f5d8a;
+  --accent-soft:#d9e4ef; --leader:#b8472a; --node-fill:#ffffff;
+  --node-stroke:#2f5d8a; --rule:#c8ccd6; --code-bg:#eef1f5; }
+html,body { background:var(--bg); color:var(--text);
+  font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+  line-height:1.65; font-size:18px; }
+body { max-width:760px; margin:3rem auto 6rem; padding:0 1.5rem; }
+h1 { font-size:2rem; line-height:1.2; margin:0 0 2rem;
+  border-bottom:1px solid var(--rule); padding-bottom:0.6rem; }
+h2 { font-size:1.35rem; margin-top:2.4rem; margin-bottom:0.8rem;
+  color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif;
+  font-weight:600; letter-spacing:0.01em; }
+p { margin:0 0 1.1rem; }
+figure { margin:2rem auto; text-align:center; }
+figure svg { max-width:100%; height:auto; display:block; margin:0 auto; }
+figcaption { font-family:"Helvetica Neue",Arial,sans-serif; font-size:0.85rem;
+  color:var(--muted); margin-top:0.6rem; text-align:center; }
+svg text { font-family:"Helvetica Neue",Arial,sans-serif; fill:var(--text); }
+.legend-text { font-size:11px; fill:var(--muted); }
+pre { background:var(--code-bg); padding:0.9rem 1.1rem; overflow-x:auto;
+  border-radius:6px; font-size:0.82em; }
+code { background:var(--code-bg); font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:0.85em; padding:0.1em 0.3em; border-radius:3px; }
+pre code { background:none; padding:0; }
+.table-wrap { overflow-x:auto; margin:1.5rem 0; }
+table { border-collapse:collapse; width:100%; font-size:0.85em; line-height:1.45; }
+th { text-align:left; color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif;
+  font-weight:600; border-bottom:2px solid var(--accent); padding:0.45rem 0.6rem;
+  vertical-align:bottom; }
+td { border-bottom:1px solid var(--rule); padding:0.45rem 0.6rem; vertical-align:top; }
+tr { break-inside:avoid; }
+</style>
+</head>
+<body>
+<h1>16. Dataverse: Datenmodell und Sicherheitsmodell</h1>
+
+<p>Dataverse ist die Datenbank einer Power-Platform-Umgebung. Für Entwickler ist sie zunächst eine relationale Datenbank mit Tabellen, Spalten und Beziehungen, erreichbar über eine REST-API. Der eigentliche Unterschied zu einer SharePoint-Liste oder einer SQL-Datenbank liegt woanders: Dataverse bringt ein eigenes, fein abgestuftes Rechtemodell mit, das jede Anfrage prüft, egal ob sie aus einer App, einem Flow, einem Agenten oder einem Skript kommt. Wer dieses Modell versteht, kann Fragen beantworten wie „Warum sieht die Vertriebsleitung diesen Datensatz, der Kollege aber nicht?“.</p>
+
+<h2>Das Datenmodell</h2>
+
+<p>Die Begriffe in der Oberfläche haben sich vor einigen Jahren geändert. In APIs und SDKs leben die alten Namen weiter, deshalb hilft eine kleine Übersetzung:</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Oberfläche</th><th>Früher und in APIs</th></tr></thead>
+<tbody>
+<tr><td>Tabelle</td><td>Entity, <code>EntityDefinitions</code></td></tr>
+<tr><td>Spalte</td><td>Field, Attribute</td></tr>
+<tr><td>Zeile</td><td>Record</td></tr>
+<tr><td>Auswahl (Choice)</td><td>Option Set, Picklist</td></tr>
+</tbody>
+</table></div>
+
+<p>Es gibt <strong>Standardtabellen</strong>, die Dataverse mitbringt, etwa Account, Contact, User, Business Unit und Task, und <strong>eigene Tabellen</strong>. Eigene Tabellen und Spalten tragen im technischen Namen das Präfix ihres Publishers, etwa <code>contoso_projekt</code> (siehe <a href="18-solutions-alm.html">Kapitel 18, Solutions und ALM</a>). Der technische Name lässt sich nach dem Speichern nicht mehr ändern.</p>
+
+<p>Daneben gibt es Sonderformen, die man kennen, aber nicht sofort nutzen muss: <strong>Aktivitätstabellen</strong> für zeitbezogene Dinge wie E-Mails und Termine, <strong>virtuelle Tabellen</strong>, die Daten live aus einer externen Quelle zeigen, und <strong>elastische Tabellen</strong> für sehr große Datenmengen.</p>
+
+<p>Spalten haben Datentypen wie Text, Zahl, Datum, Datei, Bild, Formel, Auswahl und <strong>Lookup</strong>. Ein Lookup ist ein Verweis auf eine Zeile einer anderen Tabelle. Eine <strong>Auswahl</strong> speichert eine Zahl und zeigt ein Label; sie kann lokal für eine Spalte oder global für mehrere Tabellen definiert sein.</p>
+
+<h3>Beziehungen</h3>
+
+<p>Dataverse kennt zwei echte Beziehungstypen:</p>
+
+<ul>
+<li><strong>1:N:</strong> Die Kind-Tabelle erhält eine Lookup-Spalte auf die Eltern-Tabelle. Ein Projekt hat viele Aufgaben.</li>
+<li><strong>N:N:</strong> Dataverse legt intern eine Zwischentabelle an. Ein Projekt hat viele Beteiligte, ein Beteiligter viele Projekte.</li>
+</ul>
+
+<p>N:1 ist nur die Sicht der Kind-Tabelle auf eine 1:N-Beziehung.</p>
+
+<p>Jede 1:N-Beziehung hat ein <strong>Verhalten</strong> für Aktionen wie Zuweisen, Teilen und Löschen. Bei einer Eltern-Beziehung (parental) wandern diese Aktionen vom Elternteil zu den Kindern: Wer ein Projekt löscht, löscht seine Aufgaben, und wer ein Projekt teilt, teilt seine Aufgaben mit. Bei einer Verweis-Beziehung (referential) bleibt das Kind unberührt. Für die Sicherheit ist das wichtig, denn ein harmlos wirkendes Teilen kann so mehr freigeben als beabsichtigt.</p>
+
+<p>Eine zweite Feinheit: Wer eine Zeile mit Lookup lesen darf, sieht den <strong>Primärnamen</strong> der verknüpften Zeile, auch ohne Leserecht darauf. In Primärnamen gehören deshalb keine vertraulichen Angaben.</p>
+
+<h3>Wann Dataverse, wann eine SharePoint-Liste</h3>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Frage</th><th>SharePoint-Liste</th><th>Dataverse</th></tr></thead>
+<tbody>
+<tr><td>Lizenz</td><td>in Microsoft 365 enthalten</td><td>Premium (außerhalb des Microsoft-365-Kontexts)</td></tr>
+<tr><td>Rechte</td><td>auf Liste, Ordner, Element; Vererbung wie bei Dateien (siehe <a href="05-daten-freigaben.html">Kapitel 5, Daten und Freigaben</a>)</td><td>Rollen mit Zugriffsebenen pro Tabelle, Besitz pro Zeile, Spaltensicherheit</td></tr>
+<tr><td>Beziehungen</td><td>einfache Nachschlagefelder</td><td>echte 1:N- und N:N-Beziehungen mit Verhalten</td></tr>
+<tr><td>Datenmenge und Abfragen</td><td>begrenzt, Delegation wird schnell zum Problem (siehe <a href="17-apps-flows.html">Kapitel 17, Apps und Flows bauen</a>)</td><td>für große Mengen und serverseitige Abfragen gebaut</td></tr>
+<tr><td>Model-driven App</td><td>nicht möglich</td><td>möglich</td></tr>
+</tbody>
+</table></div>
+
+<p>Faustregel: Für eine Teamliste mit wenigen hundert Einträgen ohne feine Rechte reicht SharePoint. Sobald verschiedene Personen verschiedene Zeilen sehen sollen, Beziehungen wichtig werden oder eine Model-driven App gewünscht ist, ist Dataverse der richtige Ort.</p>
+
+<h2>Das Sicherheitsmodell</h2>
+
+<p>Das Rechtemodell von Dataverse hat mehrere Bausteine. Sie wirken zusammen, lassen sich aber einzeln erklären.</p>
+
+<h3>Sicherheitsrollen: Privileg mal Zugriffsebene</h3>
+
+<p>Eine <strong>Sicherheitsrolle</strong> ist eine Sammlung von Privilegien pro Tabelle. Die acht Privilegien sind Create, Read, Write, Delete, Append, Append To, Assign und Share. Append und Append To regeln das Verknüpfen: Wer eine Aufgabe an ein Projekt hängt, braucht Append auf der Aufgabe und Append To auf dem Projekt.</p>
+
+<p>Jedes Privileg hat eine <strong>Zugriffsebene</strong>:</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Ebene</th><th>Gilt für</th></tr></thead>
+<tbody>
+<tr><td>None</td><td>nichts</td></tr>
+<tr><td>User</td><td>eigene Zeilen, Zeilen der eigenen Teams und mit einem geteilte Zeilen</td></tr>
+<tr><td>Business Unit</td><td>alle Zeilen der eigenen Business Unit</td></tr>
+<tr><td>Parent: Child Business Units</td><td>eigene Business Unit und alle darunter</td></tr>
+<tr><td>Organization</td><td>alle Zeilen der Tabelle</td></tr>
+</tbody>
+</table></div>
+
+<p>Eine Rolle sagt also nicht nur „darf lesen“, sondern „darf lesen, und zwar die eigenen“ oder „darf lesen, und zwar alle der Abteilung“.</p>
+
+<p>Rollen sind <strong>kumulativ</strong>. Hat eine Person zwei Rollen, gilt die Vereinigung. Es gibt kein Verbot, das eine Rolle aussprechen könnte, um ein Recht einer anderen aufzuheben. Wer weniger Rechte will, muss Rollen enger schneiden, nicht eine Sperrrolle hinzufügen.</p>
+
+<h3>Business Units</h3>
+
+<p>Jede Dataverse-Datenbank hat eine oberste <strong>Business Unit</strong> (Root) und darunter einen Baum weiterer Business Units. Jede Person gehört genau einer an. Jede Zeile hat einen Besitzer und eine besitzende Business Unit. Business Units sind Sicherheitsgrenzen und müssen nicht dem Organigramm entsprechen. In kleinen Firmen reicht oft die Root allein.</p>
+
+<figure id="kap16-zugriffsebenen">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 370" role="img" aria-labelledby="d16-ze-title d16-ze-desc"><title id="d16-ze-title">Zugriffsebenen auf dem Baum der Business Units</title><desc id="d16-ze-desc">Ein Baum aus Root, Abteilung A mit Unterabteilung A1 und Abteilung B. Für Person P in Abteilung A umfasst User nur ihre eigenen Zeilen, Business Unit die Abteilung A, Parent: Child Abteilung A und A1, Organization den ganzen Baum.</desc><defs><marker id="d16-ze-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="d16-ze-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker><marker id="d16-ze-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker></defs><rect x="10" y="10" width="660" height="350" rx="6" fill="none" stroke="#5b6072" stroke-width="1.5" stroke-dasharray="5 4"/><text x="24" y="32" font-size="12" text-anchor="start" font-weight="600" style="fill:#5b6072">Organization: der ganze Baum</text><path d="M340 80 L270 180" fill="none" stroke="#5b6072" stroke-width="1.5"/><path d="M340 80 L550 150" fill="none" stroke="#5b6072" stroke-width="1.5"/><path d="M270 230 L270 268" fill="none" stroke="#5b6072" stroke-width="1.5"/><rect x="280" y="40" width="120" height="40" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="340.0" y="64" font-size="12.5" text-anchor="middle" font-weight="600">Root</text><rect x="480" y="150" width="140" height="50" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="550.0" y="180" font-size="12.5" text-anchor="middle" font-weight="600">Abteilung B</text><rect x="60" y="118" width="320" height="222" rx="6" fill="none" stroke="#2f5d8a" stroke-width="1.5" stroke-dasharray="5 4"/><text x="72" y="136" font-size="11" text-anchor="start" font-weight="600" style="fill:#2f5d8a">Parent: Child Business Units</text><rect x="80" y="148" width="280" height="94" rx="6" fill="none" stroke="#2f5d8a" stroke-width="1.5"/><text x="92" y="166" font-size="11" text-anchor="start" font-weight="600" style="fill:#2f5d8a">Business Unit</text><rect x="200" y="180" width="140" height="50" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="270.0" y="202" font-size="12.5" text-anchor="middle" font-weight="600">Abteilung A</text><text x="270.0" y="218" font-size="11" text-anchor="middle" style="fill:#5b6072">Person P</text><rect x="92" y="178" width="96" height="52" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/><text x="140.0" y="202" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">User</text><text x="140.0" y="216" font-size="11" text-anchor="middle" style="fill:#5b6072">Zeilen von P</text><rect x="200" y="270" width="140" height="50" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="270.0" y="300" font-size="12.5" text-anchor="middle" font-weight="600">Unterabteilung A1</text><text x="550" y="240" font-size="11" text-anchor="middle" style="fill:#5b6072">Dieselbe Rolle wirkt für</text><text x="550" y="254" font-size="11" text-anchor="middle" style="fill:#5b6072">eine Person in B anders.</text></svg>
+<figcaption>Die Zugriffsebene einer Rolle ist relativ zur Business Unit der Person. Dieselbe Rolle erlaubt einer Person in Abteilung A etwas anderes als einer in Abteilung B.</figcaption>
+</figure>
+
+<h3>Besitz, Teams und Teilen</h3>
+
+<p>Zeilen in den meisten Tabellen gehören einer Person oder einem Team. Ob eine Tabelle so funktioniert, wird beim Anlegen festgelegt und ist danach unveränderlich: <strong>user- oder teambesessene</strong> Tabellen kennen alle Zugriffsebenen, <strong>organisationsbesessene</strong> Tabellen nur „alle oder keine“.</p>
+
+<p>Teams gibt es in drei Formen:</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Team</th><th>Besitzt Zeilen?</th><th>Hat Rollen?</th><th>Mitglieder</th></tr></thead>
+<tbody>
+<tr><td><strong>Owner Team</strong></td><td>ja</td><td>ja</td><td>manuell gepflegt</td></tr>
+<tr><td><strong>Access Team</strong></td><td>nein</td><td>nein</td><td>dient nur als Empfänger beim Teilen, oft pro Zeile automatisch erzeugt</td></tr>
+<tr><td><strong>Entra-Gruppen-Team</strong></td><td>ja</td><td>ja</td><td>aus einer Gruppe in Entra ID abgeleitet</td></tr>
+</tbody>
+</table></div>
+
+<p>Das <strong>Entra-Gruppen-Team</strong> ist für Firmen der praktischste Weg. Die Rolle hängt am Team, die Mitgliedschaft pflegt die Person, die ohnehin Gruppen in Entra verwaltet. Dataverse übernimmt die Mitgliedschaft bei der Anmeldung; sie wird zwischengespeichert, Änderungen wirken also nicht immer sofort.</p>
+
+<p><strong>Teilen</strong> (Share) gibt einer Person oder einem Team Zugriff auf eine einzelne Zeile, zusätzlich zu dem, was die Rolle erlaubt. Es ist für Ausnahmen gedacht. Viele geteilte Zeilen sind schwer zu überblicken und machen Abfragen langsamer. <strong>Zuweisen</strong> (Assign) wechselt dagegen den Besitzer.</p>
+
+<h3>Zwei Prüfungen bei jedem Zugriff</h3>
+
+<p>Bei jedem Zugriff prüft Dataverse zwei Dinge nacheinander.</p>
+
+<figure id="kap16-zwei-pruefungen">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 315" role="img" aria-labelledby="d16-zp-title d16-zp-desc"><title id="d16-zp-title">Zwei Prüfungen bei jedem Zugriff</title><desc id="d16-zp-desc">Eine Anfrage auf Zeile X passiert zuerst die Privileg-Prüfung, dann die Zugriffs-Prüfung über Besitz, Rollen-Ebene, Teilen oder Hierarchie. Danach filtert die Spaltensicherheit, und erst dann steht das Ergebnis fest.</desc><defs><marker id="d16-zp-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="d16-zp-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker><marker id="d16-zp-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker></defs><rect x="5" y="120" width="115" height="60" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="62.5" y="148" font-size="12.5" text-anchor="middle" font-weight="600">Anfrage</text><text x="62.5" y="162" font-size="11" text-anchor="middle" style="fill:#5b6072">Read auf Zeile X</text><rect x="148" y="120" width="124" height="60" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="210.0" y="140" font-size="12.5" text-anchor="middle" font-weight="600">1 Privileg</text><text x="210.0" y="156" font-size="11" text-anchor="middle" style="fill:#5b6072">irgendeine Rolle</text><text x="210.0" y="170" font-size="11" text-anchor="middle" style="fill:#5b6072">mit Read?</text><rect x="300" y="36" width="164" height="230" rx="6" fill="none" stroke="#2f5d8a" stroke-width="1.5"/><text x="382" y="58" font-size="12.5" text-anchor="middle" font-weight="600">2 Zugriff</text><text x="382" y="73" font-size="10.5" text-anchor="middle" style="fill:#5b6072">über einen dieser Wege</text><rect x="312" y="84" width="140" height="34" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="382.0" y="106" font-size="12.5" text-anchor="middle" font-weight="600">Besitz</text><rect x="312" y="128" width="140" height="34" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="382.0" y="150" font-size="12.5" text-anchor="middle" font-weight="600">Rollen-Ebene</text><rect x="312" y="172" width="140" height="34" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="382.0" y="194" font-size="12.5" text-anchor="middle" font-weight="600">Teilen</text><rect x="312" y="216" width="140" height="34" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="382.0" y="238" font-size="12.5" text-anchor="middle" font-weight="600">Hierarchie</text><rect x="490" y="120" width="92" height="60" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="536.0" y="148" font-size="12.5" text-anchor="middle" font-weight="600">Spalten-</text><text x="536.0" y="162" font-size="11" text-anchor="middle" style="fill:#5b6072">sicherheit</text><rect x="598" y="120" width="77" height="60" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="636.5" y="154" font-size="12.5" text-anchor="middle" font-weight="600">Ergebnis</text><path d="M120 150 L146 150" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d16-zp-a)"/><path d="M272 150 L298 150" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d16-zp-a)"/><path d="M464 150 L488 150" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d16-zp-a)"/><path d="M582 150 L596 150" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d16-zp-a)"/><text x="210" y="200" font-size="11" text-anchor="middle" style="fill:#5b6072">nein: abgelehnt</text><text x="340" y="300" font-size="12" text-anchor="middle" font-weight="600" style="fill:#b8472a">Ein Privileg allein reicht nicht: erst Besitz, Ebene oder Freigabe öffnen die Zeile.</text></svg>
+<figcaption>Ein Privileg allein reicht nicht. Erst Ebene, Besitz oder Freigabe entscheiden, welche Zeilen sichtbar sind, und die Spaltensicherheit schränkt innerhalb davon weiter ein.</figcaption>
+</figure>
+
+<ol>
+<li><strong>Privileg-Prüfung:</strong> Hat die Identität überhaupt ein Read-Privileg auf dieser Tabelle, egal auf welcher Ebene?</li>
+<li><strong>Zugriffs-Prüfung:</strong> Erreicht sie diese bestimmte Zeile, über Besitz, über die Ebene ihrer Rolle, über eine Freigabe oder über eine Hierarchie von Vorgesetzten?</li>
+</ol>
+
+<p>In Model-driven Apps zeigt die Funktion „Check Access“ an einer Zeile, über welchen Weg eine bestimmte Person Zugriff hat. Für die Fehlersuche ist das unbezahlbar.</p>
+
+<h3>Spaltensicherheit</h3>
+
+<p><strong>Spaltensicherheit</strong> schützt einzelne Spalten, etwa ein Gehalt oder eine private Telefonnummer. Die Spalte wird als gesichert markiert, ein Sicherheitsprofil legt fest, wer sie lesen, anlegen oder ändern darf. Zwei Dinge sind dabei wichtig: Spaltensicherheit gibt keinen Zugriff auf Zeilen, sie schränkt nur innerhalb des vorhandenen Zugriffs ein. Und sie gilt für alle Zugriffswege, auch die API, aber nicht für <code>System Administrator</code>.</p>
+
+<p>Einstellungen in der Oberfläche schützen dagegen nichts. Eine ausgeblendete Spalte im Formular oder eine als versteckt markierte Auswahloption bleibt über die API lesbar.</p>
+
+<h2>Die Kette bis zur Zeile</h2>
+
+<p>Zwischen einem Konto in Entra ID und einer sichtbaren Zeile liegen mehrere Stufen. Jede kann einzeln scheitern:</p>
+
+<ol>
+<li><strong>Konto in Entra ID</strong></li>
+<li><strong>Lizenz</strong> für die Nutzung</li>
+<li><strong>Sicherheitsgruppe der Umgebung</strong>, falls gesetzt: Sie ist ein Türsteher. Mitglieder werden als Nutzer in der Umgebung angelegt, Nichtmitglieder werden deaktiviert. Rechte gibt sie keine.</li>
+<li><strong>Nutzer in Dataverse</strong> mit Business Unit</li>
+<li><strong>Sicherheitsrolle</strong>, direkt oder über ein Team</li>
+<li><strong>Zugriff auf die Zeile</strong> über Ebene, Besitz oder Freigabe</li>
+<li><strong>Spaltensicherheit</strong></li>
+</ol>
+
+<p>Wer „Ich sehe nichts“ meldet, wird diese Kette von oben nach unten abgehen.</p>
+
+<h2>Dienste und Skripte: der Application User</h2>
+
+<p>Ein Hintergrunddienst, ein Skript oder eine Pipeline greift nicht als Mensch auf Dataverse zu. Dafür gibt es den <strong>Application User</strong>: einen Nutzerdatensatz in Dataverse, der an eine App-Registrierung oder eine Managed Identity gebunden ist (siehe <a href="02-identitaeten-tokens.html">Kapitel 2, Identitäten und Tokens</a>). Er bekommt eine Business Unit und Sicherheitsrollen wie ein Mensch, braucht aber keine Lizenz und muss nicht Mitglied der Sicherheitsgruppe der Umgebung sein.</p>
+
+<p>Das ist der saubere Weg gegenüber einem lizenzierten „Dienstkonto“ mit Passwort. Er folgt demselben Prinzip wie Sites.Selected bei SharePoint (siehe <a href="03-rechtesysteme.html">Kapitel 3, Die drei Rechtesysteme</a>): Entra ID stellt nur fest, wer die App ist. Was sie darf, entscheidet Dataverse über die zugewiesene Rolle. Für den App-only-Zugriff braucht die App-Registrierung deshalb keine Graph-ähnliche Anwendungsberechtigung, sondern einen Application User mit eng geschnittener eigener Rolle.</p>
+
+<h3>Die Web API mit einem Entra-Token</h3>
+
+<p>Dataverse ist über eine OData-REST-API unter der Adresse der Umgebung erreichbar. Jede Anfrage läuft durch dieselbe Sicherheitsprüfung wie die Oberfläche. Die Audience des Tokens ist die Adresse der Umgebung, nicht <code>graph.microsoft.com</code>.</p>
+
+<figure id="kap16-token-zur-zeile">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 345" role="img" aria-labelledby="d16-tz-title d16-tz-desc"><title id="d16-tz-title">Vom Entra-Token zur Zeile</title><desc id="d16-tz-desc">Ein Mensch mit delegiertem Token und ein Dienst mit App-only-Token erhalten von Entra ID ein Token für die Adresse der Umgebung. Dataverse ordnet es einem Nutzer oder einem Application User zu, wendet dessen Sicherheitsrollen an und liefert die erlaubten Zeilen.</desc><defs><marker id="d16-tz-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="d16-tz-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker><marker id="d16-tz-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker></defs><rect x="10" y="40" width="175" height="60" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="97.5" y="60" font-size="12.5" text-anchor="middle" font-weight="600">Mensch über App</text><text x="97.5" y="76" font-size="11" text-anchor="middle" style="fill:#5b6072">delegiert:</text><text x="97.5" y="90" font-size="11" text-anchor="middle" style="fill:#5b6072">user_impersonation</text><rect x="10" y="200" width="175" height="60" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="97.5" y="220" font-size="12.5" text-anchor="middle" font-weight="600">Dienst oder Skript</text><text x="97.5" y="236" font-size="11" text-anchor="middle" style="fill:#5b6072">App-only:</text><text x="97.5" y="250" font-size="11" text-anchor="middle" style="fill:#5b6072">.default</text><text x="315" y="100" font-size="11" text-anchor="middle" font-weight="600" style="fill:#5b6072">authentifiziert</text><rect x="240" y="110" width="150" height="80" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="315.0" y="140" font-size="12.5" text-anchor="middle" font-weight="600">Entra ID</text><text x="315.0" y="156" font-size="11" text-anchor="middle" style="fill:#5b6072">Access Token,</text><text x="315.0" y="170" font-size="11" text-anchor="middle" style="fill:#5b6072">aud = Umgebungsadresse</text><path d="M185 70 L238 132" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d16-tz-a)"/><path d="M185 230 L238 170" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d16-tz-a)"/><rect x="448" y="20" width="222" height="280" rx="6" fill="none" stroke="#2f5d8a" stroke-width="1.5"/><text x="559" y="42" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#2f5d8a">Dataverse autorisiert</text><rect x="460" y="60" width="96" height="50" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="508.0" y="82" font-size="12.5" text-anchor="middle" font-weight="600">Nutzer</text><text x="508.0" y="98" font-size="11" text-anchor="middle" style="fill:#5b6072">Mensch</text><rect x="566" y="60" width="96" height="50" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="614.0" y="82" font-size="12.5" text-anchor="middle" font-weight="600">Application</text><text x="614.0" y="98" font-size="11" text-anchor="middle" style="fill:#5b6072">User</text><rect x="460" y="150" width="202" height="50" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="561.0" y="172" font-size="12.5" text-anchor="middle" font-weight="600">Sicherheitsrollen</text><text x="561.0" y="188" font-size="11" text-anchor="middle" style="fill:#5b6072">Business Unit, Teams</text><rect x="460" y="236" width="202" height="50" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="561.0" y="266" font-size="12.5" text-anchor="middle" font-weight="600">Zeilen</text><path d="M390 150 L446 150" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d16-tz-a)"/><text x="418" y="142" font-size="11" text-anchor="middle" font-weight="600" style="fill:#2f5d8a">Token</text><path d="M508 110 L508 148" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d16-tz-a)"/><path d="M614 110 L614 148" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d16-tz-a)"/><path d="M561 200 L561 234" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d16-tz-a)"/><text x="340" y="330" font-size="12" text-anchor="middle" font-weight="600" style="fill:#b8472a">Die Sicherheitsgruppe der Umgebung prüft nur Menschen; der Application User geht vorbei.</text></svg>
+<figcaption>Entra ID authentifiziert, Dataverse autorisiert. Dieselbe Anfrage liefert je nach zugeordnetem Nutzer und dessen Rollen unterschiedliche Zeilen.</figcaption>
+</figure>
+
+<p>Ein kurzer Test mit dem eigenen Konto über die Azure CLI:</p>
+
+<pre><code class="language-bash">URL=https://&lt;org&gt;.crm4.dynamics.com
+TOKEN=$(az account get-access-token --resource $URL --query accessToken -o tsv)
+curl -s -H "Authorization: Bearer $TOKEN" -H "OData-Version: 4.0" \
+  "$URL/api/data/v9.2/WhoAmI"</code></pre>
+
+<p><code>WhoAmI</code> gibt die ID des Dataverse-Nutzers und seiner Business Unit zurück. Delegiert fragt eine App den Scope <code>&lt;umgebungsadresse&gt;/user_impersonation</code> an, und es gelten die Rollen der angemeldeten Person. App-only fragt sie <code>&lt;umgebungsadresse&gt;/.default</code> an, und es gelten die Rollen des Application Users.</p>
+
+<h2>Typische Missverständnisse</h2>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Annahme</th><th>Was stimmt</th></tr></thead>
+<tbody>
+<tr><td>„Die Sicherheitsgruppe der Umgebung gibt Zugriff auf Daten.“</td><td>Sie entscheidet nur, wer Nutzer der Umgebung ist. Rechte kommen aus Rollen.</td></tr>
+<tr><td>„Mit einer zweiten Rolle kann ich Rechte entziehen.“</td><td>Rollen sind kumulativ, es gibt kein Verbot.</td></tr>
+<tr><td>„Formular ausblenden schützt die Spalte.“</td><td>Die API umgeht die Oberfläche; nur Rollen und Spaltensicherheit zählen.</td></tr>
+<tr><td>„Spaltensicherheit schützt auch vor Admins.“</td><td>Für System Administrator gilt sie nicht.</td></tr>
+<tr><td>„Ein Hintergrunddienst braucht ein lizenziertes Dienstkonto.“</td><td>Der Application User ist der vorgesehene Weg, ohne Lizenz und ohne Passwort.</td></tr>
+<tr><td>„Teilen eines Projekts betrifft nur das Projekt.“</td><td>Bei einer Eltern-Beziehung werden die Kinder mitgeteilt.</td></tr>
+</tbody>
+</table></div>
+<nav style="display:flex;justify-content:space-between;gap:1rem;margin-top:3rem;border-top:1px solid var(--rule);padding-top:1rem;font-family:'Helvetica Neue',Arial,sans-serif;font-size:.9rem"><span><a href="15-power-platform-bausteine.html">← Zurück</a></span><a href="index.html">Übersicht</a><span><a href="17-apps-flows.html">Weiter →</a></span></nav>
+</body>
+</html>

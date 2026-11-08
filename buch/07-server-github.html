@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>7. Server und GitHub: Vom Commit zur laufenden App</title>
+<style>
+:root { --bg:#fafaf7; --text:#1f2230; --muted:#5b6072; --accent:#2f5d8a;
+  --accent-soft:#d9e4ef; --leader:#b8472a; --node-fill:#ffffff;
+  --node-stroke:#2f5d8a; --rule:#c8ccd6; --code-bg:#eef1f5; }
+html,body { background:var(--bg); color:var(--text);
+  font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+  line-height:1.65; font-size:18px; }
+body { max-width:760px; margin:3rem auto 6rem; padding:0 1.5rem; }
+h1 { font-size:2rem; line-height:1.2; margin:0 0 2rem;
+  border-bottom:1px solid var(--rule); padding-bottom:0.6rem; }
+h2 { font-size:1.35rem; margin-top:2.4rem; margin-bottom:0.8rem;
+  color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif;
+  font-weight:600; letter-spacing:0.01em; }
+p { margin:0 0 1.1rem; }
+figure { margin:2rem auto; text-align:center; }
+figure svg { max-width:100%; height:auto; display:block; margin:0 auto; }
+figcaption { font-family:"Helvetica Neue",Arial,sans-serif; font-size:0.85rem;
+  color:var(--muted); margin-top:0.6rem; text-align:center; }
+svg text { font-family:"Helvetica Neue",Arial,sans-serif; fill:var(--text); }
+.legend-text { font-size:11px; fill:var(--muted); }
+pre { background:var(--code-bg); padding:0.9rem 1.1rem; overflow-x:auto;
+  border-radius:6px; font-size:0.82em; }
+code { background:var(--code-bg); font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:0.85em; padding:0.1em 0.3em; border-radius:3px; }
+pre code { background:none; padding:0; }
+.table-wrap { overflow-x:auto; margin:1.4rem 0; }
+table { border-collapse:collapse; width:100%; font-size:0.85em; line-height:1.45; }
+th, td { border-bottom:1px solid var(--rule); padding:0.5rem 0.7rem;
+  text-align:left; vertical-align:top; }
+th { color:var(--accent); border-bottom:2px solid var(--accent);
+  font-family:"Helvetica Neue",Arial,sans-serif; font-weight:600; }
+td code { white-space:nowrap; }
+@media print { .table-wrap { overflow-x:visible; } td code { white-space:normal; } }
+</style>
+</head>
+<body>
+<h1>7. Server und GitHub: Vom Commit zur laufenden App</h1>
+
+<p>Zwischen einer Codeänderung und der laufenden App in Azure liegen mehrere Stationen, und an jeder handelt eine andere Identität. Ein Mensch schiebt Code nach GitHub, ein Automatisierungsjob baut und rollt aus, und später greift die App selbst auf Daten und Geheimnisse zu. Wer diese Identitäten auseinanderhält, findet für jede Frage nach einem Recht die richtige Stelle.</p>
+
+<figure id="kap07-commit-zur-app">
+<svg viewBox="0 0 680 484" width="680" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="d1-t d1-d"><title id="d1-t">Vom Commit zur laufenden App: drei Identitäten, zwei Rechtewelten</title><desc id="d1-d">Das GitHub-Konto schiebt vom Entwickler-Laptop ins Repository, der Runner handelt als Deployment-Identität gegenüber App Service und tauscht bei Entra ID ein Token, die App greift als Laufzeit-Identität auf Key Vault und weitere Dienste zu. Eine gestrichelte Grenze trennt GitHub und Tenant. Die Rechte der späteren Identitäten hängen faktisch davon ab, wer die früheren kontrolliert.</desc><defs><marker id="d1-a" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="d1-r" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker><marker id="d1-m" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker></defs><text x="20" y="26" text-anchor="start" font-size="13" font-weight="600" style="fill:#2f5d8a">Rechtewelt GitHub</text><circle cx="80" cy="105" r="44" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.8"/><text x="80" y="102.1" text-anchor="middle" font-size="12">Entwickler-</text><text x="80" y="116.6" text-anchor="middle" font-size="12">Laptop</text><circle cx="290" cy="105" r="48" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.8"/><text x="290" y="94.8" text-anchor="middle" font-size="12">Repository in</text><text x="290" y="109.3" text-anchor="middle" font-size="12">der GitHub</text><text x="290" y="123.8" text-anchor="middle" font-size="12">Organization</text><circle cx="500" cy="105" r="44" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.8"/><text x="500" y="109.3" text-anchor="middle" font-size="12">Runner</text><line x1="124" y1="105" x2="241" y2="105" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#d1-a)"/><text x="183" y="80" text-anchor="middle" font-size="11" style="fill:#5b6072">Identität 1</text><text x="183" y="96" text-anchor="middle" font-size="12" font-weight="700" style="fill:#b8472a">GitHub-Konto</text><line x1="339" y1="105" x2="455" y2="105" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#d1-a)"/><text x="397" y="96" text-anchor="middle" font-size="11" style="fill:#5b6072">startet Job</text><line x1="14" y1="195" x2="666" y2="195" stroke="#5b6072" stroke-width="1.4" stroke-dasharray="6 5"/><text x="20" y="187" text-anchor="start" font-size="11" style="fill:#5b6072">Grenze zwischen GitHub und Tenant</text><text x="20" y="218" text-anchor="start" font-size="13" font-weight="600" style="fill:#2f5d8a">Rechtewelt Tenant: Entra ID und Azure</text><circle cx="500" cy="300" r="44" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.8"/><text x="500" y="304.3" text-anchor="middle" font-size="12">App Service</text><circle cx="620" cy="300" r="44" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.8"/><text x="620" y="304.3" text-anchor="middle" font-size="12">Entra ID</text><circle cx="290" cy="300" r="44" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.8"/><text x="290" y="304.3" text-anchor="middle" font-size="12">Key Vault</text><circle cx="290" cy="415" r="40" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.8"/><text x="290" y="412.1" text-anchor="middle" font-size="12">weitere</text><text x="290" y="426.6" text-anchor="middle" font-size="12">Dienste</text><line x1="500" y1="149" x2="500" y2="255" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#d1-a)"/><text x="491" y="222" text-anchor="end" font-size="11" style="fill:#5b6072">Identität 2</text><text x="491" y="238" text-anchor="end" font-size="12" font-weight="700" style="fill:#b8472a">Deployment-Identität</text><line x1="523" y1="142" x2="596" y2="261" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#d1-a)" marker-start="url(#d1-a)"/><text x="562" y="166" text-anchor="start" font-size="11" style="fill:#5b6072">Token-Tausch</text><line x1="456" y1="300" x2="335" y2="300" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#d1-a)"/><text x="395" y="275" text-anchor="middle" font-size="11" style="fill:#5b6072">Identität 3</text><text x="395" y="291" text-anchor="middle" font-size="12" font-weight="700" style="fill:#b8472a">Laufzeit-Identität</text><line x1="462" y1="322" x2="326" y2="397" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#d1-a)"/><text x="398" y="378" text-anchor="start" font-size="12" font-weight="700" style="fill:#b8472a">Laufzeit-Identität</text><text x="20" y="262" text-anchor="start" font-size="12" font-weight="700" style="fill:#b8472a">Faktische Abhängigkeit</text><text x="20" y="282" text-anchor="start" font-size="11.5">Wer das GitHub-Konto kontrolliert,</text><line x1="32" y1="289" x2="32" y2="309" stroke="#b8472a" stroke-width="1.6" marker-end="url(#d1-r)"/><text x="20" y="325" text-anchor="start" font-size="11.5">bestimmt, was die Deployment-</text><text x="20" y="340" text-anchor="start" font-size="11.5">Identität ausrollt,</text><line x1="32" y1="347" x2="32" y2="367" stroke="#b8472a" stroke-width="1.6" marker-end="url(#d1-r)"/><text x="20" y="383" text-anchor="start" font-size="11.5">und damit, was die Laufzeit-</text><text x="20" y="398" text-anchor="start" font-size="11.5">Identität tut.</text><text x="20" y="470" text-anchor="start" class="legend-text">Rot: handelnde Identität am Pfeil. Gestrichelt: Grenze der beiden Rechtewelten.</text></svg>
+<figcaption>Der Weg vom Commit über GitHub und den Runner bis zur laufenden App in Azure, mit der handelnden Identität an jedem Pfeil. Auf dem Weg handeln drei verschiedene Identitäten aus zwei getrennten Rechtewelten, und die Rechte der späteren hängen faktisch davon ab, wer die früheren kontrolliert.</figcaption>
+</figure>
+
+<h2>GitHub-Rechte: eine eigene Welt außerhalb von Entra ID</h2>
+
+<p>GitHub ist kein Teil des Tenants. Ein GitHub-Konto ist zunächst ein eigenes Konto bei einem anderen Anbieter, und keine Entra-Rolle oder Azure-Rollenzuweisung gibt ein Recht in GitHub. Das hat eine praktische Folge: Wird ein Nutzerkonto in Entra ID deaktiviert, behält dieselbe Person ihren GitHub-Zugang, solange niemand sie dort entfernt. Größere GitHub-Tarife können die Anmeldung an Entra ID koppeln, zum Beispiel über SAML. Die Rechte selbst werden trotzdem in GitHub vergeben.</p>
+
+<p>Eine <strong>GitHub Organization</strong> ist der gemeinsame Firmenbereich auf GitHub, dem Repositories und Mitglieder zugeordnet sind. Ein Owner darf dort alles, ein Mitglied der GitHub Organization bekommt nur das eingestellte Basisrecht und das, was Teams und Repositories zusätzlich vergeben. Die eigentliche Arbeit regeln die Repository-Rollen:</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Repository-Rolle</th><th>Darf im Kern</th><th>Relevanz für den Deployment-Weg</th></tr></thead>
+<tbody>
+<tr><td>Read</td><td>Code lesen und klonen</td><td>Sieht auch alle Workflow-Dateien</td></tr>
+<tr><td>Triage</td><td>Zusätzlich Issues und Pull Requests verwalten</td><td>Kein Schreibzugriff auf Code</td></tr>
+<tr><td>Write</td><td>Branches pushen, Pull Requests mergen, sofern nichts dagegen spricht</td><td>Kann Workflows ändern und dadurch Code auf dem Runner ausführen</td></tr>
+<tr><td>Maintain</td><td>Zusätzlich Teile der Repository-Einstellungen verwalten</td><td>Wie Write, mit mehr Verwaltung</td></tr>
+<tr><td>Admin</td><td>Alle Einstellungen, einschließlich Secrets und Schutzregeln</td><td>Kann Schutzregeln ändern oder abschalten</td></tr>
+</tbody>
+</table></div>
+
+<p>Besonders unterschätzt wird Write. Die Rolle klingt nach „darf Code ändern“, bedeutet aber auch: Die Person kann in einem eigenen Branch eine Workflow-Datei anlegen, die beliebige Befehle ausführt. Was dieser Workflow erreicht, hängt davon ab, welche Geheimnisse und Vertrauensregeln ihm offenstehen.</p>
+
+<p><strong>Branch-Schutz</strong> sind Regeln, die direkte Änderungen an einem Branch einschränken. Typisch für <code>main</code> sind: Änderungen nur über Pull Requests, mindestens ein Review durch eine andere Person, erfolgreiche Tests vor dem Merge und kein Force-Push. Wichtig ist die Einstellung, ob auch Admins an die Regeln gebunden sind. Einzelne Regeln können bei privaten Repositories einen bezahlten Tarif voraussetzen. Eine Sicherheitsgrenze ist Branch-Schutz allerdings nur dann, wenn auch das Deployment an den geschützten Branch gebunden ist.</p>
+
+<h2>GitHub Actions, Workflow und Runner</h2>
+
+<p><strong>GitHub Actions</strong> ist die in GitHub eingebaute Automatisierung. Ein <strong>Workflow</strong> ist eine YAML-Datei unter <code>.github/workflows</code>, die festlegt, wann welche Schritte laufen, zum Beispiel bei jedem Push auf <code>main</code>. Er besteht aus Jobs, und jeder Job läuft auf einem eigenen Rechner, dem <strong>Runner</strong>. Es gibt zwei Arten:</p>
+
+<ul>
+<li><strong>GitHub-gehostete Runner</strong> sind frische virtuelle Maschinen bei GitHub. Sie werden für einen Job erzeugt und danach verworfen.</li>
+<li><strong>Self-hosted Runner</strong> sind eigene Rechner, die sich bei GitHub registrieren. Sie können ins interne Netz reichen, behalten aber je nach Einrichtung Zustand zwischen Jobs. Ein bösartiger Job kann dort Spuren hinterlassen, die den nächsten Job betreffen.</li>
+</ul>
+
+<p>Der Code läuft also nicht abstrakt „in GitHub“, sondern als gewöhnlicher Prozess auf einem Linux- oder Windows-Rechner. Eine Action ist ein wiederverwendbarer, meist fremder Baustein eines Workflows. Jede Abhängigkeit, die <code>npm install</code> nachlädt, und jede fremde Action, die der Workflow einbindet, läuft dort mit und sieht dieselben Umgebungsvariablen und Dateien wie der Rest des Jobs. Außerdem bekommt jeder Job automatisch den <code>GITHUB_TOKEN</code>, ein kurzlebiges Token für Zugriffe auf GitHub selbst. Es hat nichts mit Azure zu tun, und der Block <code>permissions</code> im Workflow legt fest, was es darf.</p>
+
+<h2>Deployment-Identität und Laufzeit-Identität</h2>
+
+<p>Die zentrale Trennung dieses Themas: Die <strong>Deployment-Identität</strong> rollt eine neue Version aus. Die <strong>Laufzeit-Identität</strong> ist die Identität, mit der die laufende App auf andere Dienste zugreift. Sie haben unterschiedliche Aufgaben und sollten nie dieselbe Identität sein.</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th></th><th>Deployment-Identität</th><th>Laufzeit-Identität</th></tr></thead>
+<tbody>
+<tr><td>Handelt</td><td>Beim Ausrollen, auf dem Runner</td><td>Dauerhaft, in der App</td></tr>
+<tr><td>Typische Form</td><td>Service Principal einer App-Registrierung oder user-assigned Managed Identity, jeweils mit Federated Credential</td><td>Managed Identity der Ressource</td></tr>
+<tr><td>Typisches Recht</td><td>„Website Contributor“ auf genau einer Web-App (Control Plane)</td><td>„Key Vault Secrets User“ auf einem Key Vault (Data Plane)</td></tr>
+<tr><td>Wirkung bei Missbrauch</td><td>Kann Code austauschen</td><td>Kann die Daten lesen, auf die die App Zugriff hat</td></tr>
+</tbody>
+</table></div>
+
+<p>Die Trennung hat eine Grenze. Wer neuen Code ausrollen darf, bestimmt, was mit der Laufzeit-Identität geschieht. Die Deployment-Identität liest zwar selbst kein Geheimnis aus dem Key Vault, kann aber Code ausrollen, der es liest. Rechte wirken hier transitiv:</p>
+
+<blockquote><p>Write auf <code>main</code> → Deployment-Identität → Code in der App → Rechte der Laufzeit-Identität</p></blockquote>
+
+<figure id="kap07-transitive-rechte">
+<svg viewBox="0 0 680 356" width="680" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="d2-t d2-d"><title id="d2-t">Transitive Rechte von Write auf main bis zu den Daten</title><desc id="d2-d">Eine Kette führt von Write auf main über die Deployment-Identität und den Code in der App zur Laufzeit-Identität und zu den Daten im Key Vault. Der direkte Zugriff der Deployment-Identität auf die Daten ist durchgestrichen, der mittelbare Zugriff über den ausgerollten Code ist rot hervorgehoben.</desc><defs><marker id="d2-a" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="d2-r" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker><marker id="d2-m" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker></defs><text x="408" y="28" text-anchor="middle" font-size="12" font-weight="700" style="fill:#5b6072">Kein direkter Zugriff der Deployment-Identität auf die Daten</text><text x="408" y="45" text-anchor="middle" font-size="11" style="fill:#5b6072">Die Trennung verhindert den direkten Griff nach den Daten.</text><path d="M204 138 C204 60 612 60 612 108" fill="none" stroke="#5b6072" stroke-width="1.5" stroke-dasharray="5 4"/><path d="M604 112 L620 128 M620 112 L604 128" stroke="#b8472a" stroke-width="2.6" fill="none"/><circle cx="68" cy="190" r="50" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.8"/><text x="68" y="187" text-anchor="middle" font-size="12">Write auf</text><text x="68" y="203" text-anchor="middle" font-size="12" style="font-family:ui-monospace,Menlo,Consolas,monospace">main</text><circle cx="204" cy="190" r="50" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.8"/><text x="204" y="187.1" text-anchor="middle" font-size="12">Deployment-</text><text x="204" y="201.6" text-anchor="middle" font-size="12">Identität</text><circle cx="340" cy="190" r="50" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.8"/><text x="340" y="187.1" text-anchor="middle" font-size="12">Code in</text><text x="340" y="201.6" text-anchor="middle" font-size="12">der App</text><circle cx="476" cy="190" r="50" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.8"/><text x="476" y="173.1" text-anchor="middle" font-size="11.5">Laufzeit-</text><text x="476" y="187.1" text-anchor="middle" font-size="11.5">Identität</text><text x="476" y="201.1" text-anchor="middle" font-size="11.5">mit ihren</text><text x="476" y="215.1" text-anchor="middle" font-size="11.5">Rechten</text><circle cx="612" cy="190" r="50" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.8"/><text x="612" y="178" text-anchor="middle" font-size="12">Daten im</text><text x="612" y="193" text-anchor="middle" font-size="12">Key Vault</text><rect x="594" y="201" width="36" height="14" rx="2" fill="#ffffff" stroke="#b8472a" stroke-width="1.4"/><line x1="118" y1="190" x2="154" y2="190" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#d2-a)"/><line x1="254" y1="190" x2="290" y2="190" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#d2-a)"/><line x1="390" y1="190" x2="426" y2="190" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#d2-a)"/><line x1="526" y1="190" x2="562" y2="190" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#d2-a)"/><text x="136" y="152" text-anchor="middle" font-size="11" style="fill:#5b6072">löst aus</text><text x="272" y="152" text-anchor="middle" font-size="11" style="fill:#5b6072">rollt aus</text><text x="408" y="152" text-anchor="middle" font-size="11" style="fill:#5b6072">läuft mit</text><text x="544" y="152" text-anchor="middle" font-size="11" style="fill:#5b6072">liest</text><path d="M204 242 C204 320 612 320 612 242" fill="none" stroke="#b8472a" stroke-width="2" marker-end="url(#d2-r)"/><text x="408" y="324" text-anchor="middle" font-size="12" font-weight="700" style="fill:#b8472a">Mittelbarer Zugriff über den ausgerollten Code:</text><text x="408" y="341" text-anchor="middle" font-size="12" font-weight="700" style="fill:#b8472a">Wer ausrollen darf, erbt die Rechte der Laufzeit-Identität.</text></svg>
+<figcaption>Die Kette von Write auf <code>main</code> über die Deployment-Identität und den ausgerollten Code bis zu den Rechten der Laufzeit-Identität. Die Trennung verhindert den direkten Griff nach den Daten, aber wer ausrollen darf, erbt mittelbar die Rechte der Laufzeit-Identität.</figcaption>
+</figure>
+
+<p>Nützlich bleibt die Trennung trotzdem. Sie verhindert den direkten Griff nach den Daten, macht einen Angriff im Deployment-Verlauf sichtbar und begrenzt, was ein abgeflossenes Runner-Token erreicht. Der eigentliche Schutz dieser Kette liegt vorne: bei Branch-Schutz, Reviews und der Bindung des Deployments an einen bestimmten Kontext.</p>
+
+<h2>OIDC und Federated Credential im Detail</h2>
+
+<p>Der Runner muss sich bei Entra ID ausweisen, ohne dass irgendwo ein dauerhaftes Passwort liegt. Das Mittel dafür ist <strong>Workload Identity Federation</strong>: eine Vertrauensregel, mit der ein externes Token gegen ein Entra-Token getauscht wird. <strong>OIDC</strong> ist dabei der Standard, mit dem GitHub dem Runner einen signierten Herkunftsnachweis ausstellt. Darin steht nicht „dieser Job darf etwas“, sondern nur „dieser Job läuft in diesem Repository in diesem Kontext“. Was daraus folgt, entscheidet allein Entra ID anhand einer vorab hinterlegten Regel.</p>
+
+<p>Diese Regel heißt <strong>Federated Credential</strong> und legt drei Werte fest:</p>
+
+<ul>
+<li><strong>Issuer</strong>: Wer muss den Nachweis ausgestellt haben? Für GitHub Actions ist das <code>https://<wbr>token.<wbr>actions.<wbr>githubusercontent.<wbr>com</code>.</li>
+<li><strong>Subject</strong>: Für wen muss der Nachweis gelten? Bei GitHub stecken darin das Repository und der Kontext des Jobs.</li>
+<li><strong>Audience</strong>: Für wen ist der Nachweis bestimmt? Der Standardwert für den Tausch bei Entra ID ist <code>api://AzureADTokenExchange</code>.</li>
+</ul>
+
+<p>Zum Kontext eines Jobs kann ein GitHub Environment gehören. Das ist ein benanntes Ziel wie <code>production</code>, an das sich Schutzregeln hängen lassen, etwa eine Pflichtfreigabe oder eine Beschränkung auf bestimmte Branches. Auch das hängt bei privaten Repositories vom Tarif ab.</p>
+
+<p>Das OIDC-Token des Runners ist ein gewöhnliches JWT. Ein Ausschnitt seiner Claims:</p>
+
+<pre><code class="language-json">{
+  "iss": "https://token.actions.githubusercontent.com",
+  "sub": "repo:contoso/meine-app:environment:production",
+  "aud": "api://AzureADTokenExchange",
+  "ref": "refs/heads/main"
+}</code></pre>
+
+<p>An <code>sub</code> hängt die Sicherheit. Der Aufbau richtet sich nach dem Kontext des Jobs:</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Kontext des Jobs</th><th>Subject</th></tr></thead>
+<tbody>
+<tr><td>Push auf einen Branch</td><td><code>repo:contoso/<wbr>meine-app:ref:refs/<wbr>heads/<wbr>main</code></td></tr>
+<tr><td>Job mit Environment</td><td><code>repo:contoso/<wbr>meine-app:environment:production</code></td></tr>
+<tr><td>Pull Request</td><td><code>repo:contoso/meine-app:pull_request</code></td></tr>
+</tbody>
+</table></div>
+
+<p>Entra ID vergleicht das Subject exakt mit der Regel. Hier liegt die häufigste Falle beim Einrichten: Sobald ein Job ein <code>environment</code> angibt, lautet das Subject auf das Environment und nicht mehr auf den Branch. Eine auf <code>ref:refs/heads/main</code> eingerichtete Regel passt dann nicht. Die Fehlermeldung nennt meist das tatsächlich gelieferte Subject.</p>
+
+<figure id="kap07-oidc-tausch">
+<svg viewBox="0 0 680 664" width="680" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="d3-t d3-d"><title id="d3-t">OIDC-Tausch vom Runner bis zum App Service</title><desc id="d3-d">Sequenz: Der Runner fordert beim GitHub-OIDC-Dienst ein Token an und erhält ein signiertes OIDC-Token. Entra ID prüft beim Tausch Signatur, Issuer, Subject und Audience gegen das Federated Credential und stellt ein Access Token für die Azure-Verwaltung aus. Beim Deployment-Aufruf prüft Azure die Rollenzuweisung und rollt auf den App Service aus. GitHub liefert nur den Herkunftsnachweis, entschieden wird zweimal auf Microsoft-Seite.</desc><defs><marker id="d3-a" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="d3-r" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker><marker id="d3-m" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker></defs><line x1="55" y1="80" x2="55" y2="628" stroke="#5b6072" stroke-width="1" stroke-dasharray="2 4"/><line x1="185" y1="80" x2="185" y2="628" stroke="#5b6072" stroke-width="1" stroke-dasharray="2 4"/><line x1="360" y1="80" x2="360" y2="628" stroke="#5b6072" stroke-width="1" stroke-dasharray="2 4"/><line x1="510" y1="80" x2="510" y2="628" stroke="#5b6072" stroke-width="1" stroke-dasharray="2 4"/><line x1="625" y1="80" x2="625" y2="628" stroke="#5b6072" stroke-width="1" stroke-dasharray="2 4"/><line x1="258" y1="8" x2="258" y2="628" stroke="#5b6072" stroke-width="1.4" stroke-dasharray="6 5"/><text x="250" y="22" text-anchor="end" font-size="12" font-weight="600" style="fill:#2f5d8a">GitHub: nur Herkunftsnachweis</text><text x="266" y="22" text-anchor="start" font-size="12" font-weight="600" style="fill:#b8472a">Microsoft-Seite: zwei Entscheidungen</text><circle cx="55" cy="80" r="44" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.8"/><text x="55" y="84.3" text-anchor="middle" font-size="12">Runner</text><circle cx="185" cy="80" r="46" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.8"/><text x="185" y="77.1" text-anchor="middle" font-size="11.5">GitHub-</text><text x="185" y="91.1" text-anchor="middle" font-size="11.5">OIDC-Dienst</text><circle cx="360" cy="80" r="46" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.8"/><text x="360" y="70.1" text-anchor="middle" font-size="11.5">Entra ID</text><text x="360" y="84.1" text-anchor="middle" font-size="11.5">mit Federated</text><text x="360" y="98.1" text-anchor="middle" font-size="11.5">Credential</text><circle cx="510" cy="80" r="46" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.8"/><text x="510" y="70.1" text-anchor="middle" font-size="11.5">Azure-</text><text x="510" y="84.1" text-anchor="middle" font-size="11.5">Verwaltungs-</text><text x="510" y="98.1" text-anchor="middle" font-size="11.5">schnittstelle</text><circle cx="625" cy="80" r="44" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.8"/><text x="625" y="84.1" text-anchor="middle" font-size="11.5">App Service</text><text x="120" y="167" text-anchor="middle" font-size="11">Token anfordern</text><line x1="55" y1="175" x2="185" y2="175" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#d3-a)"/><text x="120" y="204" text-anchor="middle" font-size="11">signiertes</text><text x="120" y="219" text-anchor="middle" font-size="11">OIDC-Token</text><line x1="185" y1="226" x2="55" y2="226" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#d3-a)"/><text x="120" y="259" text-anchor="middle" font-size="11">Tausch: OIDC-Token</text><text x="120" y="274" text-anchor="middle" font-size="11">an Entra ID</text><line x1="55" y1="281" x2="360" y2="281" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#d3-a)"/><rect x="268" y="298" width="184" height="86" rx="8" fill="#ffffff" stroke="#b8472a" stroke-width="2"/><text x="360" y="317" text-anchor="middle" font-size="11" font-weight="700" style="fill:#b8472a">Entscheidung 1: Vertrauensregel</text><text x="360" y="334" text-anchor="middle" font-size="11">Prüfung von Signatur und</text><text x="360" y="350" text-anchor="middle" font-size="11">Issuer, Subject, Audience</text><text x="360" y="372" text-anchor="middle" font-size="10.5" style="fill:#5b6072">Wer darf die Identität annehmen?</text><text x="120" y="413" text-anchor="middle" font-size="11">Access Token für</text><text x="120" y="428" text-anchor="middle" font-size="11">die Azure-Verwaltung</text><line x1="360" y1="435" x2="55" y2="435" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#d3-a)"/><text x="120" y="472" text-anchor="middle" font-size="11">Deployment-Aufruf</text><text x="120" y="487" text-anchor="middle" font-size="11">mit Access Token</text><line x1="55" y1="494" x2="510" y2="494" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#d3-a)"/><rect x="420" y="510" width="180" height="70" rx="8" fill="#ffffff" stroke="#b8472a" stroke-width="2"/><text x="510" y="529" text-anchor="middle" font-size="11" font-weight="700" style="fill:#b8472a">Entscheidung 2: Rollen</text><text x="510" y="546" text-anchor="middle" font-size="11">Prüfung der Rollenzuweisung</text><text x="510" y="566" text-anchor="middle" font-size="10.5" style="fill:#5b6072">Was darf die Identität?</text><text x="567" y="601" text-anchor="middle" font-size="11">rollt aus</text><line x1="510" y1="608" x2="625" y2="608" stroke="#2f5d8a" stroke-width="1.6" marker-end="url(#d3-a)"/><text x="20" y="650" text-anchor="start" class="legend-text">Zeit läuft von oben nach unten. Rot: die beiden Entscheidungen auf Microsoft-Seite.</text></svg>
+<figcaption>Der Runner holt ein OIDC-Token von GitHub, tauscht es bei Entra ID gegen ein Access Token und rollt damit nach Azure aus. GitHub liefert nur den Herkunftsnachweis. Entschieden wird zweimal auf Microsoft-Seite: erst die Vertrauensregel, wer die Identität annehmen darf, dann die Rollenzuweisung, was sie darf.</figcaption>
+</figure>
+
+<ol>
+<li>Der Job fordert beim OIDC-Dienst von GitHub ein Token an. Das geht nur, wenn der Workflow das Recht <code>id-token: write</code> gesetzt hat.</li>
+<li>GitHub signiert ein kurzlebiges Token mit den Claims des Jobs.</li>
+<li>Der Runner schickt dieses Token an Entra ID und nennt dabei Client-ID und Tenant der gewünschten Identität.</li>
+<li>Entra ID lädt die öffentlichen Schlüssel des Issuers, prüft die Signatur und vergleicht Issuer, Subject und Audience mit dem Federated Credential.</li>
+<li>Passt alles, stellt Entra ID ein kurz gültiges Access Token für die Azure-Verwaltung aus. Der nächste Job holt sich ein neues.</li>
+<li>Mit diesem Token ruft der Runner Azure auf. Azure RBAC prüft nun wie bei jedem anderen Principal die Rollenzuweisung.</li>
+</ol>
+
+<p>Die Einrichtung in Azure besteht aus zwei Teilen, der Vertrauensregel und dem eigentlichen Recht. Am Beispiel einer App-Registrierung:</p>
+
+<pre><code class="language-bash">az ad app federated-credential create --id &lt;client-id&gt; --parameters '{"name": "github-production", "issuer": "https://token.actions.githubusercontent.com", "subject": "repo:contoso/meine-app:environment:production", "audiences": ["api://AzureADTokenExchange"]}'
+
+az role assignment create --assignee &lt;client-id&gt; --role "Website Contributor" \
+  --scope "/subscriptions/&lt;subscription-id&gt;/resourceGroups/meine-rg/providers/Microsoft.Web/sites/meine-app"</code></pre>
+
+<p><code>--assignee</code> akzeptiert hier auch die Client-ID und löst sie zum Service Principal auf, der dafür schon existieren muss. Der passende Workflow braucht kein Passwort:</p>
+
+<pre><code class="language-yaml">on:
+  push:
+    branches: [main]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+      id-token: write          # erlaubt das Anfordern des OIDC-Tokens
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - uses: azure/webapps-deploy@v3
+        with:
+          app-name: meine-app
+          package: .</code></pre>
+
+<p>Die drei Kennungen liegen als normale Variablen (<code>vars</code>) vor. Sie sind keine Geheimnisse, denn ohne passendes OIDC-Token nützen sie niemandem. Das Recht <code>id-token: write</code> gehört nur an den Deploy-Job. Laufen Bau und Tests in einem eigenen Job ohne dieses Recht, kann ein Build-Skript mit nachgeladenen Abhängigkeiten gar kein OIDC-Token anfordern.</p>
+
+<p>Damit schließt sich auch die Kette zum Branch-Schutz. Das Subject sorgt dafür, dass nur ein Job aus dem genannten Kontext die Identität bekommt. Branch-Schutz und Environment-Regeln sorgen dafür, dass in diesen Kontext nur geprüfter Code gelangt. Bei einer Regel mit <code>ref:refs/heads/main</code> läuft ein Workflow aus einem beliebigen Feature-Branch zwar, sein Subject passt aber nicht zur Regel. Bei einer Environment-Regel kann ein Feature-Branch das Environment ebenfalls angeben und liefert dann genau das erwartete Subject. Die eigentliche Grenze ist dort deshalb die Branch-Beschränkung des Environments.</p>
+
+<h2>GitHub Secret gegen OIDC</h2>
+
+<p>Die ältere Variante speichert einen dauerhaften Zugang als <strong>GitHub Secret</strong>, also als verschlüsselt bei GitHub abgelegten Wert, den Workflows nutzen können. Typisch ist ein <strong>Client Secret</strong> einer App-Registrierung oder ein Publish Profile, eine Datei mit Zugangsdaten für das Deployment einer einzelnen Web-App.</p>
+
+<p>Ein GitHub Secret lässt sich nach dem Speichern über Oberfläche und API nicht mehr im Klartext auslesen, und in Logs maskiert GitHub bekannte Werte. Das schützt aber nur vor dem versehentlichen Ausgeben. Ein Workflow, der den Wert kodiert oder an einen fremden Server schickt, kommt daran vorbei. Secrets auf Repository-Ebene stehen außerdem Workflows auf jedem Branch zur Verfügung. Wer Write hat, kann sie also mit einem Workflow im eigenen Branch abgreifen, an Branch-Schutz vorbei. Environment-Secrets lassen sich enger binden.</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Frage</th><th>GitHub Secret mit Client Secret</th><th>OIDC mit Federated Credential</th></tr></thead>
+<tbody>
+<tr><td>Was liegt in GitHub?</td><td>Ein dauerhaft gültiges Passwort</td><td>Nur nicht geheime Kennungen</td></tr>
+<tr><td>Was liegt in Entra ID?</td><td>Das Client Secret an der App-Registrierung</td><td>Die Regel mit Issuer, Subject, Audience</td></tr>
+<tr><td>Abgeflossener Wert nutzbar</td><td>Von überall, bis zum Ablauf oder Widerruf</td><td>Nur kurz, im Rahmen der Rollenzuweisung</td></tr>
+<tr><td>Bindung an Branch oder Environment</td><td>Nur über GitHub-Konfiguration</td><td>Zusätzlich von Entra ID geprüft</td></tr>
+<tr><td>Rotation</td><td>Manuell, jemand muss den Ablauf im Blick haben</td><td>Entfällt</td></tr>
+</tbody>
+</table></div>
+
+<p>OIDC macht GitHub Secrets nicht überflüssig. Für Dienste, die keine Federation anbieten, bleibt ein gespeicherter API-Schlüssel oft die einzige Option. Für den Weg von GitHub nach Azure ist OIDC aber der Normalfall, ein Client Secret die Ausnahme.</p>
+
+<h2>App Service, Managed Identity und Key Vault</h2>
+
+<p>Das Ziel des Deployments ist hier <strong>App Service</strong>. Die App bekommt ihre Konfiguration über App Settings, die zur Laufzeit als Umgebungsvariablen erscheinen. Für Geheimnisse im Klartext sind sie kein guter Ort: Wer die Konfiguration über die Control Plane lesen darf, sieht die Werte, und das schließt „Website Contributor“ und damit die Deployment-Identität ein. Dafür gibt es <strong>Key Vault</strong>.</p>
+
+<p>Die Laufzeit-Identität ist im Normalfall eine <strong>Managed Identity</strong> (siehe Kapitel 2, Identitäten und Tokens). Die App holt ihr Token über einen lokalen Endpunkt, den die Plattform nur innerhalb der Ressource bereitstellt, im Code meist über die SDK-Klasse <code>DefaultAzureCredential</code>.</p>
+
+<pre><code class="language-bash">az webapp identity assign --name meine-app --resource-group meine-rg
+az role assignment create --assignee &lt;principal-id&gt; --role "Key Vault Secrets User" --scope "&lt;key-vault-id&gt;"</code></pre>
+
+<p>Die Rolle „Key Vault Secrets User“ ist eine Data-Plane-Rolle und erlaubt nur das Lesen von Geheimnissen. Sie setzt einen Key Vault voraus, dessen Zugriff über Azure RBAC gesteuert wird. Der Wert kommt dann auf einem von zwei Wegen in die App:</p>
+
+<ul>
+<li><strong>Direkt im Code</strong>: Die App ruft Key Vault mit ihrer Managed Identity auf und liest das Geheimnis.</li>
+<li><strong>Key-Vault-Referenz</strong>: Ein App Setting enthält statt des Werts einen Verweis wie <code>@Microsoft.<wbr>KeyVault(<wbr>VaultName=kv-meine-app;<wbr>SecretName=api-key)</code>, den App Service mit der Managed Identity auflöst. Die App sieht eine normale Umgebungsvariable, die Control Plane nur den Verweis.</li>
+</ul>
+
+<p>Noch besser ist es, wenn gar kein Geheimnis nötig ist. Viele Azure-Dienste akzeptieren direkt das Token der Managed Identity, und die Rollenzuweisung auf dem Zieldienst ist dann das einzige Recht. Auch Anwendungsberechtigungen für die Graph API lassen sich an den Service Principal einer Managed Identity hängen (siehe Kapitel 3, Die drei Rechtesysteme).</p>
+
+<p>Eine Managed Identity löst allerdings nur das Problem gespeicherter Passwörter. Läuft fremder Code in der App, etwa durch eine Sicherheitslücke, kann auch er beim lokalen Endpunkt Tokens holen. Deshalb gilt Least Privilege auch für die Laufzeit-Identität: Rollenzuweisungen auf einzelne Ressourcen statt auf die ganze Subscription.</p>
+
+<h2>Was liegt wo?</h2>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Was</th><th>Wo es liegt</th><th>Wer herankommt</th></tr></thead>
+<tbody>
+<tr><td>Quellcode, Workflows</td><td>GitHub-Repository; Kopien auf Laptops und kurz auf dem Runner</td><td>Repository-Rollen; Read genügt zum Lesen</td></tr>
+<tr><td>GitHub Secrets</td><td>GitHub, verschlüsselt; zur Laufzeit im Runner</td><td>Setzen durch Admins; nutzbar für Workflows, praktisch also auch für Write</td></tr>
+<tr><td>Federated Credential</td><td>An der App-Registrierung oder der Managed Identity</td><td>Besitzer der App-Registrierung, passende Entra- oder Azure-Rollen</td></tr>
+<tr><td>Tokens der Deployment-Identität</td><td>Auf dem Runner, kurz gültig</td><td>Der Job und alles, was in ihm läuft</td></tr>
+<tr><td>Tokens der Laufzeit-Identität</td><td>Im Speicher der App, von der Plattform ausgestellt</td><td>Die App und ihr Prozess</td></tr>
+<tr><td>App Settings</td><td>App Service</td><td>Rollen mit Konfigurationsrechten auf der Web-App</td></tr>
+<tr><td>Geheimnisse</td><td>Key Vault</td><td>Data-Plane-Rollen auf dem Key Vault</td></tr>
+<tr><td>Rollenzuweisungen</td><td>Azure RBAC, am jeweiligen Scope (Azure)</td><td>Rollen wie Owner oder User Access Administrator</td></tr>
+<tr><td>Logs</td><td>Workflow-Läufe bei GitHub; Activity Log für Control-Plane-Vorgänge in Azure; Sign-in-Log für Anmeldungen der Identitäten; Key-Vault-Protokolle, sofern aktiviert</td><td>Je nach System eigene Rollen</td></tr>
+</tbody>
+</table></div>
+
+<p>Ein verdächtiges Deployment lässt sich damit aus zwei Richtungen verfolgen: im Workflow-Lauf bei GitHub und im Activity Log bei Azure. Kein System allein liefert das ganze Bild.</p>
+
+<h2>Angriffsszenarien: Repo, Runner, Laptop</h2>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Szenario</th><th>Was der Angreifer bekommt</th><th>Was er nicht bekommt</th><th>Erste Reaktion</th></tr></thead>
+<tbody>
+<tr><td>Repository wird nur gelesen, etwa weil es öffentlich wurde</td><td>Code, Workflows, Kennungen und alles aus der Git-Historie, etwa eine alte <code>.env</code></td><td>GitHub Secrets; kein OIDC-Token, weil er keinen Job im Repository starten kann</td><td>Alle je eingecheckten Geheimnisse rotieren; Löschen aus der Historie allein reicht nicht</td></tr>
+<tr><td>Write-Zugang zum Repository, etwa über ein gestohlenes Konto</td><td>Workflows im eigenen Branch, damit Repository-Secrets</td><td>Bei OIDC mit passendem Subject keine Azure-Rechte, solange <code>main</code> geschützt und das Environment auf <code>main</code> beschränkt ist</td><td>Konto sperren, Workflow-Läufe prüfen, erreichbare Secrets rotieren</td></tr>
+<tr><td>Runner wird im Job übernommen, etwa durch eine bösartige Abhängigkeit</td><td>Alles im Job: Quellcode, Secrets des Jobs, das aktuelle Azure-Token für dessen Gültigkeit</td><td>Bei OIDC kein dauerhaftes Anmeldegeheimnis der Deployment-Identität; eine ausgerollte Hintertür kann aber Zugang erhalten und die Rechte der Laufzeit-Identität nutzen</td><td>Ausgerollte Version kontrollieren, Abhängigkeit entfernen, Secrets des Jobs rotieren</td></tr>
+<tr><td>Laptop einer Entwicklerin wird übernommen</td><td>Lokale Git-Zugänge, <code>az</code>-Token-Cache, <code>.env</code>-Dateien, also deren persönliche Rechte (siehe Kapitel 6, Geräte und Zugriffsregeln)</td><td>Bei Pflicht-Review keine alleinige Änderung an <code>main</code>; bei Least Privilege keinen breiten Azure-Zugriff</td><td>Sitzungen in Entra ID und GitHub widerrufen, Schlüssel tauschen, lokale Geheimnisse rotieren</td></tr>
+</tbody>
+</table></div>
+
+<p>Daraus folgen einige konkrete Regeln:</p>
+
+<ul>
+<li><strong>Subject eng fassen.</strong> Pro Umgebung eine Regel, gebunden an ein geschütztes Environment oder einen geschützten Branch.</li>
+<li><strong>Rollenzuweisung der Deployment-Identität auf die einzelne App begrenzen.</strong> Ein Contributor auf der ganzen Subscription macht aus einem Runner-Vorfall einen Subscription-Vorfall.</li>
+<li><strong>Fremde Actions auf einen festen Commit-Hash pinnen.</strong> Ein Versions-Tag kann nachträglich auf anderen Code zeigen, ein Hash nicht.</li>
+<li><strong>Self-hosted Runner nicht für öffentliche Repositories nutzen.</strong> Sonst können Fremde über Pull Requests unter Umständen Code auf einem eigenen Rechner ausführen.</li>
+</ul>
+<nav style="display:flex;justify-content:space-between;gap:1rem;margin-top:3rem;border-top:1px solid var(--rule);padding-top:1rem;font-family:'Helvetica Neue',Arial,sans-serif;font-size:.9rem"><span><a href="06-geraete-zugriff.html">← Zurück</a></span><a href="index.html">Übersicht</a><span><a href="08-projekt.html">Weiter →</a></span></nav>
+</body>
+</html>

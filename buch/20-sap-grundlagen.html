@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>20. SAP für Microsoft-Leute: Systemlandschaft und Rechtemodell</title>
+<style>
+:root { --bg:#fafaf7; --text:#1f2230; --muted:#5b6072; --accent:#2f5d8a;
+  --accent-soft:#d9e4ef; --leader:#b8472a; --node-fill:#ffffff;
+  --node-stroke:#2f5d8a; --rule:#c8ccd6; --code-bg:#eef1f5; }
+html,body { background:var(--bg); color:var(--text);
+  font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+  line-height:1.65; font-size:18px; }
+body { max-width:760px; margin:3rem auto 6rem; padding:0 1.5rem; }
+h1 { font-size:2rem; line-height:1.2; margin:0 0 2rem;
+  border-bottom:1px solid var(--rule); padding-bottom:0.6rem; }
+h2 { font-size:1.35rem; margin-top:2.4rem; margin-bottom:0.8rem;
+  color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif;
+  font-weight:600; letter-spacing:0.01em; }
+p { margin:0 0 1.1rem; }
+figure { margin:2rem auto; text-align:center; }
+figure svg { max-width:100%; height:auto; display:block; margin:0 auto; }
+figcaption { font-family:"Helvetica Neue",Arial,sans-serif; font-size:0.85rem;
+  color:var(--muted); margin-top:0.6rem; text-align:center; }
+svg text { font-family:"Helvetica Neue",Arial,sans-serif; fill:var(--text); }
+.legend-text { font-size:11px; fill:var(--muted); }
+pre { background:var(--code-bg); padding:0.9rem 1.1rem; overflow-x:auto;
+  border-radius:6px; font-size:0.82em; }
+code { background:var(--code-bg); font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:0.85em; padding:0.1em 0.3em; border-radius:3px; }
+pre code { background:none; padding:0; }
+.table-wrap { overflow-x:auto; margin:1.5rem 0; }
+table { border-collapse:collapse; width:100%; font-size:0.85em; line-height:1.45; }
+th { text-align:left; color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif;
+  font-weight:600; border-bottom:2px solid var(--accent); padding:0.45rem 0.6rem;
+  vertical-align:bottom; }
+td { border-bottom:1px solid var(--rule); padding:0.45rem 0.6rem; vertical-align:top; }
+tr { break-inside:avoid; }
+</style>
+</head>
+<body>
+<h1>20. SAP für Microsoft-Leute: Systemlandschaft und Rechtemodell</h1>
+
+<p>In vielen Firmen laufen Buchhaltung, Einkauf, Lager und Personal in SAP. Microsoft 365 ist dort der Arbeitsplatz, SAP das System, in dem das Geschäft steht. Wer an der Grenze zwischen beiden arbeitet, etwa mit einem Agenten, der Bestellungen abfragt, oder mit einer Anmeldung über Entra ID, muss SAP nicht bedienen können. Er muss aber verstehen, wie SAP Systeme gliedert und Rechte vergibt. Vieles klingt vertraut und ist doch anders: Ein Mandant ist kein Tenant, und eine Rolle prüft nicht von selbst. Dieses Kapitel ordnet die Begriffe so, dass sie sich an die Modelle der vorigen Kapitel anschließen lassen.</p>
+
+<h2>Die Produktlandschaft</h2>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Produkt</th><th>Was es ist</th></tr></thead>
+<tbody>
+<tr><td><strong>SAP ERP (ECC)</strong></td><td>das klassische ERP-System, das viele Firmen seit Jahrzehnten betreiben; Microsoft-Vergleich: ein großer, selbst betriebener Anwendungsserver mit eigener Datenbank</td></tr>
+<tr><td><strong>S/4HANA</strong></td><td>der Nachfolger von ECC, nur auf der Datenbank HANA, mit vereinfachtem Datenmodell; ein neues Produkt, kein einfaches Upgrade</td></tr>
+<tr><td><strong>SAP BTP</strong></td><td>Business Technology Platform: SAPs Plattform für Integration, Erweiterungen, Daten, KI und Identität, grob vergleichbar mit Azure plus Power Platform für die SAP-Welt</td></tr>
+<tr><td><strong>SuccessFactors, Ariba, Concur</strong></td><td>zugekaufte SaaS-Produkte für Personal, Einkauf und Reisekosten, jeweils mit eigenem Rechtemodell</td></tr>
+</tbody>
+</table></div>
+
+<p>S/4HANA gibt es in drei Betriebsformen:</p>
+
+<ul>
+<li><strong>On-Premise:</strong> Die Firma betreibt das System selbst oder lässt es betreiben.</li>
+<li><strong>Private Cloud:</strong> Ein eigenes System für eine Firma, betrieben von SAP oder bei einem Hyperscaler wie Azure, vertraglich meist im Paket <strong>RISE with SAP</strong>.</li>
+<li><strong>Public Cloud:</strong> Ein SaaS-System, das sich viele Kunden teilen, mit festen Standardprozessen und regelmäßigen Updates durch SAP.</li>
+</ul>
+
+<p>SAP fasst die Cloud-Varianten inzwischen unter dem Dach „SAP Cloud ERP“ zusammen; in Projekten heißen sie weiter Public und Private Cloud.</p>
+
+<p>Für den Markt ist ein Datum wichtig: Die reguläre Wartung von ECC endet Ende 2027, gegen Aufpreis gibt es eine Verlängerung bis 2030. Deshalb stecken gerade sehr viele Firmen in der Umstellung auf S/4HANA, und mit ihr werden auch Rollen, Anmeldung und Schnittstellen neu gebaut. Das ist einer der Gründe, warum es so viele SAP-nahe Stellen gibt.</p>
+
+<p>Ein weiterer Begriff fällt in fast jedem Projekt: <strong>Clean Core</strong>. Das ERP soll möglichst nah am Standard bleiben, Erweiterungen laufen über freigegebene Schnittstellen oder daneben auf der BTP. Das ist dieselbe Idee wie „in Produktion wird nicht direkt angepasst“ (siehe <a href="18-solutions-alm.html">Kapitel 18, Solutions und ALM</a>), nur über ein ganzes ERP-System gedacht.</p>
+
+<p>Als Oberflächen gibt es das <strong>SAP GUI</strong>, einen Windows-Client, der mit Transaktionscodes wie <code>SU01</code> oder <code>PFCG</code> arbeitet, und <strong>Fiori</strong>, die Web-Oberfläche, deren Apps im Hintergrund OData-Services aufrufen. In S/4HANA laufen beide nebeneinander. <strong>Joule</strong> ist SAPs KI-Assistent über die Cloud-Produkte hinweg; wie Copilot soll er nur zeigen, was die angemeldete Person sehen darf.</p>
+
+<h2>System, Mandant, Landschaft</h2>
+
+<p>Drei Begriffe tragen die ganze Struktur:</p>
+
+<ul>
+<li>Ein <strong>System</strong> ist eine SAP-Installation mit Datenbank und Anwendungsservern. Es hat eine dreistellige Kennung, die <strong>SID</strong>, etwa <code>PRD</code>.</li>
+<li>Ein <strong>Mandant</strong> (Client) ist eine dreistellige Nummer wie <code>100</code> und trennt Daten <strong>innerhalb</strong> eines Systems. Benutzer, Rollenzuordnungen und Geschäftsdaten gehören zu einem Mandanten. Programmcode und Tabellendefinitionen gelten für alle Mandanten eines Systems.</li>
+<li>Die <strong>Drei-System-Landschaft</strong> besteht aus Entwicklung (DEV), Qualitätssicherung (QAS) und Produktion (PRD).</li>
+</ul>
+
+<p>Wer sich anmeldet, gibt deshalb immer drei Dinge an: System, Mandant und Benutzer.</p>
+
+<figure id="kap20-landschaft">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 355" role="img" aria-labelledby="d20-la-title d20-la-desc"><title id="d20-la-title">Eine SAP-Landschaft</title><desc id="d20-la-desc">Drei Systeme DEV, QAS und PRD. DEV hat die Mandanten 100 und 200, QAS und PRD je den Mandanten 100, jeweils mit eigenen Benutzern und Daten. In jedem System gelten Programme und Tabellen für alle Mandanten. Transportaufträge wandern von DEV über QAS nach PRD.</desc><defs><marker id="d20-la-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="d20-la-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker><marker id="d20-la-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker></defs><rect x="10" y="30" width="210" height="250" rx="6" fill="none" stroke="#2f5d8a" stroke-width="1.5"/><text x="115" y="54" font-size="13" text-anchor="middle" font-weight="600" style="fill:#2f5d8a">System DEV</text><rect x="25" y="70" width="180" height="56" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="115.0" y="96" font-size="12.5" text-anchor="middle" font-weight="600">Mandant 100</text><text x="115.0" y="110" font-size="11" text-anchor="middle" style="fill:#5b6072">Customizing: Benutzer, Daten</text><rect x="25" y="140" width="180" height="56" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="115.0" y="166" font-size="12.5" text-anchor="middle" font-weight="600">Mandant 200</text><text x="115.0" y="180" font-size="11" text-anchor="middle" style="fill:#5b6072">Test: Benutzer, Daten</text><rect x="25" y="220" width="180" height="46" rx="4" fill="#ffffff" stroke="#c8ccd6" stroke-width="1.5"/><text x="115.0" y="240" font-size="12.5" text-anchor="middle" font-weight="600">Programme, Tabellen</text><text x="115.0" y="256" font-size="11" text-anchor="middle" style="fill:#5b6072">gelten für alle Mandanten</text><rect x="235" y="30" width="210" height="250" rx="6" fill="none" stroke="#2f5d8a" stroke-width="1.5"/><text x="340" y="54" font-size="13" text-anchor="middle" font-weight="600" style="fill:#2f5d8a">System QAS</text><rect x="250" y="70" width="180" height="56" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="340.0" y="96" font-size="12.5" text-anchor="middle" font-weight="600">Mandant 100</text><text x="340.0" y="110" font-size="11" text-anchor="middle" style="fill:#5b6072">Abnahme: Benutzer, Daten</text><rect x="250" y="220" width="180" height="46" rx="4" fill="#ffffff" stroke="#c8ccd6" stroke-width="1.5"/><text x="340.0" y="240" font-size="12.5" text-anchor="middle" font-weight="600">Programme, Tabellen</text><text x="340.0" y="256" font-size="11" text-anchor="middle" style="fill:#5b6072">gelten für alle Mandanten</text><rect x="460" y="30" width="210" height="250" rx="6" fill="none" stroke="#2f5d8a" stroke-width="1.5"/><text x="565" y="54" font-size="13" text-anchor="middle" font-weight="600" style="fill:#2f5d8a">System PRD</text><rect x="475" y="70" width="180" height="56" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="565.0" y="96" font-size="12.5" text-anchor="middle" font-weight="600">Mandant 100</text><text x="565.0" y="110" font-size="11" text-anchor="middle" style="fill:#5b6072">Produktion: Benutzer, Daten</text><rect x="475" y="220" width="180" height="46" rx="4" fill="#ffffff" stroke="#c8ccd6" stroke-width="1.5"/><text x="565.0" y="240" font-size="12.5" text-anchor="middle" font-weight="600">Programme, Tabellen</text><text x="565.0" y="256" font-size="11" text-anchor="middle" style="fill:#5b6072">gelten für alle Mandanten</text><path d="M115 305 L338 305" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d20-la-a)"/><path d="M340 305 L563 305" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d20-la-a)"/><text x="227" y="298" font-size="11" text-anchor="middle" font-weight="600" style="fill:#2f5d8a">Transportauftrag</text><text x="452" y="298" font-size="11" text-anchor="middle" font-weight="600" style="fill:#2f5d8a">Transportauftrag</text><text x="340" y="340" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">Ein Mandant trennt Daten im System; er ist kein Tenant.</text></svg>
+<figcaption>Ein Mandant trennt Daten innerhalb eines Systems, ist aber kein Tenant mit eigener Identitätswelt. Rollen und Programme entstehen in DEV und wandern per Transport nach Produktion.</figcaption>
+</figure>
+
+<p>Der Vergleich mit Microsoft hilft, wenn man ihn richtig zieht. Ein Mandant ist <strong>kein Tenant</strong>. Ein Tenant ist eine eigene Identitätswelt mit eigenem Verzeichnis. Ein Mandant teilt sich dagegen Code und vieles an Technik mit den anderen Mandanten desselben Systems. Er ähnelt eher einer Dataverse-Umgebung auf einer gemeinsamen Plattform.</p>
+
+<h3>Transporte</h3>
+
+<p>Änderungen an Programmen, Einstellungen und Rollen entstehen in DEV und werden in <strong>Transportaufträgen</strong> gesammelt. Ein Transportauftrag wird freigegeben und dann entlang eines festen Wegs nach QAS und PRD importiert. In Produktion ändert man nicht direkt. Das ist dasselbe Modell wie Solutions und Pipelines in der Power Platform (siehe <a href="18-solutions-alm.html">Kapitel 18, Solutions und ALM</a>), nur älter, feiner und seit Jahrzehnten Gegenstand jeder Prüfung.</p>
+
+<h2>Das Rechtemodell</h2>
+
+<p>Das klassische SAP-Rechtemodell ist sehr fein, und es funktioniert in einem entscheidenden Punkt anders als die Modelle der Microsoft-Welt.</p>
+
+<h3>Benutzertypen</h3>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Typ</th><th>Für wen</th><th>Anmeldung</th></tr></thead>
+<tbody>
+<tr><td>Dialog</td><td>eine Person</td><td>interaktiv</td></tr>
+<tr><td>System</td><td>Hintergrundprozesse, Schnittstellen im System</td><td>keine interaktive Anmeldung</td></tr>
+<tr><td>Kommunikation</td><td>Schnittstellen von außen</td><td>keine interaktive Anmeldung</td></tr>
+<tr><td>Service</td><td>geteilte oder anonyme Zugänge</td><td>interaktiv möglich, Rechte sehr eng halten</td></tr>
+<tr><td>Referenz</td><td>Vorlage, um Rechte zu vererben</td><td>keine Anmeldung</td></tr>
+</tbody>
+</table></div>
+
+<p>System- und Kommunikationsbenutzer sind die SAP-Fassung eines Service Principals: Identitäten für Maschinen, nicht für Menschen. An der Schnittstelle zu Microsoft spielen sie eine große Rolle (siehe <a href="21-sap-microsoft.html">Kapitel 21, Microsoft und SAP</a>).</p>
+
+<h3>Berechtigungsobjekte</h3>
+
+<p>Das Kernkonzept ist das <strong>Berechtigungsobjekt</strong>. Es beschreibt eine Art von Recht und hat Felder. Eine <strong>Berechtigung</strong> ist eine konkrete Belegung dieser Felder. Zwei Beispiele:</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Objekt</th><th>Felder</th><th>Bedeutung einer Berechtigung</th></tr></thead>
+<tbody>
+<tr><td><code>S_TCODE</code></td><td>Transaktion</td><td>darf die Transaktion starten, etwa <code>FB03</code></td></tr>
+<tr><td><code>F_BKPF_BUK</code></td><td>Buchungskreis, Aktivität</td><td>darf Buchhaltungsbelege im Buchungskreis 1000 anzeigen (Aktivität 03)</td></tr>
+</tbody>
+</table></div>
+
+<p>Die Aktivität <code>ACTVT</code> taucht in vielen Objekten auf: <code>01</code> heißt anlegen, <code>02</code> ändern, <code>03</code> anzeigen. Ein <strong>Buchungskreis</strong> ist eine rechtlich selbständige Einheit der Buchhaltung, meist eine Firma im Konzern.</p>
+
+<p>Der Unterschied zu Azure RBAC liegt im Scope. Azure grenzt über die Ressource ab, etwa eine Resource Group. SAP grenzt über <strong>Organisationswerte</strong> ab: Buchungskreis, Werk, Verkaufsorganisation. Das ähnelt eher den Zugriffsebenen und Business Units in Dataverse (siehe <a href="16-dataverse.html">Kapitel 16, Dataverse</a>).</p>
+
+<h3>Wer prüft</h3>
+
+<p>Hier liegt der wichtigste Unterschied zu Entra ID und Dataverse. In Dataverse prüft die Plattform jeden Zugriff selbst. Im klassischen SAP prüft das <strong>Programm</strong>: Der ABAP-Code ruft an den Stellen, an denen er Schutz braucht, ausdrücklich eine Prüfung auf, den <code>AUTHORITY-CHECK</code>. Beim Start einer Transaktion prüft das System zuerst <code>S_TCODE</code>, danach prüft das Programm die Objekte, die es selbst abfragt.</p>
+
+<p>Daraus folgt: Ein selbst entwickeltes Programm ohne Prüfung schützt seine Daten nicht, egal wie sauber die Rollen sind. Eigenentwicklungen, in SAP oft an Namen mit <code>Z</code> oder <code>Y</code> zu erkennen, sind deshalb ein eigenes Prüfthema.</p>
+
+<h3>Rollen in PFCG</h3>
+
+<p>Rollen werden im <strong>Profilgenerator</strong> gepflegt, der Transaktion <code>PFCG</code>.</p>
+
+<ul>
+<li>Eine <strong>Einzelrolle</strong> enthält ein Menü aus Transaktionen oder Apps und die Berechtigungsdaten dazu. Aus ihr erzeugt das System ein <strong>Profil</strong>, gegen das technisch geprüft wird.</li>
+<li>Eine <strong>Sammelrolle</strong> bündelt mehrere Einzelrollen, ohne eigene Berechtigungen.</li>
+<li>Aus einer <strong>Masterrolle</strong> werden <strong>abgeleitete Rollen</strong> erzeugt, die dieselbe Funktion mit anderen Organisationswerten haben: dieselbe Rolle „Kreditorenbuchhaltung“, einmal für Buchungskreis 1000, einmal für 2000.</li>
+</ul>
+
+<figure id="kap20-rolle">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 320" role="img" aria-labelledby="d20-ro-title d20-ro-desc"><title id="d20-ro-title">Vom Berechtigungsobjekt zum Benutzer</title><desc id="d20-ro-desc">Feldwerte Buchungskreis 1000 und Aktivität 03 bilden eine Berechtigung im Objekt F_BKPF_BUK. Sie steht in einer Einzelrolle in PFCG, aus der ein Profil generiert wird. Die Einzelrolle steckt in einer Sammelrolle, die einem Benutzer im Mandanten zugeordnet ist. Darunter eine Masterrolle mit zwei abgeleiteten Rollen für die Buchungskreise 1000 und 2000.</desc><defs><marker id="d20-ro-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="d20-ro-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker><marker id="d20-ro-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker></defs><rect x="5" y="40" width="120" height="64" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="65.0" y="62" font-size="12.5" text-anchor="middle" font-weight="600">Feldwerte</text><text x="65.0" y="78" font-size="11" text-anchor="middle" style="fill:#5b6072">Buchungskreis 1000</text><text x="65.0" y="92" font-size="11" text-anchor="middle" style="fill:#5b6072">Aktivität 03</text><rect x="140" y="40" width="125" height="64" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="202.5" y="70" font-size="12.5" text-anchor="middle" font-weight="600">F_BKPF_BUK</text><text x="202.5" y="84" font-size="11" text-anchor="middle" style="fill:#5b6072">Berechtigungsobjekt</text><rect x="280" y="40" width="125" height="64" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="342.5" y="62" font-size="12.5" text-anchor="middle" font-weight="600">Einzelrolle</text><text x="342.5" y="78" font-size="11" text-anchor="middle" style="fill:#5b6072">PFCG: Menü und</text><text x="342.5" y="92" font-size="11" text-anchor="middle" style="fill:#5b6072">Berechtigungen</text><rect x="420" y="40" width="115" height="64" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="477.5" y="70" font-size="12.5" text-anchor="middle" font-weight="600">Sammelrolle</text><text x="477.5" y="84" font-size="11" text-anchor="middle" style="fill:#5b6072">bündelt Rollen</text><rect x="550" y="40" width="125" height="64" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="612.5" y="70" font-size="12.5" text-anchor="middle" font-weight="600">Benutzer</text><text x="612.5" y="84" font-size="11" text-anchor="middle" style="fill:#5b6072">im Mandanten</text><path d="M125 72 L138 72" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d20-ro-a)"/><path d="M265 72 L278 72" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d20-ro-a)"/><path d="M405 72 L418 72" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d20-ro-a)"/><path d="M535 72 L548 72" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d20-ro-a)"/><rect x="280" y="130" width="125" height="46" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="342.5" y="150" font-size="12.5" text-anchor="middle" font-weight="600">Profil</text><text x="342.5" y="166" font-size="11" text-anchor="middle" style="fill:#5b6072">wird generiert</text><path d="M342 104 L342 128" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d20-ro-a)"/><rect x="30" y="222" width="200" height="56" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="130.0" y="248" font-size="12.5" text-anchor="middle" font-weight="600">Masterrolle</text><text x="130.0" y="262" font-size="11" text-anchor="middle" style="fill:#5b6072">Kreditorenbuchhaltung</text><rect x="290" y="200" width="170" height="44" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="375.0" y="220" font-size="12.5" text-anchor="middle" font-weight="600">Abgeleitete Rolle</text><text x="375.0" y="234" font-size="11" text-anchor="middle" style="fill:#5b6072">Buchungskreis 1000</text><rect x="290" y="262" width="170" height="44" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="375.0" y="282" font-size="12.5" text-anchor="middle" font-weight="600">Abgeleitete Rolle</text><text x="375.0" y="296" font-size="11" text-anchor="middle" style="fill:#5b6072">Buchungskreis 2000</text><path d="M230 242 L288 222" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d20-ro-a)"/><path d="M230 258 L288 284" fill="none" stroke="#2f5d8a" stroke-width="1.5" marker-end="url(#d20-ro-a)"/><text x="575" y="230" font-size="11.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">Geprüft wird das Profil,</text><text x="575" y="246" font-size="11.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">dort, wo das Programm</text><text x="575" y="262" font-size="11.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">ausdrücklich fragt.</text></svg>
+<figcaption>Eine SAP-Rolle ist ein Bündel aus Funktion und Organisationswert. Wirksam wird sie erst, wenn das Programm an der richtigen Stelle prüft.</figcaption>
+</figure>
+
+<p>Die Rollen entstehen in DEV und werden transportiert. In Produktion werden sie nur Benutzern zugeordnet.</p>
+
+<p>Für die Fehlersuche gibt es eigene Werkzeuge: <code>SU53</code> zeigt die letzte fehlgeschlagene Prüfung eines Benutzers, ein Berechtigungs-Trace zeichnet alle Prüfungen auf, <code>SUIM</code> wertet Benutzer und Rollen aus. Das entspricht grob dem Sign-in-Log und der Funktion „Check Access“ in Dataverse.</p>
+
+<h3>Kritische Rechte und Notfallzugriff</h3>
+
+<p>Zwei Profile sind Standardfunde jeder Prüfung: <strong><code>SAP_ALL</code></strong> gibt alle Rechte, vergleichbar mit einem dauerhaften Global Administrator ohne PIM, und <strong><code>SAP_NEW</code></strong> gibt pauschal Rechte für neue Prüfungen nach einem Upgrade. Dialogbenutzer in Produktion sollten keines von beiden haben. Auch die bei der Installation angelegten Standardbenutzer gehören gesperrt oder mit geändertem Kennwort abgesichert.</p>
+
+<p>Für Notfälle gibt es den <strong>Firefighter</strong>: einen Zugang mit weitreichenden Rechten, der nur befristet, mit Begründung und protokolliert genutzt wird, und dessen Protokoll eine zweite Person nachträglich prüft. Das ist inhaltlich PIM (siehe <a href="04-admin-rollen.html">Kapitel 4, Admin-Rollen</a>), nur in SAP-Werkzeugen.</p>
+
+<h3>Fiori: drei Ebenen für eine App</h3>
+
+<p>Eine Fiori-App braucht drei getrennte Freigaben:</p>
+
+<ol>
+<li>die <strong>Kachel</strong> aus einem Business Catalog im Menü der Rolle,</li>
+<li>die Berechtigung, den <strong>OData-Service</strong> im Hintergrund aufzurufen,</li>
+<li>die klassischen <strong>Berechtigungsobjekte</strong> für die eigentlichen Daten.</li>
+</ol>
+
+<p>Fehlt die erste, sieht man die App nicht. Fehlt die zweite, startet sie mit einem Fehler. Fehlt die dritte, bleibt sie leer. Wer „Die App ist da, aber leer“ hört, kennt jetzt die drei Stellen, an denen es hängen kann.</p>
+
+<h3>Rechte in der Public Cloud</h3>
+
+<p>In der Public Cloud von S/4HANA gibt es keinen Profilgenerator und keinen direkten Zugriff auf Berechtigungsobjekte. Das Modell ist vereinfacht: Eine <strong>Business Role</strong> wird aus einer Vorlage von SAP erzeugt, enthält <strong>Business Catalogs</strong> als Funktionsbündel und <strong>Restrictions</strong>, die auf Organisationswerte wie Buchungskreis oder Werk einschränken. Business Users bekommen Business Roles. Das Prinzip „Funktion mal Organisationswert“ bleibt, die Werkzeuge sind andere.</p>
+
+<h2>Governance: Funktionstrennung und Prüfung</h2>
+
+<p>In der Microsoft-Welt ist die große Frage meist „Wer ist Admin?“. In der SAP-Welt ist es die <strong>Funktionstrennung</strong> (Segregation of Duties, SoD). Bestimmte Kombinationen von Rechten bei einer Person sind ein Risiko, auch wenn jedes Recht für sich harmlos ist. Das klassische Beispiel: Wer einen neuen Lieferanten anlegen <strong>und</strong> eine Zahlung an ihn freigeben kann, kann Geld an sich selbst überweisen.</p>
+
+<p>Ein Regelwerk beschreibt deshalb Funktionen und die Konflikte zwischen ihnen, und Werkzeuge prüfen Rollen und Benutzer dagegen, am besten schon vor der Zuordnung.</p>
+
+<figure id="kap20-sod">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 335" role="img" aria-labelledby="d20-sd-title d20-sd-desc"><title id="d20-sd-title">Funktionstrennung</title><desc id="d20-sd-desc">Links hat Person A die Rechte Lieferant anlegen und Zahlung freigeben und kann damit an sich selbst zahlen. Rechts sind die Rechte auf Person A und Person B verteilt, es gibt keinen Konflikt. Darunter: Ein Regelwerk in GRC oder IAG warnt schon vor der Zuordnung.</desc><defs><marker id="d20-sd-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2f5d8a"/></marker><marker id="d20-sd-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#b8472a"/></marker><marker id="d20-sd-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5b6072"/></marker></defs><text x="170" y="28" font-size="13" text-anchor="middle" font-weight="600" style="fill:#b8472a">Eine Person</text><text x="510" y="28" font-size="13" text-anchor="middle" font-weight="600" style="fill:#2f5d8a">Getrennt</text><rect x="10" y="40" width="320" height="222" rx="6" fill="none" stroke="#c8ccd6" stroke-width="1.5"/><rect x="350" y="40" width="320" height="222" rx="6" fill="none" stroke="#c8ccd6" stroke-width="1.5"/><rect x="100" y="60" width="140" height="44" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="170.0" y="86" font-size="12.5" text-anchor="middle" font-weight="600">Person A</text><rect x="25" y="140" width="140" height="50" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="95.0" y="170" font-size="12.5" text-anchor="middle" font-weight="600">Lieferant anlegen</text><rect x="175" y="140" width="140" height="50" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="245.0" y="170" font-size="12.5" text-anchor="middle" font-weight="600">Zahlung freigeben</text><path d="M150 104 L95 138" fill="none" stroke="#5b6072" stroke-width="1.5"/><path d="M190 104 L245 138" fill="none" stroke="#5b6072" stroke-width="1.5"/><rect x="25" y="210" width="290" height="38" rx="4" fill="#ffffff" stroke="#b8472a" stroke-width="1.5"/><text x="170.0" y="234" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:#b8472a">kann an sich selbst zahlen</text><rect x="370" y="60" width="135" height="44" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="437.5" y="86" font-size="12.5" text-anchor="middle" font-weight="600">Person A</text><rect x="515" y="60" width="135" height="44" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="582.5" y="86" font-size="12.5" text-anchor="middle" font-weight="600">Person B</text><rect x="370" y="140" width="135" height="50" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="437.5" y="170" font-size="12.5" text-anchor="middle" font-weight="600">Lieferant anlegen</text><rect x="515" y="140" width="135" height="50" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="582.5" y="170" font-size="12.5" text-anchor="middle" font-weight="600">Zahlung freigeben</text><path d="M437 104 L437 138" fill="none" stroke="#5b6072" stroke-width="1.5"/><path d="M582 104 L582 138" fill="none" stroke="#5b6072" stroke-width="1.5"/><rect x="370" y="210" width="280" height="38" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="510.0" y="234" font-size="12.5" text-anchor="middle" font-weight="600">kein Konflikt</text><rect x="100" y="282" width="480" height="40" rx="4" fill="#ffffff" stroke="#2f5d8a" stroke-width="1.5"/><text x="340.0" y="306" font-size="12.5" text-anchor="middle" font-weight="600">Ein Regelwerk in GRC oder IAG warnt schon vor der Zuordnung.</text></svg>
+<figcaption>In SAP entsteht das Risiko oft nicht durch ein zu starkes Recht, sondern durch die Kombination zweier normaler Rechte bei derselben Person.</figcaption>
+</figure>
+
+<p>Dafür gibt es zwei Werkzeugfamilien:</p>
+
+<ul>
+<li><strong>SAP GRC Access Control</strong> für die klassischen Systeme: Prüfung der Funktionstrennung, Anträge mit Genehmigung, Notfallzugriff mit Firefighter, regelmäßige Bestätigung der Rechte durch die Fachbereiche. Die heutige Version wird auf eine neue Generation umgestellt; das Produkt lebt weiter.</li>
+<li><strong>SAP Cloud Identity Access Governance</strong> für die Cloud-Produkte. Es ergänzt GRC und ersetzt es nicht vollständig. In vielen Firmen laufen beide nebeneinander.</li>
+</ul>
+
+<p>Der Grund für diese Strenge sind <strong>Wirtschaftsprüfer</strong>. Bei der Jahresabschlussprüfung testen sie die IT-Kontrollen rund um das System, in dem die Buchhaltung steht: Wie werden Rechte beantragt und genehmigt? Werden sie beim Austritt entzogen? Wer hat <code>SAP_ALL</code> oder Notfallzugriff, und wer prüft die Protokolle? Werden Änderungen nur über Transporte gemacht? Gibt es Konflikte in der Funktionstrennung? Was in Microsoft 365 oft als „gute Praxis“ gilt, ist in SAP prüfungsrelevant.</p>
+
+<p>Eine weitere Nachricht betrifft direkt die Microsoft-Welt: SAPs eigenes Produkt für Identitätsverwaltung, <strong>SAP Identity Management</strong>, läuft aus. SAP nennt Entra ID als empfohlenen Nachfolger. Wer Entra ID Governance kennt, hat in SAP-Firmen damit gerade ein gesuchtes Wissen (siehe <a href="21-sap-microsoft.html">Kapitel 21, Microsoft und SAP</a>).</p>
+
+<h2>Rechte auf der BTP</h2>
+
+<p>Auf der BTP gilt ein drittes, einfacheres Modell:</p>
+
+<ul>
+<li>Das Vertragskonto heißt <strong>Global Account</strong>. Darunter liegen <strong>Subaccounts</strong>, jeweils in einer Region, vergleichbar mit Subscriptions.</li>
+<li>Eine Anwendung definiert <strong>Role Templates</strong>. Daraus werden <strong>Roles</strong>, die zu <strong>Role Collections</strong> gebündelt werden. Nur Role Collections werden Benutzern oder Gruppen zugewiesen.</li>
+<li>Die Anmeldung läuft über eine Vertrauensbeziehung (Trust) zu einem Identitätsanbieter, empfohlen ist der <strong>Identity Authentication Service</strong> (IAS) aus den SAP Cloud Identity Services. Der IAS ist oft nur ein Vermittler vor Entra ID. Gruppen aus dem Identitätsanbieter werden auf Role Collections abgebildet.</li>
+</ul>
+
+<p>Das Muster ist dasselbe wie bei App-Rollen in Entra ID (siehe <a href="02-identitaeten-tokens.html">Kapitel 2, Identitäten und Tokens</a>): Die Anmeldung kommt von außen, die Rechte definiert die Anwendung.</p>
+
+<h2>SAP und Microsoft im Vergleich</h2>
+
+<div class="table-wrap"><table>
+<thead><tr><th>SAP</th><th>Microsoft</th><th>Wie gut der Vergleich trägt</th></tr></thead>
+<tbody>
+<tr><td>Mandant</td><td>Dataverse-Umgebung</td><td>teilweise; kein Tenant, Code ist geteilt</td></tr>
+<tr><td>Einzelrolle in PFCG</td><td>Sicherheitsrolle in Dataverse</td><td>gut: Funktion mal Reichweite</td></tr>
+<tr><td>Organisationswert wie Buchungskreis</td><td>Business Unit, Zugriffsebene</td><td>grob</td></tr>
+<tr><td>Sammelrolle</td><td>Gruppe mit mehreren Rollen, Access Package</td><td>grob</td></tr>
+<tr><td>Transportauftrag und Transportweg</td><td>Solution und Pipeline</td><td>gut; SAP ist feiner und strenger geprüft</td></tr>
+<tr><td>Firefighter</td><td>PIM</td><td>gut</td></tr>
+<tr><td>Notfallbenutzer ohne Werkzeug</td><td>Break-Glass-Konto</td><td>gut</td></tr>
+<tr><td>Prüfung der Funktionstrennung</td><td>kaum ein direktes Gegenstück</td><td>Lücke auf Microsoft-Seite</td></tr>
+<tr><td>Bestätigung der Rechte durch Fachbereiche</td><td>Access Reviews in Entra ID</td><td>gut</td></tr>
+<tr><td>IAS</td><td>Entra ID als Identitätsanbieter</td><td>IAS steht meist hinter Entra ID</td></tr>
+<tr><td><code>SU53</code>, Berechtigungs-Trace</td><td>Sign-in-Log, „Check Access“</td><td>grob</td></tr>
+</tbody>
+</table></div>
+
+<h2>Typische Missverständnisse</h2>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Annahme</th><th>Was stimmt</th></tr></thead>
+<tbody>
+<tr><td>„Mandant ist dasselbe wie Tenant.“</td><td>Ein Mandant trennt Daten innerhalb eines Systems; Code und Technik sind geteilt.</td></tr>
+<tr><td>„Die Plattform prüft jeden Zugriff.“</td><td>Im klassischen SAP prüft das Programm; Eigenentwicklungen ohne Prüfung sind offen.</td></tr>
+<tr><td>„Die Kachel ist sichtbar, also ist die Person berechtigt.“</td><td>Kachel, OData-Service und Datenobjekt sind drei getrennte Freigaben.</td></tr>
+<tr><td>„Das größte Risiko ist der Admin.“</td><td>In SAP ist es oft die Kombination zweier normaler Rechte bei einer Person.</td></tr>
+<tr><td>„Rollen passt man in Produktion an.“</td><td>Rollen entstehen in DEV und werden transportiert.</td></tr>
+<tr><td>„Public Cloud funktioniert wie On-Premise.“</td><td>Dort gibt es Business Roles, Catalogs und Restrictions statt PFCG.</td></tr>
+<tr><td>„GRC wird abgeschaltet.“</td><td>Es wird modernisiert; für die Cloud kommt ein zweites Werkzeug dazu.</td></tr>
+</tbody>
+</table></div>
+<nav style="display:flex;justify-content:space-between;gap:1rem;margin-top:3rem;border-top:1px solid var(--rule);padding-top:1rem;font-family:'Helvetica Neue',Arial,sans-serif;font-size:.9rem"><span><a href="19-copilot-studio.html">← Zurück</a></span><a href="index.html">Übersicht</a><span><a href="21-sap-microsoft.html">Weiter →</a></span></nav>
+</body>
+</html>
