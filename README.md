@@ -2,7 +2,7 @@
 
 Stand: November 2026.
 
-Diese Sammlung hält fest, was bei einer Erkundung von Microsoft 365, Azure, Copilot und Sprachmodellen herauskam: was tatsächlich funktioniert, was es kostet, welche Infrastruktur dafür nötig ist und wo die Grenzen liegen. Der Blick ist der einer kleinen Beratungsfirma (Systemhaus), die mit einem externen IT-Dienstleister arbeitet und prüft, welche KI-Anwendungsfälle sich lohnen.
+Diese Sammlung hält fest, was bei einer Erkundung von Microsoft 365, Entra ID, Azure, Copilot und Sprachmodellen herauskam: wie die Bausteine zusammenhängen, was tatsächlich funktioniert, was es kostet, welche Infrastruktur dafür nötig ist und wo die Grenzen liegen.
 
 Alle Tests liefen in einem eigenen Testtenant mit erfundenen Daten. Firmen, Personen und Projekte in den Beispielen sind ausgedacht. Zahlen und Preise beziehen sich auf den Stand der Tests und können sich ändern.
 
@@ -40,5 +40,7 @@ Ein eigenständiger Überblickstext in 21 Kapiteln mit Diagrammen und Glossar: E
 - Quelltext der Kapitel als Markdown: [buch/kapitel/](buch/kapitel/)
 
 ## Hinweis
+
+Einige Abwägungen sind aus Sicht einer kleinen Organisation formuliert, deren Tenant ein externer IT-Dienstleister betreut.
 
 Keine Rechtsberatung. Wo es um Datenschutz, Verträge oder Lizenzen geht, ist das eine technische Einordnung und ersetzt keine Prüfung im Einzelfall.

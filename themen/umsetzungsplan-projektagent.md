@@ -1,6 +1,6 @@
 # Umsetzungsplan: Projektagent in Microsoft 365
 
-Stand: November 2026. Architekturentwurf für eine kleine Beratungsfirma (Systemhaus) mit einigen Dutzend Mitarbeitenden, die mit Microsoft 365 arbeitet und einen externen IT-Dienstleister für den Tenant hat. Als Ganzes ist der Entwurf nicht gebaut. Einzelne Bausteine wurden im Testtenant ausprobiert, siehe [Was davon im Test geprüft wurde](#was-davon-im-test-geprüft-wurde).
+Stand: November 2026. Architekturentwurf für eine kleine Beratungsfirma mit einigen Dutzend Mitarbeitenden, die mit Microsoft 365 arbeitet und deren Tenant ein externer IT-Dienstleister betreut. Als Ganzes ist der Entwurf nicht gebaut. Einzelne Bausteine wurden im Testtenant ausprobiert, siehe [Was davon im Test geprüft wurde](#was-davon-im-test-geprüft-wurde).
 
 **Kennzeichnung der Aussagen:**
 
