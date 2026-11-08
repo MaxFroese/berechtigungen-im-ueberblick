@@ -24,7 +24,7 @@ Im Büroalltag gibt es viele Aufgaben, bei denen ein Sprachmodell helfen könnte
 
 ## Was eine App mit Live-Daten aus Microsoft 365 braucht
 
-Eine Seite, die nur vorberechnete Daten zeigt, ist ein Webserver mit ein paar Dateien. Sobald eine App im Namen eines Nutzers Dateien liest oder ein Modell aufruft, kommt eine ganze Kette dazu. Jeder Schritt hat einen Grund. Die Grundlagen stehen ausführlicher in [Grundlagen](../themen/grundlagen.md), die Rechte im [Buch „Berechtigungen“](../buch/index.html).
+Eine Seite, die nur vorberechnete Daten zeigt, ist ein Webserver mit ein paar Dateien. Sobald eine App im Namen eines Nutzers Dateien liest oder ein Modell aufruft, kommt eine ganze Kette dazu. Jeder Schritt hat einen Grund. Die Grundlagen stehen ausführlicher in [Grundlagen](../themen/grundlagen.md), die Rechte im [Buch „Berechtigungen“](../buch/README.md).
 
 ```text
 Hosting (Azure Web-App)

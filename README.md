@@ -14,6 +14,7 @@ Alle Tests liefen in einem eigenen Testtenant mit erfundenen Daten. Firmen, Pers
 | 2 | [Index und Retrieval](themen/index-und-retrieval.md) | Wie Suche und RAG in Microsoft 365 arbeiten und was die Messungen zeigen |
 | 3 | [Harnesses im Vergleich](themen/harnesses-im-vergleich.md) | Copilot Chat, Copilot Studio, Copilot Harness, Cowork: Aufgaben, Grenzen, Abrechnung |
 | 4 | [Die Apps](apps/README.md) | Sieben Prototypen: Ziel, Lösung, was live lief und warum nicht |
+| 5 | [Das Buch](buch/README.md) | 21 Kapitel zu Berechtigungen, Lizenzen und Architektur, mit Diagrammen |
 
 ## Themen
 
@@ -36,8 +37,7 @@ Alle Tests liefen in einem eigenen Testtenant mit erfundenen Daten. Firmen, Pers
 
 Ein eigenständiger Überblickstext in 21 Kapiteln mit Diagrammen und Glossar: Entra ID, Azure, Microsoft 365, GitHub, KI-Agenten, Lizenzen und Abrechnung, Recht und Datenweg, Arbeit mit externem IT-Dienstleister, Power Platform, Dataverse, ALM, Copilot Studio sowie SAP und die Schnittstelle zu Microsoft.
 
-- Lesen als HTML: [buch/index.html](buch/index.html). Nach dem Klonen lokal im Browser öffnen oder über GitHub Pages.
-- Quelltext der Kapitel als Markdown: [buch/kapitel/](buch/kapitel/)
+**[Zum Buch: Inhaltsverzeichnis aller Kapitel](buch/README.md)**, direkt hier auf GitHub lesbar, mit allen Diagrammen. Dazu das [Glossar](buch/glossar.md) und [Kapitel 1 als Einstieg](buch/kapitel/01-landkarte.md).
 
 ## Hinweis
 

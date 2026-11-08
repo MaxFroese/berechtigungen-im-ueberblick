@@ -2,7 +2,7 @@
 
 Entra ID, Azure, Microsoft 365, GitHub und KI-Agenten: was wo liegt, wer es verwaltet und wer was darf. Stand: November 2026.
 
-Die Kapitel lassen sich direkt hier auf GitHub lesen, mit allen Diagrammen. Eine HTML-Fassung liegt daneben ([index.html](index.html)) und ist über GitHub Pages lesbar.
+Die Kapitel lassen sich direkt hier auf GitHub lesen, mit allen Diagrammen. Eine HTML-Fassung mit gleichem Inhalt liegt im Ordner [html](html/), sie ist für den Browser nach dem Herunterladen gedacht.
 
 - [1. Die Landkarte: Was liegt wo?](kapitel/01-landkarte.md)
 - [2. Identitäten und Tokens: Wer ist wer?](kapitel/02-identitaeten-tokens.md)
@@ -26,4 +26,4 @@ Die Kapitel lassen sich direkt hier auf GitHub lesen, mit allen Diagrammen. Eine
 - [20. SAP für Microsoft-Leute: Systemlandschaft und Rechtemodell](kapitel/20-sap-grundlagen.md)
 - [21. Microsoft und SAP: Identität und Datenzugriff an der Schnittstelle](kapitel/21-sap-microsoft.md)
 
-Das [Glossar](glossar.html) gibt es in der HTML-Fassung.
+Alle Begriffe stehen im [Glossar](glossar.md).
