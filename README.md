@@ -44,12 +44,12 @@ Einstieg: [Kapitel 1, Die Landkarte](buch/kapitel/01-landkarte.md).
 
 Alle Begriffe stehen im [Glossar](buch/glossar.md). Eine HTML-Fassung mit gleichem Inhalt liegt in [buch/html](buch/html/).
 
-## Praxistests
-
-Ergänzend gibt es Notizen aus Tests in einem eigenen Testtenant mit erfundenen Daten: Suche und Retrieval, Copilot Studio, Harnesses im Vergleich, Kosten, ein Eigenbau-Agent und sieben kleine Prototyp-Apps. Siehe [Praxistests](themen/README.md).
-
 ## Hinweis
 
 Einige Abwägungen sind aus Sicht einer kleinen Organisation formuliert, deren Tenant ein externer IT-Dienstleister betreut.
 
 Keine Rechtsberatung. Wo es um Datenschutz, Verträge oder Lizenzen geht, ist das eine technische Einordnung und ersetzt keine Prüfung im Einzelfall.
+
+## Praxistests
+
+Ergänzend gibt es Notizen aus Tests in einem eigenen Testtenant mit erfundenen Daten: Suche und Retrieval, Copilot Studio, Harnesses im Vergleich, Kosten, ein Eigenbau-Agent und sieben kleine Prototyp-Apps. Siehe [Praxistests](themen/README.md).
