@@ -1,43 +1,52 @@
-# Microsoft 365, Copilot und KI-Agenten im Praxistest
+# Berechtigungen im Überblick
 
-Stand: November 2026.
+Microsoft 365, Entra ID, Azure, Power Platform, GitHub und KI-Agenten: was wo liegt, wer es verwaltet, wer was darf und wer bezahlt. Ein Überblickstext in 21 Kapiteln mit Diagrammen und [Glossar](buch/glossar.md), direkt hier auf GitHub lesbar. Stand: November 2026.
 
-Diese Sammlung hält fest, was bei einer Erkundung von Microsoft 365, Entra ID, Azure, Copilot und Sprachmodellen herauskam: wie die Bausteine zusammenhängen, was tatsächlich funktioniert, was es kostet, welche Infrastruktur dafür nötig ist und wo die Grenzen liegen.
+Einstieg: [Kapitel 1, Die Landkarte](buch/kapitel/01-landkarte.md).
 
-Alle Tests liefen in einem eigenen Testtenant mit erfundenen Daten. Firmen, Personen und Projekte in den Beispielen sind ausgedacht. Zahlen und Preise beziehen sich auf den Stand der Tests und können sich ändern.
+## Kapitel
 
-## Lesereihenfolge
+**Grundlagen: Identität, Rechte, Daten, Geräte, Server**
 
-| Reihenfolge | Dokument | Worum es geht |
-|---|---|---|
-| 1 | [Grundlagen](themen/grundlagen.md) | Anmeldung, Graph API, Teams und Rechte am Beispiel einer kleinen Frage-App |
-| 2 | [Index und Retrieval](themen/index-und-retrieval.md) | Wie Suche und RAG in Microsoft 365 arbeiten und was die Messungen zeigen |
-| 3 | [Harnesses im Vergleich](themen/harnesses-im-vergleich.md) | Copilot Chat, Copilot Studio, Copilot Harness, Cowork: Aufgaben, Grenzen, Abrechnung |
-| 4 | [Die Apps](apps/README.md) | Sieben Prototypen: Ziel, Lösung, was live lief und warum nicht |
-| 5 | [Das Buch](buch/README.md) | 21 Kapitel zu Berechtigungen, Lizenzen und Architektur, mit Diagrammen |
+- [1. Die Landkarte: Was liegt wo?](buch/kapitel/01-landkarte.md)
+- [2. Identitäten und Tokens: Wer ist wer?](buch/kapitel/02-identitaeten-tokens.md)
+- [3. Die drei Rechtesysteme: Warum „Admin“ nicht gleich „darf alles“ ist](buch/kapitel/03-rechtesysteme.md)
+- [4. Admin-Rollen: Wer sieht und darf was wirklich?](buch/kapitel/04-admin-rollen.md)
+- [5. Daten und Freigaben: Wer kommt an welche Datei?](buch/kapitel/05-daten-freigaben.md)
+- [6. Geräte und Zugriffsregeln: Welche Rolle spielt der Laptop?](buch/kapitel/06-geraete-zugriff.md)
+- [7. Server und GitHub: Vom Commit zur laufenden App](buch/kapitel/07-server-github.md)
 
-## Themen
+**Bauen und KI-Agenten**
 
-| Thema | Dokument | Kurz |
-|---|---|---|
-| Grundlagen | [grundlagen.md](themen/grundlagen.md) | Der Weg von der App-Registrierung bis zum Token und zur Antwort |
-| Index und Retrieval | [index-und-retrieval.md](themen/index-und-retrieval.md) | Stichwort- gegen Vektorsuche, Messungen mit der Retrieval API |
-| Eigener Index im Vergleich | [eigener-index-foundry-iq.md](themen/eigener-index-foundry-iq.md) | Foundry IQ: ganze Sätze gehen, Listen und Synonyme bleiben schwierig |
-| Copilot-Technik vertieft | [microsoft-rag-architektur.md](themen/microsoft-rag-architektur.md) | Begriffe, Abfragepfad, Sucharten und Lizenzen |
-| Copilot Studio | [copilot-studio.md](themen/copilot-studio.md) | Agent mit SharePoint-Wissen, Evaluation, Modellwahl und Kosten |
-| Harnesses | [harnesses-im-vergleich.md](themen/harnesses-im-vergleich.md) | Welche Umgebung wofür taugt und wie sie abgerechnet wird |
-| Copilot Harness im Test | [copilot-harness-praxistest.md](themen/copilot-harness-praxistest.md) | Testfragen, Excel, Workflows, Skills, Kosten |
-| Eigenbau auf Foundry | [eigenbau-agent.md](themen/eigenbau-agent.md) | RAG und agentische Schleife mit eigenem Code, Kosten je Anfrage |
-| Anwendungsfälle | [einordnung-anwendungsfaelle.md](themen/einordnung-anwendungsfaelle.md) | Allgemeines Raster: welche KI-Wünsche wie angegangen werden |
-| Projektagent | [umsetzungsplan-projektagent.md](themen/umsetzungsplan-projektagent.md) | Architekturentwurf für einen Agenten, der Projektstände mitführt |
-| Testfragen | [testfragen.md](themen/testfragen.md) | Die Fragen, mit denen alle Varianten verglichen wurden |
-| Testergebnisse | [testergebnisse.md](themen/testergebnisse.md) | Alle Ergebnisse im Überblick |
+- [8. Ein Beispielprojekt eingeordnet: Vom Test-Tenant in eine Firma](buch/kapitel/08-projekt.md)
+- [9. KI-Agenten im Rechtemodell: Claude Code und Codex](buch/kapitel/09-ki-agenten.md)
+- [10. Bauen ohne Admin-Rechte: Woran es in einer Firma hapert](buch/kapitel/10-bauen-ohne-admin-rechte.md)
 
-## Buch: Berechtigungen im Überblick
+**Lizenzen, Plattformen, Recht und IT-Dienstleister**
 
-Ein eigenständiger Überblickstext in 21 Kapiteln mit Diagrammen und Glossar: Entra ID, Azure, Microsoft 365, GitHub, KI-Agenten, Lizenzen und Abrechnung, Recht und Datenweg, Arbeit mit externem IT-Dienstleister, Power Platform, Dataverse, ALM, Copilot Studio sowie SAP und die Schnittstelle zu Microsoft.
+- [11. Lizenzen und Abrechnung: Wer bezahlt, wer darf kaufen?](buch/kapitel/11-lizenzen-abrechnung.md)
+- [12. Plattformen und Verwaltungsorte: Azure, Foundry, Power Platform](buch/kapitel/12-plattformen-verwaltung.md)
+- [13. Rechtliche Einordnung, technisch gedacht: Welche Daten dürfen wohin?](buch/kapitel/13-recht-datenweg.md)
+- [14. Mit externem IT-Dienstleister: Wer hält die Rollen, wer entscheidet, wer zahlt?](buch/kapitel/14-it-dienstleister.md)
 
-**[Zum Buch: Inhaltsverzeichnis aller Kapitel](buch/README.md)**, direkt hier auf GitHub lesbar, mit allen Diagrammen. Dazu das [Glossar](buch/glossar.md) und [Kapitel 1 als Einstieg](buch/kapitel/01-landkarte.md).
+**Power Platform, Dataverse und Copilot Studio**
+
+- [15. Power Platform von innen: Bausteine und Umgebungen](buch/kapitel/15-power-platform-bausteine.md)
+- [16. Dataverse: Datenmodell und Sicherheitsmodell](buch/kapitel/16-dataverse.md)
+- [17. Apps und Flows bauen: Canvas, Model-driven, Cloud Flows](buch/kapitel/17-apps-flows.md)
+- [18. Solutions und ALM: von Dev nach Prod](buch/kapitel/18-solutions-alm.md)
+- [19. Copilot Studio von innen und Pro-Code-Anbindung](buch/kapitel/19-copilot-studio.md)
+
+**SAP und die Schnittstelle zu Microsoft**
+
+- [20. SAP für Microsoft-Leute: Systemlandschaft und Rechtemodell](buch/kapitel/20-sap-grundlagen.md)
+- [21. Microsoft und SAP: Identität und Datenzugriff an der Schnittstelle](buch/kapitel/21-sap-microsoft.md)
+
+Alle Begriffe stehen im [Glossar](buch/glossar.md). Eine HTML-Fassung mit gleichem Inhalt liegt in [buch/html](buch/html/).
+
+## Praxistests
+
+Ergänzend gibt es Notizen aus Tests in einem eigenen Testtenant mit erfundenen Daten: Suche und Retrieval, Copilot Studio, Harnesses im Vergleich, Kosten, ein Eigenbau-Agent und sieben kleine Prototyp-Apps. Siehe [Praxistests](themen/README.md).
 
 ## Hinweis
 
